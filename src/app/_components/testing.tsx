@@ -4,6 +4,7 @@ import { useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import useDetection from '@/hooks/useDetection'
+import useDraw from '@/hooks/useDraw'
 
 const VIDEO_WIDTH = 640
 const VIDEO_HEIGHT = 480
@@ -14,17 +15,8 @@ const Testing = () => {
   const [mediaStream, setMediaStream] = useState<MediaStream | null>(null)
   const [isCameraOn, setIsCameraOn] = useState(false)
 
-  const { detect, stop } = useDetection(videoRef.current, keypoints => {
-    console.log(keypoints[0])
-  })
-
-  const cleanCanvas = () => {
-    const canvas = canvasRef.current
-    const ctx = canvas?.getContext('2d')
-    if (!ctx || !canvas) return
-
-    ctx.clearRect(0, 0, VIDEO_WIDTH, VIDEO_HEIGHT)
-  }
+  const { draw, clean } = useDraw(canvasRef.current, VIDEO_WIDTH, VIDEO_HEIGHT)
+  const { detect, stop } = useDetection(videoRef.current, draw)
 
   const startCamera = async () => {
     try {
@@ -52,31 +44,8 @@ const Testing = () => {
       setIsCameraOn(false)
       console.log('Camera disabled')
       stop()
-
-      cleanCanvas()
+      clean()
     }
-  }
-
-  const drawKeypoints = (
-    keypoints: number[][],
-    width: number,
-    height: number
-  ) => {
-    const canvas = canvasRef.current
-    const ctx = canvas?.getContext('2d')
-    if (!ctx || !canvas) return
-
-    ctx.clearRect(0, 0, width, height)
-
-    keypoints.forEach(([y, x, score]) => {
-      if (score > 0.3) {
-        const mirroredX = 1 - x // Mirror the x-coordinate (since x is normalized 0 to 1)
-        ctx.beginPath()
-        ctx.arc(mirroredX * width, y * height, 5, 0, 2 * Math.PI)
-        ctx.fillStyle = 'red'
-        ctx.fill()
-      }
-    })
   }
 
   return (

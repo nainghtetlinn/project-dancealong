@@ -1,9 +1,9 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { toast } from 'sonner'
 
-import { useModel } from '@/provider/model-provider'
+import useDetection from '@/hooks/useDetection'
 
 const VIDEO_WIDTH = 640
 const VIDEO_HEIGHT = 480
@@ -14,7 +14,9 @@ const Testing = () => {
   const [mediaStream, setMediaStream] = useState<MediaStream | null>(null)
   const [isCameraOn, setIsCameraOn] = useState(false)
 
-  const { model, detectPose: dp } = useModel()
+  const { detect, stop } = useDetection(videoRef.current, keypoints => {
+    console.log(keypoints[0])
+  })
 
   const cleanCanvas = () => {
     const canvas = canvasRef.current
@@ -33,6 +35,7 @@ const Testing = () => {
       setMediaStream(stream)
       setIsCameraOn(true)
       console.log('Camera enabled')
+      detect()
     } catch (error) {
       console.error('Error accessing webcam', error)
       toast.error('Error accessing webcam')
@@ -48,51 +51,11 @@ const Testing = () => {
       setMediaStream(null)
       setIsCameraOn(false)
       console.log('Camera disabled')
+      stop()
 
       cleanCanvas()
     }
   }
-
-  const toggleCamera = () => {
-    if (isCameraOn) {
-      stopCamera()
-    } else {
-      startCamera()
-    }
-  }
-
-  useEffect(() => {
-    return () => {
-      stopCamera() // in case user navigates away
-    }
-  }, [stopCamera])
-
-  useEffect(() => {
-    let animationFrameId: number
-
-    const detectPose = async () => {
-      if (
-        model &&
-        videoRef.current &&
-        videoRef.current.readyState === 4 // video is ready
-      ) {
-        const video = videoRef.current
-
-        const keypoints = dp(video)
-
-        //@ts-ignore
-        drawKeypoints(keypoints, VIDEO_WIDTH, VIDEO_HEIGHT)
-      }
-
-      animationFrameId = requestAnimationFrame(detectPose)
-    }
-
-    if (model && isCameraOn) {
-      detectPose()
-    }
-
-    return () => cancelAnimationFrame(animationFrameId)
-  }, [model, isCameraOn])
 
   const drawKeypoints = (
     keypoints: number[][],
@@ -135,7 +98,7 @@ const Testing = () => {
           className='absolute inset-0'
         ></canvas>
       </div>
-      <button onClick={toggleCamera}>
+      <button onClick={() => (isCameraOn ? stopCamera() : startCamera())}>
         {isCameraOn ? 'Stop Camera' : 'Start Camera'}
       </button>
     </div>
@@ -143,4 +106,3 @@ const Testing = () => {
 }
 
 export default Testing
-//

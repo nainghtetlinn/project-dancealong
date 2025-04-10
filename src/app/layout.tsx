@@ -39,7 +39,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <ModelProvider>
+          <ModelProvider type='thunder'>
             <main>{children}</main>
           </ModelProvider>
           <Toaster />

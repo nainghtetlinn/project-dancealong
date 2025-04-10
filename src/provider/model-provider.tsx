@@ -2,18 +2,28 @@
 
 import * as tf from '@tensorflow/tfjs'
 import React, { createContext, useContext, useEffect, useState } from 'react'
-import { Loader2 } from 'lucide-react'
 
-const modelUri = '/movenet-tfjs-singlepose-lightning-v4/model.json'
-const MOVENET_INPUT_WIDTH = 192
-const MOVENET_INPUT_HEIGHT = 192
+const lightningUri = '/movenet-tfjs-singlepose-lightning-v4/model.json'
+const MOVENET_LIGHTNING_INPUT_WIDTH = 192
+const MOVENET_LIGHTNING_INPUT_HEIGHT = 192
+
+const thunderUri = '/movenet-tfjs-singlepose-thunder-v4/model.json'
+const MOVENET_THUNDER_INPUT_WIDTH = 256
+const MOVENET_THUNDER_INPUT_HEIGHT = 256
 
 const modelContext = createContext<{
   loading: boolean
   model: tf.GraphModel | null
-}>({ model: null, loading: true })
+  type: 'lightning' | 'thunder'
+}>({ model: null, loading: true, type: 'lightning' })
 
-export function ModelProvider({ children }: { children: React.ReactNode }) {
+export function ModelProvider({
+  children,
+  type,
+}: {
+  children: React.ReactNode
+  type: 'lightning' | 'thunder'
+}) {
   const [model, setModel] = useState<tf.GraphModel | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -23,19 +33,37 @@ export function ModelProvider({ children }: { children: React.ReactNode }) {
 
       await tf.setBackend('webgl')
       await tf.ready()
-      const m = await tf.loadGraphModel(modelUri)
+      const m = await tf.loadGraphModel(
+        type === 'thunder' ? thunderUri : lightningUri
+      )
       setModel(m)
-      console.log('Model loaded')
+      console.log('Model loaded:', type)
 
       // Warm up the model by passing zeros through it once
       tf.tidy(() => {
         const answer = m.execute(
-          tf.zeros([1, MOVENET_INPUT_HEIGHT, MOVENET_INPUT_WIDTH, 3]).toInt()
+          type === 'thunder'
+            ? tf
+                .zeros([
+                  1,
+                  MOVENET_THUNDER_INPUT_HEIGHT,
+                  MOVENET_THUNDER_INPUT_WIDTH,
+                  3,
+                ])
+                .toInt()
+            : tf
+                .zeros([
+                  1,
+                  MOVENET_LIGHTNING_INPUT_HEIGHT,
+                  MOVENET_LIGHTNING_INPUT_WIDTH,
+                  3,
+                ])
+                .toInt()
         ) as tf.Tensor
-        console.log('Warm up ', answer.squeeze().arraySync())
+        console.log('Warm up:', type, answer.squeeze().arraySync())
       })
     } catch (error) {
-      console.error('Error loading model:', error)
+      console.error('Error loading model:', type, error)
     } finally {
       setLoading(false)
     }
@@ -46,7 +74,7 @@ export function ModelProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   return (
-    <modelContext.Provider value={{ model, loading }}>
+    <modelContext.Provider value={{ type, model, loading }}>
       {children}
     </modelContext.Provider>
   )

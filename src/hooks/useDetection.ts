@@ -2,14 +2,16 @@ import * as tf from '@tensorflow/tfjs'
 import { useRef } from 'react'
 import { useModel } from '@/provider/model-provider'
 
-const INPUT_WIDTH = 192
-const INPUT_HEIGHT = 192
+const LIGHTNING_INPUT_WIDTH = 192
+const LIGHTNING_INPUT_HEIGHT = 192
+const THUNDER_INPUT_WIDTH = 256
+const THUNDER_INPUT_HEIGHT = 256
 
 const useDetection = (
   video: HTMLVideoElement | null,
   callback: (keypoints: number[][]) => void
 ) => {
-  const { model } = useModel()
+  const { type, model } = useModel()
 
   const animationFrameId = useRef<number | null>(null)
   const isDetecting = useRef(false)
@@ -25,7 +27,11 @@ const useDetection = (
     tf.tidy(() => {
       const inputTensor = tf.browser
         .fromPixels(video)
-        .resizeBilinear([INPUT_HEIGHT, INPUT_WIDTH])
+        .resizeBilinear(
+          type === 'thunder'
+            ? [THUNDER_INPUT_HEIGHT, THUNDER_INPUT_WIDTH]
+            : [LIGHTNING_INPUT_HEIGHT, LIGHTNING_INPUT_WIDTH]
+        )
         .expandDims(0)
         .toInt()
 

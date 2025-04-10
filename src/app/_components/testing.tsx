@@ -1,6 +1,7 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import * as tf from '@tensorflow/tfjs'
+import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import useDetection from '@/hooks/useDetection'
@@ -16,7 +17,7 @@ const Testing = () => {
   const [isCameraOn, setIsCameraOn] = useState(false)
 
   const { draw, clean } = useDraw(canvasRef.current, VIDEO_WIDTH, VIDEO_HEIGHT)
-  const { detect, stop } = useDetection(videoRef.current, draw)
+  const { start, stop } = useDetection(videoRef.current, draw)
 
   const startCamera = async () => {
     try {
@@ -27,7 +28,6 @@ const Testing = () => {
       setMediaStream(stream)
       setIsCameraOn(true)
       console.log('Camera enabled')
-      detect()
     } catch (error) {
       console.error('Error accessing webcam', error)
       toast.error('Error accessing webcam')
@@ -43,10 +43,17 @@ const Testing = () => {
       setMediaStream(null)
       setIsCameraOn(false)
       console.log('Camera disabled')
+    }
+  }
+
+  useEffect(() => {
+    if (isCameraOn) {
+      start()
+    } else {
       stop()
       clean()
     }
-  }
+  }, [isCameraOn])
 
   return (
     <div>
@@ -69,6 +76,13 @@ const Testing = () => {
       </div>
       <button onClick={() => (isCameraOn ? stopCamera() : startCamera())}>
         {isCameraOn ? 'Stop Camera' : 'Start Camera'}
+      </button>
+      <button
+        onClick={() => {
+          console.log(tf.memory().numTensors)
+        }}
+      >
+        List
       </button>
     </div>
   )

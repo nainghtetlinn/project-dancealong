@@ -2,70 +2,61 @@ import * as tf from '@tensorflow/tfjs'
 import { useRef } from 'react'
 import { useModel } from '@/provider/model-provider'
 
-const keypoints_order = [
-  'nose',
-  'left eye',
-  'right eye',
-  'left ear',
-  'right ear',
-  'left shoulder',
-  'right shoulder',
-  'left elbow',
-  'right elbow',
-  'left wrist',
-  'right wrist',
-  'left hip',
-  'right hip',
-  'left knee',
-  'right knee',
-  'left ankle',
-  'right ankle',
-]
+const INPUT_WIDTH = 192
+const INPUT_HEIGHT = 192
 
 const useDetection = (
   video: HTMLVideoElement | null,
-  callback: (
-    result: { x: number; y: number; score: number; name: string }[]
-  ) => void
+  callback: (keypoints: number[][]) => void
 ) => {
   const { model } = useModel()
 
-  const animationFrameId = useRef(0)
+  const animationFrameId = useRef<number | null>(null)
+  const isDetecting = useRef(false)
 
   const detect = () => {
-    if (model && video && video.readyState === 4) {
-      console.log('Detecting ...')
+    if (!model || !video || video.readyState !== 4) {
+      animationFrameId.current = requestAnimationFrame(detect)
+      return
+    }
 
-      const inputTensor = tf.tidy(() =>
-        tf.browser
-          .fromPixels(video)
-          .resizeBilinear([192, 192])
-          .expandDims(0)
-          .toInt()
-      )
+    console.log('Detecting ...')
+
+    tf.tidy(() => {
+      const inputTensor = tf.browser
+        .fromPixels(video)
+        .resizeBilinear([INPUT_HEIGHT, INPUT_WIDTH])
+        .expandDims(0)
+        .toInt()
 
       const result = model.execute(inputTensor) as tf.Tensor
 
       const keypoints = (result.arraySync() as number[][][][])[0][0]
 
-      const formatted = keypoints.map((kp, i) => {
-        return { x: kp[1], y: kp[0], score: kp[2], name: keypoints_order[i] }
-      })
-
-      callback(formatted)
-
-      tf.dispose([inputTensor, result])
-    }
+      callback(keypoints)
+    })
 
     animationFrameId.current = requestAnimationFrame(detect)
   }
 
-  const stop = () => {
-    console.log('Detection stopped')
-    cancelAnimationFrame(animationFrameId.current)
+  const start = () => {
+    if (!isDetecting.current) {
+      isDetecting.current = true
+      animationFrameId.current = requestAnimationFrame(detect)
+      console.log('Detection started')
+    }
   }
 
-  return { detect, stop }
+  const stop = () => {
+    if (animationFrameId.current !== null) {
+      cancelAnimationFrame(animationFrameId.current)
+      animationFrameId.current = null
+      isDetecting.current = false
+      console.log('Detection stopped')
+    }
+  }
+
+  return { start, stop }
 }
 
 export default useDetection

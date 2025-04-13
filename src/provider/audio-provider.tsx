@@ -11,29 +11,35 @@ import TimelinePlugin from 'wavesurfer.js/dist/plugins/timeline.esm.js'
 import ZoomPlugin from 'wavesurfer.js/dist/plugins/zoom.esm.js'
 
 interface AudioContext {
+  AudioWaveSurferContainer: React.JSX.Element
+  wavesurfer: WaveSurfer | null
   audio: File | null
-  onDrop: (files: File[]) => void
-  removeAudio: () => void
+  duration: number
+  currentTime: number
   isPlaying: boolean
-  play: () => void
-  playWithCounter: () => void
   isCounting: boolean
   count: number
+  onDrop: (files: File[]) => void
+  removeAudio: () => void
+  play: () => void
+  playWithCounter: () => void
   pause: () => void
-  AudioWaveSurferContainer: React.JSX.Element
 }
 
 const audioContext = createContext<AudioContext>({
+  AudioWaveSurferContainer: <div />,
+  wavesurfer: null,
   audio: null,
-  onDrop: () => {},
-  removeAudio: () => {},
+  duration: 0,
+  currentTime: 0,
   isPlaying: false,
-  play: () => {},
-  playWithCounter: () => {},
   isCounting: false,
   count: 5,
+  onDrop: () => {},
+  removeAudio: () => {},
+  play: () => {},
+  playWithCounter: () => {},
   pause: () => {},
-  AudioWaveSurferContainer: <div />,
 })
 
 export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
@@ -42,6 +48,8 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
 
   const [audio, setAudio] = useState<File | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
+  const [duration, setDuration] = useState(0)
+  const [currentTime, setCurrentTime] = useState(0)
 
   const [isCounting, setIsCounting] = useState(false)
   const [count, setCount] = useState(5)
@@ -76,6 +84,9 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
     if (!audio || !containerRef.current) return
 
     wavesurferRef.current = createWaveSurfer(containerRef.current)
+
+    wavesurferRef.current.on('decode', setDuration)
+    wavesurferRef.current.on('timeupdate', setCurrentTime)
 
     wavesurferRef.current.on('finish', () => {
       wavesurferRef.current?.setTime(0)
@@ -112,16 +123,19 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
   return (
     <audioContext.Provider
       value={{
+        AudioWaveSurferContainer,
+        wavesurfer: wavesurferRef.current,
         audio,
-        onDrop,
-        removeAudio,
+        duration,
+        currentTime,
         isPlaying,
-        play,
-        playWithCounter,
         isCounting,
         count,
+        onDrop,
+        removeAudio,
+        play,
+        playWithCounter,
         pause,
-        AudioWaveSurferContainer,
       }}
     >
       {children}

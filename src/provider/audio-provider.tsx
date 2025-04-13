@@ -135,7 +135,8 @@ const createWaveSurfer = (ref: HTMLDivElement) => {
   return WaveSurfer.create({
     container: ref,
     height: 100,
-    waveColor: 'white',
+    barWidth: 2,
+    waveColor: 'oklch(.552 .016 285.938)',
     progressColor: 'oklch(.646 .222 41.116)',
     plugins: [
       TimelinePlugin.create(),

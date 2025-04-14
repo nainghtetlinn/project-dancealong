@@ -1,14 +1,16 @@
 import { Disc } from 'lucide-react'
+import SongUpload from './SongUpload'
+import Player from './Player'
 
 import { useAudio } from '@/provider/audio-provider'
 import { formatTime } from '@/lib/utils'
 
-const LeftSidebar = () => {
+const Controls = () => {
   const { audio, duration, currentTime } = useAudio()
 
   return (
-    <div className='h-full p-2 border-r'>
-      <div className='flex gap-2'>
+    <main className='h-full'>
+      <section className='flex justify-center gap-2'>
         <Disc
           size={30}
           className='shrink-0'
@@ -19,9 +21,11 @@ const LeftSidebar = () => {
             {formatTime(currentTime)}/{formatTime(duration)}
           </p>
         </div>
-      </div>
-    </div>
+      </section>
+
+      <section>{audio !== null ? <Player /> : <SongUpload />}</section>
+    </main>
   )
 }
 
-export default LeftSidebar
+export default Controls

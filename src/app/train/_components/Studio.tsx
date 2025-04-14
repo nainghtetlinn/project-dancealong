@@ -1,13 +1,11 @@
 import { Switch } from '@/components/ui/switch'
 import { Video } from 'lucide-react'
-import Player from './Player'
-import SongUpload from './SongUpload'
 
+import useDetection from '@/hooks/useDetection'
+import useDraw from '@/hooks/useDraw'
 import { cn } from '@/lib/utils'
 import { useAudio } from '@/provider/audio-provider'
 import { useTrain } from '@/provider/train-provider'
-import useDraw from '@/hooks/useDraw'
-import useDetection from '@/hooks/useDetection'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -18,7 +16,7 @@ const Studio = () => {
   const [isRecording, setIsRecording] = useState(false)
 
   const { constants } = useTrain()
-  const { audio, isCounting, count } = useAudio()
+  const { isCounting, count } = useAudio()
   const { draw, clean } = useDraw(
     canvasRef.current,
     constants.canvas.width,
@@ -65,57 +63,53 @@ const Studio = () => {
   }, [isRecording])
 
   return (
-    <div className='h-full'>
-      <div className='flex justify-center'>
-        <main className='pt-1'>
-          <section className='flex justify-between items-center'>
-            <div className='flex gap-2'>
-              <Video
-                className={cn(
-                  isRecording ? 'text-emerald-500' : 'text-destructive'
-                )}
-              />
-              {isRecording ? 'Recording ...' : 'Record'}
-            </div>
-
-            <Switch
-              checked={isRecording}
-              onCheckedChange={setIsRecording}
+    <div className='h-full flex justify-center'>
+      <main className='pt-1'>
+        <section className='flex justify-between items-center'>
+          <div className='flex gap-2'>
+            <Video
+              className={cn(
+                isRecording ? 'text-emerald-500' : 'text-destructive'
+              )}
             />
-          </section>
+            {isRecording ? 'Recording ...' : 'Record'}
+          </div>
 
-          <section
-            style={{
-              width: constants.canvas.width,
-              height: constants.canvas.height,
-            }}
-            className='relative rounded overflow-hidden bg-accent'
-          >
-            <video
-              ref={videoRef}
-              autoPlay
-              muted
-              width={constants.canvas.width}
-              height={constants.canvas.height}
-              style={{ transform: 'scaleX(-1)' }}
-              className='relative z-0'
-            ></video>
-            <canvas
-              ref={canvasRef}
-              width={constants.canvas.width}
-              height={constants.canvas.height}
-              className='absolute inset-0 z-10'
-            ></canvas>
-            {isCounting && (
-              <div className='absolute inset-0 z-20 bg-black/40 flex items-center justify-center text-5xl'>
-                {count}
-              </div>
-            )}
-          </section>
-        </main>
-      </div>
+          <Switch
+            checked={isRecording}
+            onCheckedChange={setIsRecording}
+          />
+        </section>
 
-      {audio !== null ? <Player /> : <SongUpload />}
+        <section
+          style={{
+            width: constants.canvas.width,
+            height: constants.canvas.height,
+          }}
+          className='relative rounded overflow-hidden bg-accent'
+        >
+          <video
+            ref={videoRef}
+            autoPlay
+            muted
+            width={constants.canvas.width}
+            height={constants.canvas.height}
+            style={{ transform: 'scaleX(-1)' }}
+            className='relative z-0'
+          ></video>
+          <canvas
+            ref={canvasRef}
+            width={constants.canvas.width}
+            height={constants.canvas.height}
+            className='absolute inset-0 z-10'
+          ></canvas>
+          {isCounting && (
+            <div className='absolute inset-0 z-20 bg-black/40 flex items-center justify-center text-5xl'>
+              {count}
+            </div>
+          )}
+        </section>
+      </main>
     </div>
   )
 }

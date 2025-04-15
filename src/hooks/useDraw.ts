@@ -1,23 +1,50 @@
+import Point from '@/components/primitive/Point'
+import Segment from '@/components/primitive/Segment'
+
 import { useEffect, useState } from 'react'
 
 const keypoints_order = [
-  'nose',
-  'left eye',
-  'right eye',
-  'left ear',
-  'right ear',
-  'left shoulder',
-  'right shoulder',
-  'left elbow',
-  'right elbow',
-  'left wrist',
-  'right wrist',
-  'left hip',
-  'right hip',
-  'left knee',
-  'right knee',
-  'left ankle',
-  'right ankle',
+  'nose', // 0
+  'left eye', // 1
+  'right eye', // 2
+  'left ear', // 3
+  'right ear', // 4
+  'left shoulder', // 5
+  'right shoulder', // 6
+  'left elbow', // 7
+  'right elbow', // 8
+  'left wrist', // 9
+  'right wrist', // 10
+  'left hip', // 11
+  'right hip', // 12
+  'left knee', // 13
+  'right knee', // 14
+  'left ankle', // 15
+  'right ankle', // 16
+]
+
+const adjacentPairs = [
+  // eyes to ears
+  [3, 1],
+  [1, 0],
+  [0, 2],
+  [2, 4],
+  // arms
+  [9, 7],
+  [7, 5],
+  [6, 8],
+  [8, 10],
+  // shoulders to hips
+  [5, 6],
+  [5, 11],
+  [6, 12],
+  // legs
+  [15, 13],
+  [13, 11],
+  [12, 14],
+  [14, 16],
+  // hips
+  [11, 12],
 ]
 
 const useDraw = (
@@ -42,13 +69,26 @@ const useDraw = (
     if (!ctx) return
     ctx.clearRect(0, 0, width, height)
 
-    keypoints.forEach(([y, x, score]) => {
+    const points: (Point | null)[] = keypoints.map(([y, x, score]) => {
       if (score > 0.3) {
         const mirroredX = 1 - x // Mirror the x-coordinate
-        ctx.beginPath()
-        ctx.arc(mirroredX * width, y * height, 5, 0, 2 * Math.PI)
-        ctx.fillStyle = 'red'
-        ctx.fill()
+        const point = new Point(mirroredX * width, y * height)
+        point
+          .setSize(16)
+          .setColor('oklch(0.705 0.213 47.604)')
+          .enableFill('white')
+          .draw(ctx)
+
+        return point
+      } else {
+        return null
+      }
+    })
+
+    adjacentPairs.forEach(([i, j]) => {
+      if (keypoints[i][2] > 0.3 && keypoints[j][2] > 0.3) {
+        const segment = new Segment(points[i]!, points[j]!)
+        segment.setColor('oklch(0.705 0.213 47.604)').draw(ctx)
       }
     })
   }

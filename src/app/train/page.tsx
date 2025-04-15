@@ -19,7 +19,7 @@ const Train = () => {
               <Studio />
             </div>
 
-            <div className='flex-1 p-2'>
+            <div className='flex-1 p-2 overflow-hidden'>
               <Controls />
             </div>
           </div>

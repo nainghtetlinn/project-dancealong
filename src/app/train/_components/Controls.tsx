@@ -1,5 +1,5 @@
 import SongUpload from './SongUpload'
-import Player from './Player'
+import PlayBtn from './PlayBtn'
 import SongDetails from './SongDetails'
 import AudioTimeline from './AudioTimeline'
 
@@ -14,7 +14,7 @@ const Controls = () => {
       {audio !== null ? (
         <>
           <AudioTimeline />
-          <Player />
+          <PlayBtn />
         </>
       ) : (
         <SongUpload />

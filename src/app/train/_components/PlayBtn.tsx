@@ -5,7 +5,7 @@ import { Pause, Play } from 'lucide-react'
 import { useAudio } from '@/provider/audio-provider'
 import { useState } from 'react'
 
-const Player = () => {
+const PlayBtn = () => {
   const [shouldCount, setShouldCount] = useState(
     localStorage.getItem('shouldCount') === 'true'
   )
@@ -52,4 +52,4 @@ const Player = () => {
   )
 }
 
-export default Player
+export default PlayBtn

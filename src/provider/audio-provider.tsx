@@ -148,10 +148,12 @@ export const useAudio = () => useContext(audioContext)
 const createWaveSurfer = (ref: HTMLDivElement) => {
   return WaveSurfer.create({
     container: ref,
-    height: 100,
+    height: 80,
     barWidth: 2,
     waveColor: 'oklch(.552 .016 285.938)',
     progressColor: 'oklch(.646 .222 41.116)',
+    dragToSeek: true,
+    hideScrollbar: true,
     plugins: [
       TimelinePlugin.create(),
       Hover.create({

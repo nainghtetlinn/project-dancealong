@@ -4,6 +4,7 @@ import { useTrain } from '@/provider/train-provider'
 import { TPose } from '@/types/pose'
 import { ColumnDef } from '@tanstack/react-table'
 import { Trash, Edit, Video } from 'lucide-react'
+import DeletePoseBtn from './DeletePoseBtn'
 
 const columns: ColumnDef<TPose>[] = [
   { accessorKey: 'label', header: 'Label' },
@@ -25,12 +26,7 @@ const columns: ColumnDef<TPose>[] = [
           >
             <Edit />
           </Button>
-          <Button
-            variant='destructive'
-            size='icon'
-          >
-            <Trash />
-          </Button>
+          <DeletePoseBtn label={row.original.label} />
         </div>
       )
     },

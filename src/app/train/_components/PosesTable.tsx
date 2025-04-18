@@ -11,16 +11,19 @@ const columns: ColumnDef<TPose>[] = [
   { accessorKey: 'numOfPosesCaptured', header: '' },
   {
     id: 'actions',
-    cell: ({ row }) => {
+    cell: ({ row, table }) => {
+      // checking like this will not work as expected when we have to use pagination
+      const isLast = row.index === table.getRowCount() - 1
+
       return (
-        <div className='flex justify-end gap-2'>
+        <div className='flex gap-2'>
           <Button
             className='bg-green-500'
             size='icon'
           >
             <Video />
           </Button>
-          <DeletePoseBtn label={row.original.label} />
+          {isLast && <DeletePoseBtn label={row.original.label} />}
         </div>
       )
     },

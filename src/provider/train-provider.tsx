@@ -27,13 +27,15 @@ const trainContext = createContext<TrainContext>({
 export const TrainProvider = ({ children }: { children: React.ReactNode }) => {
   const [poses, setPoses] = useState<TPose[]>([])
 
+  const lastNumber = useRef(0)
   const trainingDataRef = useRef<{ keypoints: number[][]; label: string }[]>([])
 
   const addPose = () => {
     setPoses(prev => [
       ...prev,
-      { label: 'Pose_' + prev.length, numOfPosesCaptured: 0 },
+      { label: 'Pose_' + lastNumber.current, numOfPosesCaptured: 0 },
     ])
+    lastNumber.current++
   }
 
   const removePose = (label: string) => {

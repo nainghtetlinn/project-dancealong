@@ -3,7 +3,7 @@ import { DataTable } from '@/components/ui/data-table'
 import { useTrain } from '@/provider/train-provider'
 import { TPose } from '@/types/pose'
 import { ColumnDef } from '@tanstack/react-table'
-import { Trash, Edit, Video } from 'lucide-react'
+import { Video } from 'lucide-react'
 import DeletePoseBtn from './DeletePoseBtn'
 
 const columns: ColumnDef<TPose>[] = [
@@ -19,12 +19,6 @@ const columns: ColumnDef<TPose>[] = [
             size='icon'
           >
             <Video />
-          </Button>
-          <Button
-            variant='secondary'
-            size='icon'
-          >
-            <Edit />
           </Button>
           <DeletePoseBtn label={row.original.label} />
         </div>

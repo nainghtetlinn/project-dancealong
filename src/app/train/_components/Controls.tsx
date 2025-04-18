@@ -1,7 +1,7 @@
-import SongUpload from './SongUpload'
-import PlayBtn from './PlayBtn'
-import SongDetails from './SongDetails'
 import AudioTimeline from './AudioTimeline'
+import CapturedPoses from './CapturedPoses'
+import PlayBtn from './PlayBtn'
+import SongUpload from './SongUpload'
 
 import { useAudio } from '@/provider/audio-provider'
 
@@ -10,14 +10,16 @@ const Controls = () => {
 
   return (
     <main className='h-full space-y-2'>
-      <SongDetails />
       {audio !== null ? (
         <>
           <AudioTimeline />
           <PlayBtn />
+          <CapturedPoses />
         </>
       ) : (
-        <SongUpload />
+        <div className='h-full flex items-center justify-center text-muted-foreground'>
+          Upload song to start editing
+        </div>
       )}
     </main>
   )

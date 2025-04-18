@@ -1,5 +1,7 @@
 import { Switch } from '@/components/ui/switch'
 import { Video } from 'lucide-react'
+import SongDetails from './SongDetails'
+import SongUpload from './SongUpload'
 
 import useDetection from '@/hooks/useDetection'
 import useDraw from '@/hooks/useDraw'
@@ -16,7 +18,7 @@ const Studio = () => {
   const [isRecording, setIsRecording] = useState(false)
 
   const { constants } = useTrain()
-  const { isCounting, count } = useAudio()
+  const { audio, isCounting, count } = useAudio()
   const { draw, clean } = useDraw(
     canvasRef.current,
     constants.canvas.width,
@@ -63,8 +65,8 @@ const Studio = () => {
   }, [isRecording])
 
   return (
-    <div className='h-full flex justify-center'>
-      <main className='pt-1'>
+    <div className='h-full'>
+      <main className='space-y-2'>
         <section className='flex justify-between items-center'>
           <div className='flex gap-2'>
             <Video
@@ -109,6 +111,8 @@ const Studio = () => {
             </div>
           )}
         </section>
+
+        {audio !== null ? <SongDetails /> : <SongUpload />}
       </main>
     </div>
   )

@@ -25,8 +25,7 @@ const SongDetails = () => {
       <Button
         size='icon'
         variant='destructive'
-        className='absolute top-1/2 -translate-y-1/2 right-2'
-        disabled={audio === null}
+        className='absolute top-1/2 -translate-y-1/2 right-0'
         onClick={() => {
           removeAudio()
         }}

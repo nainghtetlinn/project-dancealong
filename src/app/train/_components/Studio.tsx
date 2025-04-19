@@ -10,6 +10,7 @@ import { useAudio } from '@/provider/audio-provider'
 import { useTrain } from '@/provider/train-provider'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
+import useDetectAndDraw from '@/hooks/useDetectAndDraw'
 
 const Studio = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -19,12 +20,12 @@ const Studio = () => {
 
   const { constants } = useTrain()
   const { audio, isCounting, count } = useAudio()
-  const { draw, clean } = useDraw(
+
+  const { start, stop, clean } = useDetectAndDraw(
+    videoRef.current,
     canvasRef.current,
-    constants.canvas.width,
-    constants.canvas.height
+    keypoints => {}
   )
-  const { start, stop } = useDetection(videoRef.current, draw)
 
   const startCamera = async () => {
     try {

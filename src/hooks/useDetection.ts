@@ -22,8 +22,6 @@ const useDetection = (
       return
     }
 
-    console.log('Detecting ...')
-
     tf.tidy(() => {
       const inputTensor = tf.browser
         .fromPixels(video)

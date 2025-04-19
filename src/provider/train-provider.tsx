@@ -17,6 +17,8 @@ const constants = {
 interface TrainContext {
   constants: typeof constants
   poses: TPose[]
+  count: number
+  isCounting: boolean
   isCapturing: boolean
   isRecording: boolean
   setIsRecording: (state: boolean) => void
@@ -29,6 +31,8 @@ interface TrainContext {
 const trainContext = createContext<TrainContext>({
   constants,
   poses: [],
+  count: 5,
+  isCounting: false,
   isCapturing: false,
   isRecording: false,
   setIsRecording: () => {},
@@ -43,6 +47,8 @@ export const TrainProvider = ({ children }: { children: React.ReactNode }) => {
 
   const [isRecording, setIsRecording] = useState(false)
   const [isCapturing, setIsCapturing] = useState(false)
+  const [isCounting, setIsCounting] = useState(false)
+  const [count, setCount] = useState(5)
   const [activeLabel, setActiveLabel] = useState('')
 
   const trainingDataRef = useRef<{ keypoints: number[][]; label: string }[]>([])
@@ -62,12 +68,28 @@ export const TrainProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   const startCapturing = (label: string) => {
+    setIsCounting(true)
     setActiveLabel(label)
-    setIsCapturing(true)
-    setTimeout(() => {
-      setIsCapturing(false)
-    }, 3000)
   }
+
+  useEffect(() => {
+    if (!isCounting) return
+
+    if (count === 0) {
+      setCount(5)
+      setIsCounting(false)
+      setIsCapturing(true)
+      setTimeout(() => {
+        setIsCapturing(false)
+      }, 3000)
+    }
+
+    const timer = setTimeout(() => {
+      setCount(prev => prev - 1)
+    }, 1000)
+
+    return () => clearTimeout(timer)
+  }, [isCounting, count])
 
   const capturePose = (keypoints: number[][]) => {
     if (!isCapturing) return
@@ -91,6 +113,8 @@ export const TrainProvider = ({ children }: { children: React.ReactNode }) => {
       value={{
         constants,
         poses,
+        count,
+        isCounting,
         isCapturing,
         isRecording,
         setIsRecording,

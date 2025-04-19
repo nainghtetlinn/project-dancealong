@@ -15,7 +15,14 @@ const Studio = () => {
   const videoRef = useRef<HTMLVideoElement>(null)
   const [mediaStream, setMediaStream] = useState<MediaStream | null>(null)
 
-  const { constants, capturePose, isRecording, setIsRecording } = useTrain()
+  const {
+    constants,
+    capturePose,
+    isRecording,
+    setIsRecording,
+    isCounting,
+    count,
+  } = useTrain()
   const { audio } = useAudio()
 
   const { start, stop, clean } = useDetectAndDraw(
@@ -101,6 +108,11 @@ const Studio = () => {
             height={constants.canvas.height}
             className='absolute inset-0 z-10'
           ></canvas>
+          {isCounting && (
+            <div className='absolute inset-0 z-20 bg-black/40 flex items-center justify-center text-5xl'>
+              {count}
+            </div>
+          )}
         </section>
 
         {audio !== null ? <SongDetails /> : <SongUpload />}

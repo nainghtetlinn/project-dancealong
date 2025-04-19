@@ -3,28 +3,27 @@ import { Video } from 'lucide-react'
 import SongDetails from './SongDetails'
 import SongUpload from './SongUpload'
 
-import useDetection from '@/hooks/useDetection'
-import useDraw from '@/hooks/useDraw'
+import useDetectAndDraw from '@/hooks/useDetectAndDraw'
 import { cn } from '@/lib/utils'
 import { useAudio } from '@/provider/audio-provider'
 import { useTrain } from '@/provider/train-provider'
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { toast } from 'sonner'
-import useDetectAndDraw from '@/hooks/useDetectAndDraw'
 
 const Studio = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const [mediaStream, setMediaStream] = useState<MediaStream | null>(null)
-  const [isRecording, setIsRecording] = useState(false)
 
-  const { constants } = useTrain()
+  const { constants, isCapturing, isRecording, setIsRecording } = useTrain()
   const { audio, isCounting, count } = useAudio()
 
   const { start, stop, clean } = useDetectAndDraw(
     videoRef.current,
     canvasRef.current,
-    keypoints => {}
+    keypoints => {
+      console.log(isCapturing)
+    }
   )
 
   const startCamera = async () => {
@@ -36,6 +35,7 @@ const Studio = () => {
       setMediaStream(stream)
       setIsRecording(true)
       console.log('Camera enabled')
+      start()
     } catch (error) {
       console.error('Error accessing webcam', error)
       toast.error('Error accessing webcam')
@@ -51,19 +51,10 @@ const Studio = () => {
       setMediaStream(null)
       setIsRecording(false)
       console.log('Camera disabled')
-    }
-  }
-
-  useEffect(() => {
-    if (isRecording) {
-      startCamera()
-      start()
-    } else {
-      stopCamera()
       stop()
       clean()
     }
-  }, [isRecording])
+  }
 
   return (
     <div className='h-full'>
@@ -80,7 +71,13 @@ const Studio = () => {
 
           <Switch
             checked={isRecording}
-            onCheckedChange={setIsRecording}
+            onCheckedChange={state => {
+              if (state) {
+                startCamera()
+              } else {
+                stopCamera()
+              }
+            }}
           />
         </section>
 

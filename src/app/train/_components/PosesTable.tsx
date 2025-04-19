@@ -1,9 +1,8 @@
-import { Button } from '@/components/ui/button'
 import { DataTable } from '@/components/ui/data-table'
 import { useTrain } from '@/provider/train-provider'
 import { TPose } from '@/types/pose'
 import { ColumnDef } from '@tanstack/react-table'
-import { Video } from 'lucide-react'
+import CaptureBtn from './CaptureBtn'
 import DeletePoseBtn from './DeletePoseBtn'
 
 const columns: ColumnDef<TPose>[] = [
@@ -17,12 +16,7 @@ const columns: ColumnDef<TPose>[] = [
 
       return (
         <div className='flex gap-2'>
-          <Button
-            className='bg-green-500'
-            size='icon'
-          >
-            <Video />
-          </Button>
+          <CaptureBtn label={row.original.label} />
           {isLast && <DeletePoseBtn label={row.original.label} />}
         </div>
       )

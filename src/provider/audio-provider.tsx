@@ -17,12 +17,9 @@ interface AudioContext {
   duration: number
   currentTime: number
   isPlaying: boolean
-  isCounting: boolean
-  count: number
   onDrop: (files: File[]) => void
   removeAudio: () => void
   play: () => void
-  playWithCounter: () => void
   pause: () => void
 }
 
@@ -33,12 +30,9 @@ const audioContext = createContext<AudioContext>({
   duration: 0,
   currentTime: 0,
   isPlaying: false,
-  isCounting: false,
-  count: 5,
   onDrop: () => {},
   removeAudio: () => {},
   play: () => {},
-  playWithCounter: () => {},
   pause: () => {},
 })
 
@@ -50,9 +44,6 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
   const [isPlaying, setIsPlaying] = useState(false)
   const [duration, setDuration] = useState(0)
   const [currentTime, setCurrentTime] = useState(0)
-
-  const [isCounting, setIsCounting] = useState(false)
-  const [count, setCount] = useState(5)
 
   const onDrop = (acceptedFiles: File[]) => {
     setAudio(acceptedFiles[0])
@@ -67,10 +58,6 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
   const play = () => {
     setIsPlaying(true)
     wavesurferRef.current?.play()
-  }
-
-  const playWithCounter = () => {
-    setIsCounting(true)
   }
 
   const pause = () => {
@@ -104,22 +91,6 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [audio, containerRef])
 
-  useEffect(() => {
-    if (!isCounting) return
-
-    if (count === 0) {
-      play()
-      setIsCounting(false)
-      setCount(5)
-    }
-
-    const timer = setTimeout(() => {
-      setCount(prev => prev - 1)
-    }, 1000)
-
-    return () => clearTimeout(timer)
-  }, [isCounting, count])
-
   return (
     <audioContext.Provider
       value={{
@@ -129,12 +100,9 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
         duration,
         currentTime,
         isPlaying,
-        isCounting,
-        count,
         onDrop,
         removeAudio,
         play,
-        playWithCounter,
         pause,
       }}
     >

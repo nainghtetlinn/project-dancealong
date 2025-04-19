@@ -15,15 +15,13 @@ const Studio = () => {
   const videoRef = useRef<HTMLVideoElement>(null)
   const [mediaStream, setMediaStream] = useState<MediaStream | null>(null)
 
-  const { constants, isCapturing, isRecording, setIsRecording } = useTrain()
+  const { constants, capturePose, isRecording, setIsRecording } = useTrain()
   const { audio, isCounting, count } = useAudio()
 
   const { start, stop, clean } = useDetectAndDraw(
     videoRef.current,
     canvasRef.current,
-    keypoints => {
-      console.log(isCapturing)
-    }
+    capturePose
   )
 
   const startCamera = async () => {

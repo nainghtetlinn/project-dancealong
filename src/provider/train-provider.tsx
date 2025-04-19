@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useRef, useState } from 'react'
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 import { TPose } from '@/types/pose'
 
 const constants = {
@@ -11,21 +17,33 @@ const constants = {
 interface TrainContext {
   constants: typeof constants
   poses: TPose[]
+  isCapturing: boolean
+  isRecording: boolean
+  setIsRecording: (state: boolean) => void
   addPose: () => void
   removePose: (label: string) => void
-  capturePose: (label: string, keypoints: number[][]) => void
+  capturePose: (keypoints: number[][]) => void
+  startCapturing: (label: string) => void
 }
 
 const trainContext = createContext<TrainContext>({
   constants,
   poses: [],
+  isCapturing: false,
+  isRecording: false,
+  setIsRecording: () => {},
   addPose: () => {},
   removePose: () => {},
   capturePose: () => {},
+  startCapturing: () => {},
 })
 
 export const TrainProvider = ({ children }: { children: React.ReactNode }) => {
   const [poses, setPoses] = useState<TPose[]>([])
+
+  const [isRecording, setIsRecording] = useState(false)
+  const [isCapturing, setIsCapturing] = useState(false)
+  const [activeLabel, setActiveLabel] = useState('')
 
   const trainingDataRef = useRef<{ keypoints: number[][]; label: string }[]>([])
 
@@ -43,15 +61,29 @@ export const TrainProvider = ({ children }: { children: React.ReactNode }) => {
     )
   }
 
-  const capturePose = (label: string, keypoints: number[][]) => {
-    setPoses(prev => {
-      const index = prev.findIndex(p => p.label === label)
-      if (index !== -1) {
-        prev[index].numOfPosesCaptured++
-      }
-      return prev
-    })
-    trainingDataRef.current.push({ label, keypoints })
+  const startCapturing = (label: string) => {
+    setActiveLabel(label)
+    setIsCapturing(true)
+    setTimeout(() => {
+      setIsCapturing(false)
+    }, 3000)
+  }
+
+  const capturePose = (keypoints: number[][]) => {
+    if (!isCapturing) return
+
+    setPoses(prev =>
+      prev.map(p => {
+        if (p.label === activeLabel) {
+          return {
+            ...p,
+            numOfPosesCaptured: p.numOfPosesCaptured + 1,
+          }
+        }
+        return p
+      })
+    )
+    trainingDataRef.current.push({ label: activeLabel, keypoints })
   }
 
   return (
@@ -59,9 +91,13 @@ export const TrainProvider = ({ children }: { children: React.ReactNode }) => {
       value={{
         constants,
         poses,
+        isCapturing,
+        isRecording,
+        setIsRecording,
         addPose,
         removePose,
         capturePose,
+        startCapturing,
       }}
     >
       {children}

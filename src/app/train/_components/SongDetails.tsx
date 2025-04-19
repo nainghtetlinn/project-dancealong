@@ -1,11 +1,12 @@
-import { Disc, Trash } from 'lucide-react'
+import { Disc, Trash, Play, Pause } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 import { formatTime } from '@/lib/utils'
 import { useAudio } from '@/provider/audio-provider'
 
 const SongDetails = () => {
-  const { audio, duration, currentTime, removeAudio } = useAudio()
+  const { audio, duration, currentTime, removeAudio, isPlaying, play, pause } =
+    useAudio()
 
   return (
     <section className='relative flex justify-center'>
@@ -22,16 +23,30 @@ const SongDetails = () => {
         </div>
       </div>
 
-      <Button
-        size='icon'
-        variant='destructive'
-        className='absolute top-1/2 -translate-y-1/2 right-0'
-        onClick={() => {
-          removeAudio()
-        }}
-      >
-        <Trash />
-      </Button>
+      <div className='absolute top-1/2 -translate-y-1/2 right-0 space-x-2'>
+        <Button
+          size='icon'
+          variant='secondary'
+          onClick={() => {
+            if (isPlaying) {
+              pause()
+            } else {
+              play()
+            }
+          }}
+        >
+          {isPlaying ? <Pause /> : <Play />}
+        </Button>
+        <Button
+          size='icon'
+          variant='destructive'
+          onClick={() => {
+            removeAudio()
+          }}
+        >
+          <Trash />
+        </Button>
+      </div>
     </section>
   )
 }

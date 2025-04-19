@@ -1,7 +1,5 @@
 import AudioTimeline from './AudioTimeline'
 import CapturedPoses from './CapturedPoses'
-import PlayBtn from './PlayBtn'
-import SongUpload from './SongUpload'
 
 import { useAudio } from '@/provider/audio-provider'
 
@@ -13,7 +11,6 @@ const Controls = () => {
       {audio !== null ? (
         <>
           <AudioTimeline />
-          <PlayBtn />
           <CapturedPoses />
         </>
       ) : (

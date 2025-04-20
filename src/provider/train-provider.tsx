@@ -7,6 +7,9 @@ import React, {
 } from 'react'
 import { TPose } from '@/types/pose'
 import { exportJSON } from '@/lib/utils'
+import ShortUniqueID from 'short-unique-id'
+
+const uid = new ShortUniqueID({ length: 4 })
 
 const constants = {
   canvas: {
@@ -61,7 +64,7 @@ export const TrainProvider = ({ children }: { children: React.ReactNode }) => {
   const addPose = () => {
     setPoses(prev => [
       ...prev,
-      { label: 'Pose_' + prev.length, numOfPosesCaptured: 0 },
+      { label: 'Pose_' + uid.rnd(), numOfPosesCaptured: 0 },
     ])
   }
 

@@ -11,15 +11,12 @@ const columns: ColumnDef<TPose>[] = [
   { accessorKey: 'numOfPosesCaptured', header: '' },
   {
     id: 'actions',
-    cell: ({ row, table }) => {
-      // checking like this will not work as expected when we have to use pagination
-      const isLast = row.index === table.getRowCount() - 1
-
+    cell: ({ row }) => {
       return (
         <div className='flex gap-2'>
           <CaptureBtn label={row.original.label} />
           <EditBtn label={row.original.label} />
-          {isLast && <RemoveBtn label={row.original.label} />}
+          <RemoveBtn label={row.original.label} />
         </div>
       )
     },

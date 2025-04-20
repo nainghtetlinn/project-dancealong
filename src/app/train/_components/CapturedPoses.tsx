@@ -4,7 +4,7 @@ import PosesTable from './PosesTable'
 import { useTrain } from '@/provider/train-provider'
 
 const CapturedPoses = () => {
-  const { addPose, exportTrainingData } = useTrain()
+  const { poses, addPose, exportTrainingData } = useTrain()
 
   return (
     <section className='border rounded p-2 space-y-2'>
@@ -18,9 +18,10 @@ const CapturedPoses = () => {
       <div className='flex items-center justify-end'>
         <Button
           variant='secondary'
+          disabled={poses.length < 2}
           onClick={exportTrainingData}
         >
-          Export data
+          Export Data
         </Button>
       </div>
     </section>

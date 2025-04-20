@@ -6,6 +6,7 @@ import React, {
   useState,
 } from 'react'
 import { TPose } from '@/types/pose'
+import { exportJSON } from '@/lib/utils'
 
 const constants = {
   canvas: {
@@ -26,6 +27,7 @@ interface TrainContext {
   removePose: (label: string) => void
   capturePose: (keypoints: number[][]) => void
   startCapturing: (label: string) => void
+  exportTrainingData: () => void
 }
 
 const trainContext = createContext<TrainContext>({
@@ -40,6 +42,7 @@ const trainContext = createContext<TrainContext>({
   removePose: () => {},
   capturePose: () => {},
   startCapturing: () => {},
+  exportTrainingData: () => {},
 })
 
 export const TrainProvider = ({ children }: { children: React.ReactNode }) => {
@@ -108,6 +111,10 @@ export const TrainProvider = ({ children }: { children: React.ReactNode }) => {
     trainingDataRef.current.push({ label: activeLabel, keypoints })
   }
 
+  const exportTrainingData = () => {
+    exportJSON(trainingDataRef.current, 'training_data.json')
+  }
+
   return (
     <trainContext.Provider
       value={{
@@ -122,6 +129,7 @@ export const TrainProvider = ({ children }: { children: React.ReactNode }) => {
         removePose,
         capturePose,
         startCapturing,
+        exportTrainingData,
       }}
     >
       {children}

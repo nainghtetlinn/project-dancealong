@@ -25,6 +25,7 @@ interface TrainContext {
   setIsRecording: (state: boolean) => void
   addPose: () => void
   removePose: (label: string) => void
+  editPose: (label: string, newLabel: string) => void
   capturePose: (keypoints: number[][]) => void
   startCapturing: (label: string) => void
   exportTrainingData: () => void
@@ -40,6 +41,7 @@ const trainContext = createContext<TrainContext>({
   setIsRecording: () => {},
   addPose: () => {},
   removePose: () => {},
+  editPose: () => {},
   capturePose: () => {},
   startCapturing: () => {},
   exportTrainingData: () => {},
@@ -68,6 +70,23 @@ export const TrainProvider = ({ children }: { children: React.ReactNode }) => {
     trainingDataRef.current = trainingDataRef.current.filter(
       d => d.label !== label
     )
+  }
+
+  const editPose = (label: string, newLabel: string) => {
+    setPoses(prev => {
+      return prev.map(p => {
+        if (p.label === label) {
+          return { ...p, label: newLabel }
+        }
+        return p
+      })
+    })
+    trainingDataRef.current = trainingDataRef.current.map(d => {
+      if (d.label === label) {
+        return { ...d, label: newLabel }
+      }
+      return d
+    })
   }
 
   const startCapturing = (label: string) => {
@@ -127,6 +146,7 @@ export const TrainProvider = ({ children }: { children: React.ReactNode }) => {
         setIsRecording,
         addPose,
         removePose,
+        editPose,
         capturePose,
         startCapturing,
         exportTrainingData,

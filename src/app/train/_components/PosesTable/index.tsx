@@ -4,6 +4,7 @@ import { TPose } from '@/types/pose'
 import { ColumnDef } from '@tanstack/react-table'
 import CaptureBtn from './CaptureBtn'
 import DeletePoseBtn from './DeletePoseBtn'
+import EditBtn from './EditBtn'
 
 const columns: ColumnDef<TPose>[] = [
   { accessorKey: 'label', header: 'Label' },
@@ -17,6 +18,7 @@ const columns: ColumnDef<TPose>[] = [
       return (
         <div className='flex gap-2'>
           <CaptureBtn label={row.original.label} />
+          <EditBtn label={row.original.label} />
           {isLast && <DeletePoseBtn label={row.original.label} />}
         </div>
       )

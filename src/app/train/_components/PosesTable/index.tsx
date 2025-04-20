@@ -3,8 +3,8 @@ import { useTrain } from '@/provider/train-provider'
 import { TPose } from '@/types/pose'
 import { ColumnDef } from '@tanstack/react-table'
 import CaptureBtn from './CaptureBtn'
-import DeletePoseBtn from './DeletePoseBtn'
 import EditBtn from './EditBtn'
+import RemoveBtn from './RemoveBtn'
 
 const columns: ColumnDef<TPose>[] = [
   { accessorKey: 'label', header: 'Label' },
@@ -19,7 +19,7 @@ const columns: ColumnDef<TPose>[] = [
         <div className='flex gap-2'>
           <CaptureBtn label={row.original.label} />
           <EditBtn label={row.original.label} />
-          {isLast && <DeletePoseBtn label={row.original.label} />}
+          {isLast && <RemoveBtn label={row.original.label} />}
         </div>
       )
     },

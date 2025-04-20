@@ -3,7 +3,7 @@ import { Trash } from 'lucide-react'
 
 import { useTrain } from '@/provider/train-provider'
 
-const DeletePoseBtn = ({ label }: { label: string }) => {
+const RemoveBtn = ({ label }: { label: string }) => {
   const { removePose } = useTrain()
 
   return (
@@ -17,4 +17,4 @@ const DeletePoseBtn = ({ label }: { label: string }) => {
   )
 }
 
-export default DeletePoseBtn
+export default RemoveBtn

@@ -8,6 +8,8 @@ import React, {
 import { TPose } from '@/types/pose'
 import { exportJSON } from '@/lib/utils'
 import ShortUniqueID from 'short-unique-id'
+import { createModel } from '@/lib/model'
+import * as tf from '@tensorflow/tfjs'
 
 const uid = new ShortUniqueID({ length: 4 })
 
@@ -32,6 +34,7 @@ interface TrainContext {
   capturePose: (keypoints: number[][]) => void
   startCapturing: (label: string) => void
   exportTrainingData: () => void
+  trainModel: () => void
 }
 
 const trainContext = createContext<TrainContext>({
@@ -48,9 +51,13 @@ const trainContext = createContext<TrainContext>({
   capturePose: () => {},
   startCapturing: () => {},
   exportTrainingData: () => {},
+  trainModel: () => {},
 })
 
 export const TrainProvider = ({ children }: { children: React.ReactNode }) => {
+  const [trainedModel, setTrainedModel] = useState<tf.Sequential>()
+  const [trainedModelLabels, setTrainedModelLabels] = useState<string[]>()
+
   const [poses, setPoses] = useState<TPose[]>([])
 
   const [isRecording, setIsRecording] = useState(false)
@@ -137,6 +144,13 @@ export const TrainProvider = ({ children }: { children: React.ReactNode }) => {
     exportJSON(trainingDataRef.current, 'training_data.json')
   }
 
+  const trainModel = async () => {
+    const { labels, model } = await createModel(trainingDataRef.current)
+
+    setTrainedModel(model)
+    setTrainedModelLabels(labels)
+  }
+
   return (
     <trainContext.Provider
       value={{
@@ -153,6 +167,7 @@ export const TrainProvider = ({ children }: { children: React.ReactNode }) => {
         capturePose,
         startCapturing,
         exportTrainingData,
+        trainModel,
       }}
     >
       {children}

@@ -18,7 +18,7 @@ import { toast } from 'sonner'
 
 const EditBtn = ({ label }: { label: string }) => {
   const { editPose } = useTrain()
-  const [newLabel, setNewLabel] = useState('')
+  const [newLabel, setNewLabel] = useState(label)
   const [open, setOpen] = useState(false)
 
   return (
@@ -53,9 +53,11 @@ const EditBtn = ({ label }: { label: string }) => {
           <Button
             type='submit'
             onClick={() => {
-              if (!!newLabel) {
+              if (!!newLabel && newLabel !== label) {
                 editPose(label, newLabel)
                 setOpen(false)
+              } else if (newLabel === label) {
+                toast.error('New label cannot be old label')
               } else {
                 toast.error('Invalid label')
               }

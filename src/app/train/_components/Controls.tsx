@@ -1,4 +1,4 @@
-import AudioTimeline from './AudioTimeline'
+import AudioTimeline from './audio/AudioTimeline'
 import CapturedPoses from './CapturedPoses'
 
 import { useAudio } from '@/provider/audio-provider'

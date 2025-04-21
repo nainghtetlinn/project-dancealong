@@ -1,5 +1,5 @@
-import AudioDetails from './AudioDetails'
-import AudioUpload from './AudioUpload'
+import AudioDetails from './audio/AudioDetails'
+import AudioUpload from './audio/AudioUpload'
 import Webcam from './Webcam'
 
 import { useAudio } from '@/provider/audio-provider'

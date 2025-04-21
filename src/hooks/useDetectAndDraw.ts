@@ -26,7 +26,13 @@ const useDetectAndDraw = (
     callbackRef.current(keypoints)
   })
 
-  return { start, stop, clean }
+  return {
+    start,
+    stop: () => {
+      stop()
+      clean()
+    },
+  }
 }
 
 export default useDetectAndDraw

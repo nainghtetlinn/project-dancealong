@@ -1,3 +1,5 @@
+'use client'
+
 import useDetectAndDraw from '@/hooks/useDetectAndDraw'
 import React, {
   createContext,

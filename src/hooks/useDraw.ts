@@ -1,3 +1,5 @@
+'use client'
+
 import Point from '@/components/primitive/Point'
 import Segment from '@/components/primitive/Segment'
 

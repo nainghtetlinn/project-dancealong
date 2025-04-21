@@ -1,3 +1,5 @@
+'use client'
+
 import { useTrain } from '@/provider/train-provider'
 import { useEffect, useRef } from 'react'
 import useDetection from './useDetection'

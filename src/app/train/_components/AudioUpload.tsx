@@ -3,7 +3,7 @@ import Dropzone from 'react-dropzone'
 import { cn } from '@/lib/utils'
 import { useAudio } from '@/provider/audio-provider'
 
-const SongUpload = () => {
+const AudioUpload = () => {
   const { onDrop } = useAudio()
 
   return (
@@ -34,4 +34,4 @@ const SongUpload = () => {
   )
 }
 
-export default SongUpload
+export default AudioUpload

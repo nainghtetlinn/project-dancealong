@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { formatTime } from '@/lib/utils'
 import { useAudio } from '@/provider/audio-provider'
 
-const SongDetails = () => {
+const AudioDetails = () => {
   const { audio, duration, currentTime, removeAudio, isPlaying, play, pause } =
     useAudio()
 
@@ -51,4 +51,4 @@ const SongDetails = () => {
   )
 }
 
-export default SongDetails
+export default AudioDetails

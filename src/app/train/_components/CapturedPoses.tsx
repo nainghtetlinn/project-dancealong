@@ -3,10 +3,11 @@ import PosesTable from './PosesTable'
 
 import { addPose } from '@/lib/store/_features/poseTrainingSlice'
 import { useAppDispatch, useAppSelector } from '@/lib/store/hooks'
+import { exportJSON } from '@/lib/utils'
 
 const CapturedPoses = () => {
   const dispatch = useAppDispatch()
-  const { poses } = useAppSelector(state => state.training)
+  const { poses, trainingData } = useAppSelector(state => state.training)
 
   return (
     <section className='border rounded p-2 space-y-2'>
@@ -27,7 +28,7 @@ const CapturedPoses = () => {
         <Button
           variant='secondary'
           disabled={poses.length < 2}
-          // onClick={exportTrainingData}
+          onClick={() => exportJSON(trainingData, 'training-data.json')}
         >
           Export Data
         </Button>

@@ -10,6 +10,9 @@ export interface PoseTrainingState {
   trainingData: { keypoints: number[][]; label: string }[]
   isCapturing: boolean
   activeLabel: string
+  isTraining: boolean
+  startTime: number
+  endTime: number
 }
 
 const initialState: PoseTrainingState = {
@@ -17,6 +20,9 @@ const initialState: PoseTrainingState = {
   trainingData: [],
   isCapturing: false,
   activeLabel: '',
+  isTraining: false,
+  startTime: 0,
+  endTime: 0,
 }
 
 export const poseTrainingSlice = createSlice({
@@ -70,6 +76,15 @@ export const poseTrainingSlice = createSlice({
         })
       })
     },
+
+    startTraining: state => {
+      state.isTraining = true
+      state.startTime = Date.now()
+    },
+    stopTraining: state => {
+      state.isTraining = false
+      state.endTime = Date.now()
+    },
   },
 })
 
@@ -80,5 +95,7 @@ export const {
   startCapturing,
   stopCapturing,
   capturePoses,
+  startTraining,
+  stopTraining,
 } = poseTrainingSlice.actions
 export default poseTrainingSlice.reducer

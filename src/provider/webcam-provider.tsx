@@ -1,6 +1,8 @@
 'use client'
 
 import useDetectAndDraw from '@/hooks/useDetectAndDraw'
+import { capturePoses } from '@/lib/store/_features/poseTrainingSlice'
+import { useAppDispatch, useAppSelector } from '@/lib/store/hooks'
 import React, {
   createContext,
   useContext,
@@ -32,16 +34,28 @@ const webcamContext = createContext<WebcamContext>({
 })
 
 export const WebcamProvider = ({ children }: { children: React.ReactNode }) => {
+  const dispatch = useAppDispatch()
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const streamRef = useRef<MediaStream>(null)
+  const keypointsRef = useRef<number[][][]>([])
 
   const [webcamEnable, setWebcamEnable] = useState(false)
+  const { isCapturing } = useAppSelector(state => state.training)
 
   const { start, stop } = useDetectAndDraw(
     videoRef.current,
     canvasRef.current,
-    keypoints => {}
+    keypoints => {
+      if (isCapturing) {
+        keypointsRef.current.push(keypoints)
+      } else {
+        if (keypointsRef.current.length > 0) {
+          dispatch(capturePoses(keypointsRef.current))
+          keypointsRef.current.length = 0
+        }
+      }
+    }
   )
 
   useEffect(() => {

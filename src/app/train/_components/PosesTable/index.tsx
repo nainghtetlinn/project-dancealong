@@ -1,10 +1,11 @@
 import { DataTable } from '@/components/ui/data-table'
-import { useTrain } from '@/provider/train-provider'
 import { TPose } from '@/types/pose'
 import { ColumnDef } from '@tanstack/react-table'
 import CaptureBtn from './CaptureBtn'
 import EditBtn from './EditBtn'
 import RemoveBtn from './RemoveBtn'
+
+import { useAppSelector } from '@/lib/store/hooks'
 
 const columns: ColumnDef<TPose>[] = [
   { accessorKey: 'label', header: 'Label' },
@@ -24,7 +25,7 @@ const columns: ColumnDef<TPose>[] = [
 ]
 
 const PosesTable = () => {
-  const { poses } = useTrain()
+  const { poses } = useAppSelector(state => state.training)
 
   return (
     <DataTable

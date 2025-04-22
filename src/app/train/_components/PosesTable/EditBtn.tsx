@@ -12,12 +12,13 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Edit } from 'lucide-react'
 
-import { useTrain } from '@/provider/train-provider'
+import { editPose } from '@/lib/store/_features/poseTrainingSlice'
+import { useAppDispatch } from '@/lib/store/hooks'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
 const EditBtn = ({ label }: { label: string }) => {
-  const { editPose } = useTrain()
+  const dispatch = useAppDispatch()
   const [newLabel, setNewLabel] = useState(label)
   const [open, setOpen] = useState(false)
 
@@ -54,7 +55,7 @@ const EditBtn = ({ label }: { label: string }) => {
             type='submit'
             onClick={() => {
               if (!!newLabel && newLabel !== label) {
-                editPose(label, newLabel)
+                dispatch(editPose({ label, newLabel }))
                 setOpen(false)
               } else if (newLabel === label) {
                 toast.error('New label cannot be old label')

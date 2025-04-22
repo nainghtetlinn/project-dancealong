@@ -1,10 +1,12 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit'
+import poseTrainingReducer from './_features/poseTrainingSlice'
 import counterReducer from './_features/counterSlice'
 
 export const makeStore = () => {
   return configureStore({
     reducer: {
       counter: counterReducer,
+      training: poseTrainingReducer,
     },
   })
 }

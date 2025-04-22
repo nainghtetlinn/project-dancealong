@@ -1,10 +1,7 @@
-import { createSlice } from '@reduxjs/toolkit'
-import type { PayloadAction } from '@reduxjs/toolkit'
 import { TPose } from '@/types/pose'
-import { exportJSON } from '@/lib/utils'
+import type { PayloadAction } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit'
 import ShortUniqueID from 'short-unique-id'
-import { createModel } from '@/lib/model'
-import * as tf from '@tensorflow/tfjs'
 
 const uid = new ShortUniqueID({ length: 4 })
 

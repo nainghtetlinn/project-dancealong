@@ -6,12 +6,14 @@ import { addPose } from '@/lib/store/_features/poseTrainingSlice'
 import { trainModel } from '@/lib/store/_features/poseTrainingThunk'
 import { useAppDispatch, useAppSelector } from '@/lib/store/hooks'
 import { exportJSON } from '@/lib/utils'
+import { useModel } from '@/provider/model-provider'
 
 const CapturedPoses = () => {
   const dispatch = useAppDispatch()
   const { poses, trainingData, isTraining } = useAppSelector(
     state => state.training
   )
+  const { uploadModel } = useModel()
 
   return (
     <section className='border rounded p-2 space-y-2'>
@@ -40,7 +42,7 @@ const CapturedPoses = () => {
           disabled={poses.length < 2 || isTraining}
           onClick={async () => {
             const result = await dispatch(trainModel())
-            console.log(result)
+            uploadModel(result)
           }}
         >
           Train {isTraining && <Loader2 className='animate-spin' />}

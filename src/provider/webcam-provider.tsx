@@ -11,6 +11,8 @@ import React, {
   useState,
 } from 'react'
 import { toast } from 'sonner'
+import { useModel } from './model-provider'
+import * as tf from '@tensorflow/tfjs'
 
 const constants = {
   width: 640,
@@ -40,6 +42,8 @@ export const WebcamProvider = ({ children }: { children: React.ReactNode }) => {
   const streamRef = useRef<MediaStream>(null)
   const keypointsRef = useRef<number[][][]>([])
 
+  const { classificationLabels, classificationModel } = useModel()
+
   const [webcamEnable, setWebcamEnable] = useState(false)
   const { isCapturing } = useAppSelector(state => state.training)
 
@@ -54,6 +58,33 @@ export const WebcamProvider = ({ children }: { children: React.ReactNode }) => {
           dispatch(capturePoses(keypointsRef.current))
           keypointsRef.current.length = 0
         }
+      }
+
+      if (classificationModel !== null) {
+        const result = tf.tidy(() => {
+          const prediction = classificationModel.predict(
+            tf.tensor([keypoints.flat()])
+          ) as tf.Tensor
+          const probabilities = prediction.dataSync()
+
+          // Find the max probability and index
+          let maxIndex = 0
+          let maxProb = probabilities[0]
+
+          for (let i = 1; i < probabilities.length; i++) {
+            if (probabilities[i] > maxProb) {
+              maxProb = probabilities[i]
+              maxIndex = i
+            }
+          }
+
+          return {
+            label: classificationLabels[maxIndex],
+            confidence: maxProb,
+          }
+        })
+
+        console.log(result)
       }
     }
   )

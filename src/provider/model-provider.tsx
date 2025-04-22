@@ -11,11 +11,23 @@ const thunderUri = '/movenet-tfjs-singlepose-thunder-v4/model.json'
 const MOVENET_THUNDER_INPUT_WIDTH = 256
 const MOVENET_THUNDER_INPUT_HEIGHT = 256
 
-const modelContext = createContext<{
+interface ModelContext {
   loading: boolean
   model: tf.GraphModel | null
   type: 'lightning' | 'thunder'
-}>({ model: null, loading: true, type: 'lightning' })
+  classificationModel: tf.Sequential | null
+  classificationLabels: string[]
+  uploadModel: (result: { labels: string[]; model: tf.Sequential }) => void
+}
+
+const modelContext = createContext<ModelContext>({
+  model: null,
+  loading: true,
+  type: 'lightning',
+  classificationModel: null,
+  classificationLabels: [],
+  uploadModel: () => {},
+})
 
 export function ModelProvider({
   children,
@@ -25,6 +37,9 @@ export function ModelProvider({
   type: 'lightning' | 'thunder'
 }) {
   const [model, setModel] = useState<tf.GraphModel | null>(null)
+  const [classificationModel, setClassificationModel] =
+    useState<tf.Sequential | null>(null)
+  const [classificationLabels, setClassificationLabels] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
 
   const loadModel = async () => {
@@ -69,12 +84,26 @@ export function ModelProvider({
     }
   }
 
+  const uploadModel = (result: { labels: string[]; model: tf.Sequential }) => {
+    setClassificationLabels(result.labels)
+    setClassificationModel(result.model)
+  }
+
   useEffect(() => {
     loadModel()
   }, [])
 
   return (
-    <modelContext.Provider value={{ type, model, loading }}>
+    <modelContext.Provider
+      value={{
+        type,
+        model,
+        loading,
+        classificationModel,
+        classificationLabels,
+        uploadModel,
+      }}
+    >
       {children}
     </modelContext.Provider>
   )

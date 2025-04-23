@@ -3,12 +3,26 @@ import * as tf from '@tensorflow/tfjs'
 export const createModel = async (
   data: { label: string; keypoints: number[][] }[]
 ) => {
-  const LABELS = Array.from(new Set(data.map(d => d.label)))
-  const inputs = data.map(d => d.keypoints.flat())
-  const outputs = data.map(d => {
-    const oneHot = new Array(LABELS.length).fill(0) as number[]
-    oneHot[LABELS.indexOf(d.label)] = 1
-    return oneHot
+  const labels = Array.from(new Set(data.map(d => d.label)))
+  const inputs: number[][] = []
+  const outputs: number[][] = []
+
+  data.forEach(d => {
+    inputs.push(
+      d.keypoints
+        .map(kp => {
+          if (kp[2] < 0.3) {
+            return [0, 0]
+          }
+          return [kp[0], kp[1]]
+        })
+        .flat()
+    )
+
+    const oneHot = new Array(labels.length).fill(0) as number[]
+    oneHot[labels.indexOf(d.label)] = 1
+
+    outputs.push(oneHot)
   })
 
   tf.util.shuffleCombo(inputs, outputs)
@@ -19,16 +33,16 @@ export const createModel = async (
   const model = tf.sequential()
 
   model.add(
-    tf.layers.dense({ inputShape: [51], units: 128, activation: 'relu' })
+    tf.layers.dense({ inputShape: [34], units: 128, activation: 'relu' })
   )
   model.add(tf.layers.dropout({ rate: 0.3 }))
   model.add(tf.layers.dense({ units: 64, activation: 'relu' }))
-  model.add(tf.layers.dense({ units: LABELS.length, activation: 'softmax' }))
+  model.add(tf.layers.dense({ units: labels.length, activation: 'softmax' }))
 
   model.compile({
     optimizer: 'adam',
     loss:
-      LABELS.length === 2 ? 'binaryCrossentropy' : 'categoricalCrossentropy',
+      labels.length === 2 ? 'binaryCrossentropy' : 'categoricalCrossentropy',
     metrics: ['accuracy'],
   })
 
@@ -46,5 +60,5 @@ export const createModel = async (
   xs.dispose()
   ys.dispose()
 
-  return { labels: LABELS, model }
+  return { labels, model }
 }

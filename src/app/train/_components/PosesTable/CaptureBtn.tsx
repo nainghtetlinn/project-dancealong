@@ -9,7 +9,7 @@ import { toast } from 'sonner'
 const CaptureBtn = ({ label }: { label: string }) => {
   const dispatch = useAppDispatch()
   const { value, running } = useAppSelector(state => state.counter)
-  const { isCapturing } = useAppSelector(state => state.training)
+  const { isCapturing, activeLabel } = useAppSelector(state => state.training)
   const { webcamEnable } = useWebcam()
 
   return (
@@ -25,7 +25,7 @@ const CaptureBtn = ({ label }: { label: string }) => {
         }
       }}
     >
-      {isCapturing && running ? value : <Video />}
+      {isCapturing && running && label === activeLabel ? value : <Video />}
     </Button>
   )
 }

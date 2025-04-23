@@ -1,29 +1,31 @@
 import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   Dialog,
-  DialogTrigger,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
-  DialogContent,
-  DialogFooter,
+  DialogTrigger,
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Checkbox } from '@/components/ui/checkbox'
 import { Slider } from '@/components/ui/slider'
 import { Loader2 } from 'lucide-react'
 
-import { useAppSelector, useAppDispatch } from '@/lib/store/hooks'
 import { trainModel } from '@/lib/store/_features/poseTrainingThunk'
+import { useAppDispatch, useAppSelector } from '@/lib/store/hooks'
+import { useModel } from '@/provider/model-provider'
+import { useWebcam } from '@/provider/webcam-provider'
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { useModel } from '@/provider/model-provider'
 
 const TrainBtn = () => {
   const dispatch = useAppDispatch()
   const { isTraining, poses } = useAppSelector(state => state.training)
   const { uploadModel } = useModel()
+  const { closeWebcam } = useWebcam()
 
   const [open, setOpen] = useState(false)
   const [epochs, setEpochs] = useState('30')
@@ -33,6 +35,8 @@ const TrainBtn = () => {
   const [message, setMessage] = useState('')
 
   const train = async () => {
+    closeWebcam()
+
     try {
       const result = await dispatch(
         trainModel({

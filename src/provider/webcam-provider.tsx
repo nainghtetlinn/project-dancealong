@@ -25,6 +25,7 @@ interface WebcamContext {
   CanvasElement: React.JSX.Element
   webcamEnable: boolean
   toggleWebcam: () => void
+  closeWebcam: () => void
 }
 
 const webcamContext = createContext<WebcamContext>({
@@ -33,6 +34,7 @@ const webcamContext = createContext<WebcamContext>({
   CanvasElement: <canvas />,
   webcamEnable: false,
   toggleWebcam: () => {},
+  closeWebcam: () => {},
 })
 
 export const WebcamProvider = ({ children }: { children: React.ReactNode }) => {
@@ -116,6 +118,10 @@ export const WebcamProvider = ({ children }: { children: React.ReactNode }) => {
     setWebcamEnable(!webcamEnable)
   }
 
+  const closeWebcam = () => {
+    setWebcamEnable(false)
+  }
+
   const VideoElement = (
     <video
       ref={videoRef}
@@ -145,6 +151,7 @@ export const WebcamProvider = ({ children }: { children: React.ReactNode }) => {
         CanvasElement,
         webcamEnable,
         toggleWebcam,
+        closeWebcam,
       }}
     >
       {children}

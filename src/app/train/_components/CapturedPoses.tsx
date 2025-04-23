@@ -1,14 +1,13 @@
 import { Button } from '@/components/ui/button'
 import PosesTable from './PosesTable'
+import ExportBtn from './btns/ExportBtn'
 import TrainBtn from './btns/TrainBtn'
 
 import { addPose } from '@/lib/store/_features/poseTrainingSlice'
-import { useAppDispatch, useAppSelector } from '@/lib/store/hooks'
-import { exportJSON } from '@/lib/utils'
+import { useAppDispatch } from '@/lib/store/hooks'
 
 const CapturedPoses = () => {
   const dispatch = useAppDispatch()
-  const { poses, trainingData } = useAppSelector(state => state.training)
 
   return (
     <section className='border rounded p-2 space-y-2'>
@@ -26,14 +25,7 @@ const CapturedPoses = () => {
       <PosesTable />
 
       <div className='flex items-center justify-end gap-2'>
-        <Button
-          variant='secondary'
-          disabled={poses.length < 2}
-          onClick={() => exportJSON(trainingData, 'training-data.json')}
-        >
-          Export Data
-        </Button>
-
+        <ExportBtn />
         <TrainBtn />
       </div>
     </section>

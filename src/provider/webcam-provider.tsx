@@ -66,8 +66,17 @@ export const WebcamProvider = ({ children }: { children: React.ReactNode }) => {
 
       if (classificationModel !== null) {
         const result = tf.tidy(() => {
+          const inputs = keypoints
+            .map(kp => {
+              if (kp[2] < 0.3) {
+                return [0, 0]
+              }
+              return [kp[0], kp[1]]
+            })
+            .flat()
+
           const prediction = classificationModel.predict(
-            tf.tensor([keypoints.flat()])
+            tf.tensor([inputs])
           ) as tf.Tensor
           const probabilities = prediction.dataSync()
 

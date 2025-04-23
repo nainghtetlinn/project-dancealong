@@ -1,19 +1,14 @@
 import { Button } from '@/components/ui/button'
-import { Loader2 } from 'lucide-react'
 import PosesTable from './PosesTable'
+import TrainBtn from './btns/TrainBtn'
 
 import { addPose } from '@/lib/store/_features/poseTrainingSlice'
-import { trainModel } from '@/lib/store/_features/poseTrainingThunk'
 import { useAppDispatch, useAppSelector } from '@/lib/store/hooks'
 import { exportJSON } from '@/lib/utils'
-import { useModel } from '@/provider/model-provider'
 
 const CapturedPoses = () => {
   const dispatch = useAppDispatch()
-  const { poses, trainingData, isTraining } = useAppSelector(
-    state => state.training
-  )
-  const { uploadModel } = useModel()
+  const { poses, trainingData } = useAppSelector(state => state.training)
 
   return (
     <section className='border rounded p-2 space-y-2'>
@@ -38,15 +33,8 @@ const CapturedPoses = () => {
         >
           Export Data
         </Button>
-        <Button
-          disabled={poses.length < 2 || isTraining}
-          onClick={async () => {
-            const result = await dispatch(trainModel())
-            uploadModel(result)
-          }}
-        >
-          Train {isTraining && <Loader2 className='animate-spin' />}
-        </Button>
+
+        <TrainBtn />
       </div>
     </section>
   )

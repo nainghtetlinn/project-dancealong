@@ -1,7 +1,8 @@
 import * as tf from '@tensorflow/tfjs'
 
 export const createModel = async (
-  data: { label: string; keypoints: number[][] }[]
+  data: { label: string; keypoints: number[][] }[],
+  options: tf.ModelFitArgs
 ) => {
   const labels = Array.from(new Set(data.map(d => d.label)))
   const inputs: number[][] = []
@@ -46,16 +47,7 @@ export const createModel = async (
     metrics: ['accuracy'],
   })
 
-  await model.fit(xs, ys, {
-    epochs: 20,
-    shuffle: true,
-    validationSplit: 0.2,
-    callbacks: {
-      onEpochEnd: (epoch, logs) => {
-        console.log(`Epoch ${epoch + 1}: accuracy = ${logs?.acc}`)
-      },
-    },
-  })
+  await model.fit(xs, ys, options)
 
   xs.dispose()
   ys.dispose()

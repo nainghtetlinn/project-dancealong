@@ -1,6 +1,5 @@
 'use client'
 
-import { useTrain } from '@/provider/train-provider'
 import { useEffect, useRef } from 'react'
 import useDetection from './useDetection'
 import useDraw from './useDraw'
@@ -8,6 +7,8 @@ import useDraw from './useDraw'
 const useDetectAndDraw = (
   video: HTMLVideoElement | null,
   canvas: HTMLCanvasElement | null,
+  width: number,
+  height: number,
   callback: (keypoints: number[][]) => void
 ) => {
   const callbackRef = useRef(callback)
@@ -16,13 +17,7 @@ const useDetectAndDraw = (
     callbackRef.current = callback
   }, [callback])
 
-  const { constants } = useTrain()
-
-  const { draw, clean } = useDraw(
-    canvas,
-    constants.canvas.width,
-    constants.canvas.height
-  )
+  const { draw, clean } = useDraw(canvas, width, height)
   const { start, stop } = useDetection(video, keypoints => {
     draw(keypoints)
     callbackRef.current(keypoints)

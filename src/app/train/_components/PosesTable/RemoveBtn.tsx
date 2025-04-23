@@ -1,16 +1,17 @@
 import { Button } from '@/components/ui/button'
 import { Trash } from 'lucide-react'
 
-import { useTrain } from '@/provider/train-provider'
+import { useAppDispatch } from '@/lib/store/hooks'
+import { removePose } from '@/lib/store/_features/poseTrainingSlice'
 
 const RemoveBtn = ({ label }: { label: string }) => {
-  const { removePose } = useTrain()
+  const dispatch = useAppDispatch()
 
   return (
     <Button
       variant='destructive'
       size='icon'
-      onClick={() => removePose(label)}
+      onClick={() => dispatch(removePose(label))}
     >
       <Trash />
     </Button>

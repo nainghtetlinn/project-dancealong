@@ -52,6 +52,8 @@ export const WebcamProvider = ({ children }: { children: React.ReactNode }) => {
   const { start, stop } = useDetectAndDraw(
     videoRef.current,
     canvasRef.current,
+    constants.width,
+    constants.height,
     keypoints => {
       if (isCapturing) {
         keypointsRef.current.push(keypoints)

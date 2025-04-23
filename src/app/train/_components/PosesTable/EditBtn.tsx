@@ -22,6 +22,17 @@ const EditBtn = ({ label }: { label: string }) => {
   const [newLabel, setNewLabel] = useState(label)
   const [open, setOpen] = useState(false)
 
+  const handleEdit = () => {
+    if (!!newLabel && newLabel !== label) {
+      dispatch(editPose({ label, newLabel }))
+      setOpen(false)
+    } else if (newLabel === label) {
+      toast.error('New label cannot be old label')
+    } else {
+      toast.error('Invalid label')
+    }
+  }
+
   return (
     <Dialog
       open={open}
@@ -51,21 +62,7 @@ const EditBtn = ({ label }: { label: string }) => {
         </div>
 
         <DialogFooter>
-          <Button
-            type='submit'
-            onClick={() => {
-              if (!!newLabel && newLabel !== label) {
-                dispatch(editPose({ label, newLabel }))
-                setOpen(false)
-              } else if (newLabel === label) {
-                toast.error('New label cannot be old label')
-              } else {
-                toast.error('Invalid label')
-              }
-            }}
-          >
-            Save
-          </Button>
+          <Button onClick={handleEdit}>Save</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

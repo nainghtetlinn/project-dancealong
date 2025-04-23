@@ -5,9 +5,11 @@ import ShortUniqueID from 'short-unique-id'
 
 const uid = new ShortUniqueID({ length: 4 })
 
+type TrainingData = { keypoints: number[][]; label: string }[]
+
 export interface PoseTrainingState {
   poses: TPose[]
-  trainingData: { keypoints: number[][]; label: string }[]
+  trainingData: TrainingData
   isCapturing: boolean
   activeLabel: string
   isTraining: boolean
@@ -54,6 +56,26 @@ export const poseTrainingSlice = createSlice({
       })
     },
 
+    importPoses: (state, action: PayloadAction<TrainingData>) => {
+      const poses: TPose[] = []
+
+      action.payload.forEach(pose => {
+        const existingPose = poses.find(p => p.label === pose.label)
+
+        if (existingPose) {
+          existingPose.numOfPosesCaptured += 1
+        } else {
+          poses.push({
+            label: pose.label,
+            numOfPosesCaptured: 1,
+          })
+        }
+      })
+
+      state.poses = poses
+      state.trainingData = action.payload
+    },
+
     startCapturing: (state, action: PayloadAction<string>) => {
       state.activeLabel = action.payload
       state.isCapturing = true
@@ -92,6 +114,7 @@ export const {
   addPose,
   removePose,
   editPose,
+  importPoses,
   startCapturing,
   stopCapturing,
   capturePoses,

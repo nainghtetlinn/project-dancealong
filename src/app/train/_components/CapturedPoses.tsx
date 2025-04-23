@@ -1,6 +1,7 @@
 import PosesTable from './PosesTable'
 import AddPoseBtn from './btns/AddPoseBtn'
 import ExportBtn from './btns/ExportBtn'
+import ImportBtn from './btns/ImportBtn'
 import TrainBtn from './btns/TrainBtn'
 
 const CapturedPoses = () => {
@@ -8,7 +9,10 @@ const CapturedPoses = () => {
     <section className='border rounded p-2 space-y-2'>
       <div className='flex items-center justify-between'>
         <h4 className='font-bold'>Captured Poses</h4>
-        <AddPoseBtn />
+        <div className='space-x-2'>
+          <ImportBtn />
+          <AddPoseBtn />
+        </div>
       </div>
 
       <PosesTable />

@@ -17,7 +17,10 @@ interface ModelContext {
   type: 'lightning' | 'thunder'
   classificationModel: tf.Sequential | null
   classificationLabels: string[]
-  uploadModel: (result: { labels: string[]; model: tf.Sequential }) => void
+  uploadClassificationModel: (result: {
+    labels: string[]
+    model: tf.Sequential
+  }) => void
 }
 
 const modelContext = createContext<ModelContext>({
@@ -26,7 +29,7 @@ const modelContext = createContext<ModelContext>({
   type: 'lightning',
   classificationModel: null,
   classificationLabels: [],
-  uploadModel: () => {},
+  uploadClassificationModel: () => {},
 })
 
 export function ModelProvider({
@@ -84,7 +87,10 @@ export function ModelProvider({
     }
   }
 
-  const uploadModel = (result: { labels: string[]; model: tf.Sequential }) => {
+  const uploadClassificationModel = (result: {
+    labels: string[]
+    model: tf.Sequential
+  }) => {
     setClassificationLabels(result.labels)
     setClassificationModel(result.model)
   }
@@ -101,7 +107,7 @@ export function ModelProvider({
         loading,
         classificationModel,
         classificationLabels,
-        uploadModel,
+        uploadClassificationModel,
       }}
     >
       {children}

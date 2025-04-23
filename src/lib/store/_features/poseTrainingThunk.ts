@@ -1,13 +1,13 @@
 import { createModel } from '@/lib/model'
+import { ModelFitArgs, Sequential } from '@tensorflow/tfjs'
 import { AppThunk } from '../index'
 import { startCountdown } from './counterThunk'
 import {
   startCapturing,
-  stopCapturing,
   startTraining,
+  stopCapturing,
   stopTraining,
 } from './poseTrainingSlice'
-import { Sequential, ModelFitArgs } from '@tensorflow/tfjs'
 
 export const startTimedCapture =
   (label: string): AppThunk =>
@@ -31,15 +31,6 @@ export const trainModel =
     }>
   > =>
   async (dispatch, getState) => {
-    let trainablePoses = 0
-    const poses = getState().training.poses
-    poses.forEach(pose => {
-      if (pose.numOfPosesCaptured > 0) trainablePoses++
-    })
-
-    if (trainablePoses !== poses.length)
-      throw new Error('Not all poses have been captured')
-
     dispatch(startTraining())
 
     const result = await createModel(getState().training.trainingData, options)

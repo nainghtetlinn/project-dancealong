@@ -24,17 +24,30 @@ import { toast } from 'sonner'
 const TrainBtn = () => {
   const dispatch = useAppDispatch()
   const { isTraining, poses } = useAppSelector(state => state.training)
-  const { uploadModel } = useModel()
+  const { uploadClassificationModel } = useModel()
   const { closeWebcam } = useWebcam()
 
   const [open, setOpen] = useState(false)
+  const [message, setMessage] = useState('')
+
+  // Training options
   const [epochs, setEpochs] = useState('30')
   const [batchSize, setBatchSize] = useState('5')
   const [validationSplit, setValidationSplit] = useState(0.2)
   const [shuffle, setShuffle] = useState(true)
-  const [message, setMessage] = useState('')
 
-  const train = async () => {
+  const handleTrain = async () => {
+    /**
+     * Check if all labels have at least some poses captured
+     */
+    let trainable = true
+    poses.forEach(pose => {
+      if (pose.numOfPosesCaptured === 0) trainable = false
+    })
+
+    if (!trainable) return toast.error('Not all poses have been captured')
+
+    // Close webcam for better performance
     closeWebcam()
 
     try {
@@ -47,13 +60,17 @@ const TrainBtn = () => {
           callbacks: {
             onEpochEnd: (epoch, logs) => {
               setMessage(
-                `Epoch ${epoch + 1}: accuracy = ${logs?.acc.toFixed(4)}`
+                `Epoch ${epoch + 1}/${epochs}: accuracy = ${logs?.acc.toFixed(
+                  4
+                )}`
               )
             },
           },
         })
       )
-      uploadModel(result)
+      uploadClassificationModel(result)
+      toast.success('Model trained successfully')
+      setOpen(false)
     } catch (error: any) {
       toast.error(error.message)
     }
@@ -127,7 +144,7 @@ const TrainBtn = () => {
             <p className='text-sm text-muted-foreground'>{message}</p>
             <Button
               disabled={isTraining}
-              onClick={train}
+              onClick={handleTrain}
             >
               Save {isTraining && <Loader2 className='animate-spin' />}
             </Button>

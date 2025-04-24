@@ -71,27 +71,32 @@ const useDraw = (
     if (!ctx) return
     ctx.clearRect(0, 0, width, height)
 
-    const points: (Point | null)[] = keypoints.map(([y, x, score]) => {
-      if (score > 0.3) {
-        const mirroredX = 1 - x // Mirror the x-coordinate
-        const point = new Point(mirroredX * width, y * height)
-        point
-          .setSize(16)
-          .setColor('oklch(0.705 0.213 47.604)')
-          .enableFill('white')
-          .draw(ctx)
-
-        return point
-      } else {
-        return null
-      }
-    })
-
     adjacentPairs.forEach(([i, j]) => {
+      const points: (Point | null)[] = keypoints.map(([y, x, score]) => {
+        if (score > 0.3) {
+          const mirroredX = 1 - x // Mirror the x-coordinate
+          const point = new Point(mirroredX * width, y * height)
+          point
+            .setSize(16)
+            .setColor('oklch(0.705 0.213 47.604)')
+            .enableFill('white')
+
+          return point
+        } else {
+          return null
+        }
+      })
+
       if (keypoints[i][2] > 0.3 && keypoints[j][2] > 0.3) {
         const segment = new Segment(points[i]!, points[j]!)
         segment.setColor('oklch(0.705 0.213 47.604)').draw(ctx)
       }
+
+      points.forEach(point => {
+        if (point) {
+          point.draw(ctx)
+        }
+      })
     })
   }
 

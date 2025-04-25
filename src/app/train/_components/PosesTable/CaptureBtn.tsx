@@ -4,13 +4,12 @@ import { Video } from 'lucide-react'
 import { startTimedCapture } from '@/lib/store/_features/poseTrainingThunk'
 import { useAppDispatch, useAppSelector } from '@/lib/store/hooks'
 import { useWebcam } from '@/provider/webcam-provider'
-import { toast } from 'sonner'
 
 const CaptureBtn = ({ label }: { label: string }) => {
   const dispatch = useAppDispatch()
   const { value, running } = useAppSelector(state => state.counter)
   const { isCapturing, activeLabel } = useAppSelector(state => state.training)
-  const { webcamEnable } = useWebcam()
+  const { webcamEnable, toggleWebcam } = useWebcam()
 
   return (
     <Button
@@ -18,11 +17,10 @@ const CaptureBtn = ({ label }: { label: string }) => {
       size='icon'
       disabled={isCapturing || running}
       onClick={() => {
-        if (webcamEnable) {
-          dispatch(startTimedCapture(label))
-        } else {
-          toast.error('Please enable webcam')
+        if (!webcamEnable) {
+          toggleWebcam()
         }
+        dispatch(startTimedCapture(label))
       }}
     >
       {isCapturing && running && label === activeLabel ? value : <Video />}

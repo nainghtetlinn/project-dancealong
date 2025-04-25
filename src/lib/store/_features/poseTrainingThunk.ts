@@ -1,7 +1,7 @@
 import { createModel } from '@/lib/model'
 import { ModelFitArgs, Sequential } from '@tensorflow/tfjs'
 import { AppThunk } from '../index'
-import { startCountdown } from './counterThunk'
+import { startCountdown, startCountdownWithDisplay } from './counterThunk'
 import {
   startCapturing,
   startTraining,
@@ -11,8 +11,8 @@ import {
 
 export const startTimedCapture =
   (label: string): AppThunk =>
-  async (dispatch, getState) => {
-    await dispatch(startCountdown())
+  async dispatch => {
+    await dispatch(startCountdownWithDisplay())
 
     dispatch(startCapturing(label))
 

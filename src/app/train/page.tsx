@@ -2,6 +2,7 @@
 
 import Controls from './_components/Controls'
 import Studio from './_components/Studio'
+import Countdown from './_components/Countdown'
 
 import { AudioProvider } from '@/provider/audio-provider'
 import StoreProvider from '@/provider/store-provider'
@@ -12,6 +13,8 @@ const Train = () => {
     <StoreProvider>
       <AudioProvider>
         <WebcamProvider>
+          <Countdown />
+
           <div className='flex'>
             <div className='p-2'>
               <Studio />

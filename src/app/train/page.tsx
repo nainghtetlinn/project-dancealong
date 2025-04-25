@@ -1,8 +1,9 @@
 'use client'
 
 import Controls from './_components/Controls'
-import Studio from './_components/Studio'
 import Countdown from './_components/Countdown'
+import Studio from './_components/Studio'
+import Webcam from './_components/Webcam'
 
 import { AudioProvider } from '@/provider/audio-provider'
 import StoreProvider from '@/provider/store-provider'
@@ -14,6 +15,7 @@ const Train = () => {
       <AudioProvider>
         <WebcamProvider>
           <Countdown />
+          <Webcam />
 
           <div className='flex'>
             <div className='p-2'>

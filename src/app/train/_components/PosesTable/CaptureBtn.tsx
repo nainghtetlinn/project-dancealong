@@ -7,23 +7,19 @@ import { useWebcam } from '@/provider/webcam-provider'
 
 const CaptureBtn = ({ label }: { label: string }) => {
   const dispatch = useAppDispatch()
-  const { value, running } = useAppSelector(state => state.counter)
-  const { isCapturing, activeLabel } = useAppSelector(state => state.training)
-  const { webcamEnable, toggleWebcam } = useWebcam()
+  const { openWebcam, closeWebcam } = useWebcam()
 
   return (
     <Button
       className='bg-green-600 dark:bg-green-600/60 hover:bg-green-600/90 dark:hover:bg-green-600/90 disabled:bg-green-600/40'
       size='icon'
-      disabled={isCapturing || running}
-      onClick={() => {
-        if (!webcamEnable) {
-          toggleWebcam()
-        }
-        dispatch(startTimedCapture(label))
+      onClick={async () => {
+        openWebcam()
+        await dispatch(startTimedCapture(label))
+        closeWebcam()
       }}
     >
-      {isCapturing && running && label === activeLabel ? value : <Video />}
+      <Video />
     </Button>
   )
 }

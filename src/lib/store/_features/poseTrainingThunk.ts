@@ -10,7 +10,7 @@ import {
 } from './poseTrainingSlice'
 
 export const startTimedCapture =
-  (label: string): AppThunk =>
+  (label: string): AppThunk<Promise<void>> =>
   async dispatch => {
     await dispatch(startCountdownWithDisplay())
 

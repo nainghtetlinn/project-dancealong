@@ -89,7 +89,7 @@ export const poseTrainingSlice = createSlice({
       )
 
       if (poseIndex !== -1)
-        state.poses[poseIndex].numOfPosesCaptured = action.payload.length
+        state.poses[poseIndex].numOfPosesCaptured += action.payload.length
 
       action.payload.forEach(keypoints => {
         state.trainingData.push({

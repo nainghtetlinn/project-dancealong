@@ -3,16 +3,10 @@
 import useDetectAndDraw from '@/hooks/useDetectAndDraw'
 import { capturePoses } from '@/lib/store/_features/poseTrainingSlice'
 import { useAppDispatch, useAppSelector } from '@/lib/store/hooks'
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from 'react'
+import * as tf from '@tensorflow/tfjs'
+import React, { createContext, useContext, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { useModel } from './model-provider'
-import * as tf from '@tensorflow/tfjs'
 
 const constants = {
   width: 640,
@@ -57,11 +51,6 @@ export const WebcamProvider = ({ children }: { children: React.ReactNode }) => {
     keypoints => {
       if (isCapturing) {
         keypointsRef.current.push(keypoints)
-      } else {
-        if (keypointsRef.current.length > 0) {
-          dispatch(capturePoses(keypointsRef.current))
-          keypointsRef.current.length = 0
-        }
       }
 
       if (classificationModel !== null) {
@@ -102,33 +91,33 @@ export const WebcamProvider = ({ children }: { children: React.ReactNode }) => {
     }
   )
 
-  useEffect(() => {
-    if (webcamEnable) {
-      navigator.mediaDevices
-        .getUserMedia({ video: true })
-        .then(stream => {
-          streamRef.current = stream
-          if (videoRef.current) videoRef.current.srcObject = stream
-          start()
-        })
-        .catch(error => {
-          console.error('Error accessing webcam', error)
-          toast.error('Error accessing webcam')
-        })
-    } else {
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach(track => track.stop())
-        streamRef.current = null
-        if (videoRef.current) videoRef.current.srcObject = null
-        stop()
-      }
+  const openWebcam = async (): Promise<void> => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+      })
+      streamRef.current = stream
+      if (videoRef.current) videoRef.current.srcObject = stream
+      setWebcamEnable(true)
+      setTimeout(start, 1000)
+    } catch (error) {
+      console.error('Error accessing webcam', error)
+      toast.error('Error accessing webcam')
+      setWebcamEnable(false)
     }
-  }, [webcamEnable])
-
-  const openWebcam = () => {
-    setWebcamEnable(true)
   }
   const closeWebcam = () => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop())
+      streamRef.current = null
+      if (videoRef.current) videoRef.current.srcObject = null
+      stop()
+      if (keypointsRef.current.length > 0) {
+        // Doesn't need to specifie label because the active label will not be reset after stop capturing
+        dispatch(capturePoses(keypointsRef.current))
+        keypointsRef.current.length = 0
+      }
+    }
     setWebcamEnable(false)
   }
 

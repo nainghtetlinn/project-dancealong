@@ -1,13 +1,14 @@
+import type { Pose } from '@/types'
+import type { ColumnDef } from '@tanstack/react-table'
+
 import { DataTable } from '@/components/ui/data-table'
-import { TPose } from '@/types/pose'
-import { ColumnDef } from '@tanstack/react-table'
 import CaptureBtn from './CaptureBtn'
 import EditBtn from './EditBtn'
 import RemoveBtn from './RemoveBtn'
 
 import { useAppSelector } from '@/lib/store/hooks'
 
-const columns: ColumnDef<TPose>[] = [
+const columns: ColumnDef<Pose>[] = [
   { accessorKey: 'label', header: 'Label' },
   { accessorKey: 'numOfPosesCaptured', header: '' },
   {

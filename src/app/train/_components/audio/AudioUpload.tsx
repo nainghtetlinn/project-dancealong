@@ -9,24 +9,30 @@ const AudioUpload = () => {
   return (
     <Dropzone onDrop={onDrop}>
       {({ getRootProps, getInputProps, isDragActive }) => (
-        <div {...getRootProps()}>
+        <div
+          {...getRootProps()}
+          className='h-full flex items-center justify-center'
+        >
           <input
             {...getInputProps()}
             accept='audio/*'
           />
-
           <div
             className={cn(
-              'cursor-pointer rounded-2xl border-2 border-dashed border-primary mt-2 p-2 bg-background',
+              'p-2 w-[350px] aspect-square flex items-center justify-center bg-background cursor-pointer rounded-2xl border-2 border-dashed border-primary',
               isDragActive && 'bg-primary/30'
             )}
           >
-            <Upload
-              size={40}
-              className='mx-auto'
-            />
-            <p className='text-center font-bold'>Drag & drop to upload song</p>
-            <p className='text-center text-sm text-primary'>or browse</p>
+            <div>
+              <Upload
+                size={40}
+                className='mx-auto'
+              />
+              <p className='text-center font-bold'>
+                Drag & drop to upload song
+              </p>
+              <p className='text-center text-sm text-primary'>or browse</p>
+            </div>
           </div>
         </div>
       )}

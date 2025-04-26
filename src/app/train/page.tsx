@@ -1,9 +1,8 @@
 'use client'
 
-import Controls from './_components/Controls'
 import Countdown from './_components/Countdown'
-import Studio from './_components/Studio'
 import Webcam from './_components/Webcam'
+import Studio from './_components/Studio'
 
 import { AudioProvider } from '@/provider/audio-provider'
 import StoreProvider from '@/provider/store-provider'
@@ -17,15 +16,7 @@ const Train = () => {
           <Countdown />
           <Webcam />
 
-          <div className='flex'>
-            <div className='p-2'>
-              <Studio />
-            </div>
-
-            <div className='flex-1 p-2 overflow-hidden'>
-              <Controls />
-            </div>
-          </div>
+          <Studio />
         </WebcamProvider>
       </AudioProvider>
     </StoreProvider>

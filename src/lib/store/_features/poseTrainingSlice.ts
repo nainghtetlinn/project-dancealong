@@ -1,14 +1,13 @@
-import { TPose } from '@/types/pose'
+import type { Keypoints, Pose, TrainingData } from '@/types'
 import type { PayloadAction } from '@reduxjs/toolkit'
+
 import { createSlice } from '@reduxjs/toolkit'
 import ShortUniqueID from 'short-unique-id'
 
 const uid = new ShortUniqueID({ length: 4 })
 
-type TrainingData = { keypoints: number[][]; label: string }[]
-
 export interface PoseTrainingState {
-  poses: TPose[]
+  poses: Pose[]
   trainingData: TrainingData
   isCapturing: boolean
   activeLabel: string
@@ -57,7 +56,7 @@ export const poseTrainingSlice = createSlice({
     },
 
     importPoses: (state, action: PayloadAction<TrainingData>) => {
-      const poses: TPose[] = []
+      const poses: Pose[] = []
 
       action.payload.forEach(pose => {
         const existingPose = poses.find(p => p.label === pose.label)
@@ -83,7 +82,7 @@ export const poseTrainingSlice = createSlice({
     stopCapturing: state => {
       state.isCapturing = false
     },
-    capturePoses: (state, action: PayloadAction<number[][][]>) => {
+    capturePoses: (state, action: PayloadAction<Keypoints[]>) => {
       const poseIndex = state.poses.findIndex(
         pose => pose.label === state.activeLabel
       )

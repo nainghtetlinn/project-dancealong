@@ -1,5 +1,7 @@
 'use client'
 
+import type { Keypoints } from '@/types'
+
 import * as tf from '@tensorflow/tfjs'
 import { useRef } from 'react'
 import { useModel } from '@/provider/model-provider'
@@ -11,7 +13,7 @@ const THUNDER_INPUT_HEIGHT = 256
 
 const useDetection = (
   video: HTMLVideoElement | null,
-  callback: (keypoints: number[][]) => void
+  callback: (keypoints: Keypoints) => void
 ) => {
   const { type, model } = useModel()
 
@@ -37,7 +39,7 @@ const useDetection = (
 
       const result = model.execute(inputTensor) as tf.Tensor
 
-      const keypoints = (result.arraySync() as number[][][][])[0][0]
+      const keypoints = (result.arraySync() as Keypoints[][])[0][0]
 
       callback(keypoints)
     })

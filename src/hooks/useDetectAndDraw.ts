@@ -1,5 +1,7 @@
 'use client'
 
+import type { Keypoints } from '@/types'
+
 import { useEffect, useRef } from 'react'
 import useDetection from './useDetection'
 import useDraw from './useDraw'
@@ -9,7 +11,7 @@ const useDetectAndDraw = (
   canvas: HTMLCanvasElement | null,
   width: number,
   height: number,
-  callback: (keypoints: number[][]) => void
+  callback: (keypoints: Keypoints) => void
 ) => {
   const callbackRef = useRef(callback)
 

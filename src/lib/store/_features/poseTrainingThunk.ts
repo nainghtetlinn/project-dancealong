@@ -1,6 +1,7 @@
+import type { ModelFitArgs, Sequential } from '@tensorflow/tfjs'
+import type { AppThunk } from '../index'
+
 import { createModel } from '@/lib/model'
-import { ModelFitArgs, Sequential } from '@tensorflow/tfjs'
-import { AppThunk } from '../index'
 import { startCountdown, startCountdownWithDisplay } from './counterThunk'
 import {
   startCapturing,

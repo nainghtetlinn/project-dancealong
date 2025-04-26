@@ -1,7 +1,8 @@
+import { TrainingData } from '@/types'
 import * as tf from '@tensorflow/tfjs'
 
 export const createModel = async (
-  data: { label: string; keypoints: number[][] }[],
+  data: TrainingData,
   options: tf.ModelFitArgs
 ) => {
   const labels = Array.from(new Set(data.map(d => d.label)))

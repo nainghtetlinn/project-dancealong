@@ -1,5 +1,7 @@
 'use client'
 
+import type { Keypoints } from '@/types'
+
 import Point from '@/components/primitive/Point'
 import Segment from '@/components/primitive/Segment'
 
@@ -67,7 +69,7 @@ const useDraw = (
     ctx.clearRect(0, 0, width, height)
   }
 
-  const draw = (keypoints: number[][]) => {
+  const draw = (keypoints: Keypoints) => {
     if (!ctx) return
     ctx.clearRect(0, 0, width, height)
 

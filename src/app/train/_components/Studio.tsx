@@ -1,3 +1,5 @@
+import AudioDetails from './audio/AudioDetails'
+import AudioTimeline from './audio/AudioTimeline'
 import AudioUpload from './audio/AudioUpload'
 
 import { useAudio } from '@/provider/audio-provider'
@@ -7,7 +9,12 @@ const Studio = () => {
 
   if (audio === null) return <AudioUpload />
 
-  return <section>Hello</section>
+  return (
+    <section>
+      <AudioDetails />
+      <AudioTimeline />
+    </section>
+  )
 }
 
 export default Studio

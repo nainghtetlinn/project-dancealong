@@ -21,6 +21,7 @@ interface ModelContext {
     labels: string[]
     model: tf.Sequential
   }) => void
+  classify: (keypoints: number[][]) => void
 }
 
 const modelContext = createContext<ModelContext>({
@@ -30,6 +31,7 @@ const modelContext = createContext<ModelContext>({
   classificationModel: null,
   classificationLabels: [],
   uploadClassificationModel: () => {},
+  classify: () => {},
 })
 
 export function ModelProvider({
@@ -87,6 +89,44 @@ export function ModelProvider({
     }
   }
 
+  const classify = (keypoints: number[][]) => {
+    if (classificationModel === null) return
+
+    const result = tf.tidy(() => {
+      const inputs = keypoints
+        .map(kp => {
+          if (kp[2] < 0.3) {
+            return [0, 0]
+          }
+          return [kp[0], kp[1]]
+        })
+        .flat()
+
+      const prediction = classificationModel.predict(
+        tf.tensor([inputs])
+      ) as tf.Tensor
+      const probabilities = prediction.dataSync()
+
+      // Find the max probability and index
+      let maxIndex = 0
+      let maxProb = probabilities[0]
+
+      for (let i = 1; i < probabilities.length; i++) {
+        if (probabilities[i] > maxProb) {
+          maxProb = probabilities[i]
+          maxIndex = i
+        }
+      }
+
+      return {
+        label: classificationLabels[maxIndex],
+        confidence: maxProb,
+      }
+    })
+
+    console.log(result)
+  }
+
   const uploadClassificationModel = (result: {
     labels: string[]
     model: tf.Sequential
@@ -108,6 +148,7 @@ export function ModelProvider({
         classificationModel,
         classificationLabels,
         uploadClassificationModel,
+        classify,
       }}
     >
       {children}

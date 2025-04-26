@@ -38,7 +38,7 @@ export const WebcamProvider = ({ children }: { children: React.ReactNode }) => {
   const streamRef = useRef<MediaStream>(null)
   const keypointsRef = useRef<number[][][]>([])
 
-  const { classificationLabels, classificationModel } = useModel()
+  const { classify } = useModel()
 
   const [webcamEnable, setWebcamEnable] = useState(false)
   const { isCapturing } = useAppSelector(state => state.training)
@@ -53,41 +53,7 @@ export const WebcamProvider = ({ children }: { children: React.ReactNode }) => {
         keypointsRef.current.push(keypoints)
       }
 
-      if (classificationModel !== null) {
-        const result = tf.tidy(() => {
-          const inputs = keypoints
-            .map(kp => {
-              if (kp[2] < 0.3) {
-                return [0, 0]
-              }
-              return [kp[0], kp[1]]
-            })
-            .flat()
-
-          const prediction = classificationModel.predict(
-            tf.tensor([inputs])
-          ) as tf.Tensor
-          const probabilities = prediction.dataSync()
-
-          // Find the max probability and index
-          let maxIndex = 0
-          let maxProb = probabilities[0]
-
-          for (let i = 1; i < probabilities.length; i++) {
-            if (probabilities[i] > maxProb) {
-              maxProb = probabilities[i]
-              maxIndex = i
-            }
-          }
-
-          return {
-            label: classificationLabels[maxIndex],
-            confidence: maxProb,
-          }
-        })
-
-        console.log(result)
-      }
+      classify(keypoints)
     }
   )
 

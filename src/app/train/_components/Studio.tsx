@@ -8,12 +8,12 @@ import { useAudio } from '@/provider/audio-provider'
 const Studio = () => {
   const { audio } = useAudio()
 
-  if (audio !== null) return <AudioUpload />
+  if (audio === null) return <AudioUpload />
 
   return (
     <section>
-      {/* <AudioDetails /> */}
-      {/* <AudioTimeline /> */}
+      <AudioDetails />
+      <AudioTimeline />
       <CapturedPoses />
     </section>
   )

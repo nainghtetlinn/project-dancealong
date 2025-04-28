@@ -1,14 +1,25 @@
+type PointOptions = {
+  size?: number
+  color?: string
+  fillColor?: string
+}
+
 export default class Point {
   public x: number
   public y: number
   private size: number = 5
   private color: string = 'white'
-  private fillColor: string = 'white'
-  private fill: boolean = false
+  private fillColor?: string = undefined
 
-  constructor(x: number, y: number) {
+  constructor(x: number, y: number, options?: PointOptions) {
     this.x = x
     this.y = y
+
+    if (options) {
+      if (options.size !== undefined) this.size = options.size
+      if (options.color !== undefined) this.color = options.color
+      if (options.fillColor !== undefined) this.fillColor = options.fillColor
+    }
   }
 
   draw(ctx: CanvasRenderingContext2D) {
@@ -18,27 +29,11 @@ export default class Point {
     ctx.arc(this.x, this.y, radius, 0, Math.PI * 2)
     ctx.fill()
 
-    if (this.fill) {
+    if (this.fillColor !== undefined) {
       ctx.beginPath()
       ctx.arc(this.x, this.y, radius * 0.4, 0, Math.PI * 2)
       ctx.fillStyle = this.fillColor
       ctx.fill()
     }
-  }
-
-  setSize(size: number) {
-    this.size = size
-    return this
-  }
-
-  setColor(color: string) {
-    this.color = color
-    return this
-  }
-
-  enableFill(color: string) {
-    this.fill = true
-    this.fillColor = color
-    return this
   }
 }

@@ -4,7 +4,7 @@ import type { PayloadAction } from '@reduxjs/toolkit'
 import { createSlice } from '@reduxjs/toolkit'
 import ShortUniqueID from 'short-unique-id'
 
-const uid = new ShortUniqueID({ length: 4 })
+const uid = new ShortUniqueID({ length: 6 })
 
 export interface PoseTrainingState {
   poses: Pose[]
@@ -89,6 +89,7 @@ export const poseTrainingSlice = createSlice({
       if (pose) pose.numOfPosesCaptured += action.payload.length
 
       state.trainingData = action.payload.map(keypoints => ({
+        id: uid.rnd(),
         label: state.activeLabel,
         keypoints,
       }))

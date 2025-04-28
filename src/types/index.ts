@@ -1,4 +1,8 @@
-export type TrainingData = { keypoints: number[][]; label: string }[]
+export type TrainingData = {
+  id: string
+  keypoints: number[][]
+  label: string
+}[]
 
 export type Pose = {
   label: string

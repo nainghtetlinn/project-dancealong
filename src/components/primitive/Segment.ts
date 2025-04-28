@@ -1,6 +1,6 @@
 import Point from './Point'
 
-type SegmentOptions = {
+export type SegmentOptions = {
   width?: number
   color?: string
 }

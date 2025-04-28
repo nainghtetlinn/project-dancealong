@@ -1,4 +1,4 @@
-type PointOptions = {
+export type PointOptions = {
   size?: number
   color?: string
   fillColor?: string

@@ -10,7 +10,11 @@ const useDetectAndDraw = (
   height: number,
   callback: (keypoints: Keypoints) => void
 ) => {
-  const { canvasRef, draw, clean } = useDraw(width, height)
+  const { canvasRef, draw, clean } = useDraw(width, height, {
+    threshold: 0.3,
+    point: { size: 16, color: 'oklch(0.705 0.213 47.604)', fillColor: 'white' },
+    segment: { width: 2, color: 'oklch(0.705 0.213 47.604)' },
+  })
   const { videoRef, start, stop } = useDetection(keypoints => {
     draw(keypoints)
     callback(keypoints)

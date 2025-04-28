@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button'
-import { Trash } from 'lucide-react'
+import { Trash2 } from 'lucide-react'
 
 import { useAppDispatch } from '@/lib/store/hooks'
 import { removeLabel } from '@/lib/store/_features/poseTrainingSlice'
@@ -13,7 +13,7 @@ const RemoveBtn = ({ label }: { label: string }) => {
       size='icon'
       onClick={() => dispatch(removeLabel(label))}
     >
-      <Trash />
+      <Trash2 />
     </Button>
   )
 }

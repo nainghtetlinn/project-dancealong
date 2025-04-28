@@ -28,16 +28,25 @@ const columns: ColumnDef<Pose>[] = [
   { accessorKey: 'label', header: 'Label' },
   { accessorKey: 'numOfPosesCaptured', header: '' },
   {
-    id: 'actions',
+    id: 'capture',
     cell: ({ row }) => {
       return (
         <div className='flex gap-2'>
           <CaptureBtn label={row.original.label} />
-          <EditBtn label={row.original.label} />
           <ExpandBtn
             isExpanded={row.getIsExpanded()}
             handleClick={row.getToggleExpandedHandler()}
           />
+        </div>
+      )
+    },
+  },
+  {
+    id: 'actions',
+    cell: ({ row }) => {
+      return (
+        <div className='flex justify-end gap-2'>
+          <EditBtn label={row.original.label} />
           <RemoveBtn label={row.original.label} />
         </div>
       )

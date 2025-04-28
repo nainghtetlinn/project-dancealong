@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Edit } from 'lucide-react'
+import { Edit2 } from 'lucide-react'
 
 import { editLabel } from '@/lib/store/_features/poseTrainingSlice'
 import { useAppDispatch } from '@/lib/store/hooks'
@@ -43,7 +43,7 @@ const EditBtn = ({ label }: { label: string }) => {
           size='icon'
           variant='secondary'
         >
-          <Edit />
+          <Edit2 />
         </Button>
       </DialogTrigger>
       <DialogContent>

@@ -44,9 +44,9 @@ export const poseTrainingSlice = createSlice({
       action: PayloadAction<{ label: string; newLabel: string }>
     ) => {
       const { label, newLabel } = action.payload
-      const poseIndex = state.poses.findIndex(pose => pose.label === label)
-      if (poseIndex !== -1) {
-        state.poses[poseIndex].label = newLabel
+      const pose = state.poses.find(pose => pose.label === label)
+      if (pose) {
+        pose.label = newLabel
       }
       state.trainingData.forEach(data => {
         if (data.label === label) {
@@ -56,22 +56,22 @@ export const poseTrainingSlice = createSlice({
     },
 
     importPoses: (state, action: PayloadAction<TrainingData>) => {
-      const poses: Pose[] = []
+      const posesToImport: Pose[] = []
 
       action.payload.forEach(pose => {
-        const existingPose = poses.find(p => p.label === pose.label)
+        const existingPose = posesToImport.find(p => p.label === pose.label)
 
         if (existingPose) {
           existingPose.numOfPosesCaptured += 1
         } else {
-          poses.push({
+          posesToImport.push({
             label: pose.label,
             numOfPosesCaptured: 1,
           })
         }
       })
 
-      state.poses = poses
+      state.poses = posesToImport
       state.trainingData = action.payload
     },
 
@@ -80,22 +80,18 @@ export const poseTrainingSlice = createSlice({
       state.isCapturing = true
     },
     stopCapturing: state => {
+      // It's important not to clear the activeLabel because later capturePoses will be called.
       state.isCapturing = false
     },
     capturePoses: (state, action: PayloadAction<Keypoints[]>) => {
-      const poseIndex = state.poses.findIndex(
-        pose => pose.label === state.activeLabel
-      )
+      const pose = state.poses.find(pose => pose.label === state.activeLabel)
 
-      if (poseIndex !== -1)
-        state.poses[poseIndex].numOfPosesCaptured += action.payload.length
+      if (pose) pose.numOfPosesCaptured += action.payload.length
 
-      action.payload.forEach(keypoints => {
-        state.trainingData.push({
-          label: state.activeLabel,
-          keypoints,
-        })
-      })
+      state.trainingData = action.payload.map(keypoints => ({
+        label: state.activeLabel,
+        keypoints,
+      }))
     },
 
     startTraining: state => {

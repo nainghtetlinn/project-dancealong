@@ -1,6 +1,7 @@
 import type { Pose } from '@/types'
 import type { ColumnDef } from '@tanstack/react-table'
 
+import { Button } from '@/components/ui/button'
 import {
   Table,
   TableBody,
@@ -30,10 +31,13 @@ const columns: ColumnDef<Pose>[] = [
     header: 'Label',
     cell: ({ row }) => {
       return (
-        <div className='flex items-center gap-1'>
-          <span>{row.original.label}</span>
+        <Button
+          variant='ghost'
+          onClick={row.getToggleExpandedHandler()}
+        >
+          {row.original.label}
           {row.getIsExpanded() ? <ChevronUp /> : <ChevronDown />}
-        </div>
+        </Button>
       )
     },
   },
@@ -97,10 +101,7 @@ const PosesTable = () => {
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map(row => (
               <React.Fragment key={row.id}>
-                <TableRow
-                  data-state={row.getIsSelected() && 'selected'}
-                  onClick={row.getToggleExpandedHandler()}
-                >
+                <TableRow data-state={row.getIsSelected() && 'selected'}>
                   {row.getVisibleCells().map(cell => (
                     <TableCell key={cell.id}>
                       {flexRender(

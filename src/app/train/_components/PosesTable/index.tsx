@@ -9,9 +9,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { ChevronDown, ChevronUp } from 'lucide-react'
 import CaptureBtn from './CaptureBtn'
 import EditBtn from './EditBtn'
-import ExpandBtn from './ExpandBtn'
 import RemoveBtn from './RemoveBtn'
 import PosesList from './PosesList'
 
@@ -25,7 +25,18 @@ import {
 import React from 'react'
 
 const columns: ColumnDef<Pose>[] = [
-  { accessorKey: 'label', header: 'Label' },
+  {
+    accessorKey: 'label',
+    header: 'Label',
+    cell: ({ row }) => {
+      return (
+        <div className='flex items-center gap-1'>
+          <span>{row.original.label}</span>
+          {row.getIsExpanded() ? <ChevronUp /> : <ChevronDown />}
+        </div>
+      )
+    },
+  },
   { accessorKey: 'numOfPosesCaptured', header: '' },
   {
     id: 'capture',
@@ -33,10 +44,6 @@ const columns: ColumnDef<Pose>[] = [
       return (
         <div className='flex gap-2'>
           <CaptureBtn label={row.original.label} />
-          <ExpandBtn
-            isExpanded={row.getIsExpanded()}
-            handleClick={row.getToggleExpandedHandler()}
-          />
         </div>
       )
     },
@@ -90,7 +97,10 @@ const PosesTable = () => {
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map(row => (
               <React.Fragment key={row.id}>
-                <TableRow data-state={row.getIsSelected() && 'selected'}>
+                <TableRow
+                  data-state={row.getIsSelected() && 'selected'}
+                  onClick={row.getToggleExpandedHandler()}
+                >
                   {row.getVisibleCells().map(cell => (
                     <TableCell key={cell.id}>
                       {flexRender(
@@ -102,7 +112,10 @@ const PosesTable = () => {
                 </TableRow>
                 {row.getIsExpanded() && (
                   <TableRow>
-                    <TableCell colSpan={row.getAllCells().length}>
+                    <TableCell
+                      className='p-0'
+                      colSpan={row.getAllCells().length}
+                    >
                       <PosesList label={row.original.label} />
                     </TableCell>
                   </TableRow>

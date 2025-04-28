@@ -17,6 +17,8 @@ const PosesList = ({ label }: { label: string }) => {
 
   const filteredPoses = trainingData.filter(p => p.label === label)
 
+  if (filteredPoses.length === 0) return null
+
   return (
     <div className='relative h-[150px]'>
       <div className='absolute inset-0 overflow-x-scroll overflow-y-hidden'>

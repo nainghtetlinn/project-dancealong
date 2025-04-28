@@ -1,5 +1,5 @@
 import PosesTable from './PosesTable'
-import AddPoseBtn from './btns/AddPoseBtn'
+import AddLabelBtn from './btns/AddLabelBtn'
 import ExportBtn from './btns/ExportBtn'
 import ImportBtn from './btns/ImportBtn'
 import TrainBtn from './btns/TrainBtn'
@@ -11,7 +11,7 @@ const CapturedPoses = () => {
         <h4 className='font-bold'>Captured Poses</h4>
         <div className='space-x-2'>
           <ImportBtn />
-          <AddPoseBtn />
+          <AddLabelBtn />
         </div>
       </div>
 

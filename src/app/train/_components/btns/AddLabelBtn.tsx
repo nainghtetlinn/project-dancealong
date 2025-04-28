@@ -1,20 +1,20 @@
 import { Button } from '@/components/ui/button'
 
-import { addPose } from '@/lib/store/_features/poseTrainingSlice'
+import { addLabel } from '@/lib/store/_features/poseTrainingSlice'
 import { useAppDispatch } from '@/lib/store/hooks'
 
-const AddPoseBtn = () => {
+const AddLabelBtn = () => {
   const dispatch = useAppDispatch()
 
   return (
     <Button
       onClick={() => {
-        dispatch(addPose())
+        dispatch(addLabel())
       }}
     >
-      Add Pose
+      Add Label
     </Button>
   )
 }
 
-export default AddPoseBtn
+export default AddLabelBtn

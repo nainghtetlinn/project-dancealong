@@ -30,16 +30,16 @@ export const poseTrainingSlice = createSlice({
   name: 'poseTraining',
   initialState,
   reducers: {
-    addPose: state => {
+    addLabel: state => {
       state.poses.push({ label: 'Pose_' + uid.rnd(), numOfPosesCaptured: 0 })
     },
-    removePose: (state, action: PayloadAction<string>) => {
+    removeLabel: (state, action: PayloadAction<string>) => {
       state.poses = state.poses.filter(pose => pose.label !== action.payload)
       state.trainingData = state.trainingData.filter(
         data => data.label !== action.payload
       )
     },
-    editPose: (
+    editLabel: (
       state,
       action: PayloadAction<{ label: string; newLabel: string }>
     ) => {
@@ -110,9 +110,9 @@ export const poseTrainingSlice = createSlice({
 })
 
 export const {
-  addPose,
-  removePose,
-  editPose,
+  addLabel,
+  removeLabel,
+  editLabel,
   importPoses,
   startCapturing,
   stopCapturing,

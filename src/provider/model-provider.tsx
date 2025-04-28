@@ -42,9 +42,11 @@ const modelContext = createContext<ModelContext>({
 export function ModelProvider({
   children,
   type,
+  disable = false,
 }: {
   children: React.ReactNode
   type: 'lightning' | 'thunder'
+  disable?: boolean
 }) {
   const [model, setModel] = useState<tf.GraphModel | null>(null)
   const [classificationModel, setClassificationModel] =
@@ -141,7 +143,9 @@ export function ModelProvider({
   }
 
   useEffect(() => {
-    loadModel()
+    if (!disable) {
+      loadModel()
+    }
   }, [])
 
   return (

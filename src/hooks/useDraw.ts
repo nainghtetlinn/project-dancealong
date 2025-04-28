@@ -5,7 +5,7 @@ import type { Keypoints } from '@/types'
 import Point from '@/components/primitive/Point'
 import Segment from '@/components/primitive/Segment'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef } from 'react'
 
 const keypoints_order = [
   'nose', // 0
@@ -51,58 +51,57 @@ const adjacentPairs = [
   [11, 12],
 ]
 
-const useDraw = (
-  canvas: HTMLCanvasElement | null,
-  width: number,
-  height: number
-) => {
-  const [ctx, setContext] = useState<CanvasRenderingContext2D | null>(null)
+const useDraw = (width: number, height: number) => {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null)
+  const ctxRef = useRef<CanvasRenderingContext2D | null>(null)
 
   useEffect(() => {
-    if (canvas) {
-      setContext(canvas.getContext('2d'))
-    }
-  }, [canvas])
+    const canvas = canvasRef.current
+    if (!canvas) return
+    canvas.width = width
+    canvas.height = height
+    const context = canvas.getContext('2d')
+    if (!context) return
+    ctxRef.current = context
+  }, [width, height])
 
   const clean = () => {
+    const ctx = ctxRef.current
     if (!ctx) return
     ctx.clearRect(0, 0, width, height)
   }
 
   const draw = (keypoints: Keypoints) => {
+    const ctx = ctxRef.current
     if (!ctx) return
     ctx.clearRect(0, 0, width, height)
 
+    const points: (Point | null)[] = keypoints.map(([y, x, score]) => {
+      if (score > 0.3) {
+        const mirroredX = 1 - x // Mirror the x-coordinate
+        const point = new Point(mirroredX * width, y * height)
+        point
+          .setSize(16)
+          .setColor('oklch(0.705 0.213 47.604)')
+          .enableFill('white')
+
+        return point
+      } else {
+        return null
+      }
+    })
     adjacentPairs.forEach(([i, j]) => {
-      const points: (Point | null)[] = keypoints.map(([y, x, score]) => {
-        if (score > 0.3) {
-          const mirroredX = 1 - x // Mirror the x-coordinate
-          const point = new Point(mirroredX * width, y * height)
-          point
-            .setSize(16)
-            .setColor('oklch(0.705 0.213 47.604)')
-            .enableFill('white')
-
-          return point
-        } else {
-          return null
-        }
-      })
-
-      if (keypoints[i][2] > 0.3 && keypoints[j][2] > 0.3) {
-        const segment = new Segment(points[i]!, points[j]!)
+      if (points[i] && points[j]) {
+        const segment = new Segment(points[i], points[j])
         segment.setColor('oklch(0.705 0.213 47.604)').draw(ctx)
       }
-
-      points.forEach(point => {
-        if (point) {
-          point.draw(ctx)
-        }
-      })
+    })
+    points.forEach(point => {
+      point?.draw(ctx)
     })
   }
 
-  return { draw, clean }
+  return { canvasRef, draw, clean }
 }
 
 export default useDraw

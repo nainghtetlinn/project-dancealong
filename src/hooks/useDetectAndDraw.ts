@@ -2,30 +2,23 @@
 
 import type { Keypoints } from '@/types'
 
-import { useEffect, useRef } from 'react'
 import useDetection from './useDetection'
 import useDraw from './useDraw'
 
 const useDetectAndDraw = (
-  video: HTMLVideoElement | null,
-  canvas: HTMLCanvasElement | null,
   width: number,
   height: number,
   callback: (keypoints: Keypoints) => void
 ) => {
-  const callbackRef = useRef(callback)
-
-  useEffect(() => {
-    callbackRef.current = callback
-  }, [callback])
-
-  const { draw, clean } = useDraw(canvas, width, height)
-  const { start, stop } = useDetection(video, keypoints => {
+  const { canvasRef, draw, clean } = useDraw(width, height)
+  const { videoRef, start, stop } = useDetection(keypoints => {
     draw(keypoints)
-    callbackRef.current(keypoints)
+    callback(keypoints)
   })
 
   return {
+    videoRef,
+    canvasRef,
     start,
     stop: () => {
       stop()

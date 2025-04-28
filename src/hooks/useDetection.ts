@@ -3,24 +3,18 @@
 import type { Keypoints } from '@/types'
 
 import * as tf from '@tensorflow/tfjs'
-import { useRef } from 'react'
 import { useModel } from '@/provider/model-provider'
+import { useEffect, useRef } from 'react'
 
-const LIGHTNING_INPUT_WIDTH = 192
-const LIGHTNING_INPUT_HEIGHT = 192
-const THUNDER_INPUT_WIDTH = 256
-const THUNDER_INPUT_HEIGHT = 256
+const useDetection = (callback: (keypoints: Keypoints) => void) => {
+  const { constants, model } = useModel()
 
-const useDetection = (
-  video: HTMLVideoElement | null,
-  callback: (keypoints: Keypoints) => void
-) => {
-  const { type, model } = useModel()
-
+  const videoRef = useRef<HTMLVideoElement | null>(null)
   const animationFrameId = useRef<number | null>(null)
   const isDetecting = useRef(false)
 
   const detect = () => {
+    const video = videoRef.current
     if (!model || !video || video.readyState !== 4) {
       animationFrameId.current = requestAnimationFrame(detect)
       return
@@ -29,11 +23,7 @@ const useDetection = (
     tf.tidy(() => {
       const inputTensor = tf.browser
         .fromPixels(video)
-        .resizeBilinear(
-          type === 'thunder'
-            ? [THUNDER_INPUT_HEIGHT, THUNDER_INPUT_WIDTH]
-            : [LIGHTNING_INPUT_HEIGHT, LIGHTNING_INPUT_WIDTH]
-        )
+        .resizeBilinear([constants.height, constants.width])
         .expandDims(0)
         .toInt()
 
@@ -64,7 +54,7 @@ const useDetection = (
     }
   }
 
-  return { start, stop }
+  return { videoRef, start, stop }
 }
 
 export default useDetection

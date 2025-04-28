@@ -15,6 +15,7 @@ interface ModelContext {
   loading: boolean
   model: tf.GraphModel | null
   type: 'lightning' | 'thunder'
+  constants: { width: number; height: number }
   classificationModel: tf.Sequential | null
   classificationLabels: string[]
   uploadClassificationModel: (result: {
@@ -28,6 +29,10 @@ const modelContext = createContext<ModelContext>({
   model: null,
   loading: true,
   type: 'lightning',
+  constants: {
+    width: MOVENET_LIGHTNING_INPUT_WIDTH,
+    height: MOVENET_LIGHTNING_INPUT_HEIGHT,
+  },
   classificationModel: null,
   classificationLabels: [],
   uploadClassificationModel: () => {},
@@ -142,6 +147,16 @@ export function ModelProvider({
   return (
     <modelContext.Provider
       value={{
+        constants:
+          type === 'thunder'
+            ? {
+                width: MOVENET_THUNDER_INPUT_WIDTH,
+                height: MOVENET_THUNDER_INPUT_HEIGHT,
+              }
+            : {
+                width: MOVENET_LIGHTNING_INPUT_WIDTH,
+                height: MOVENET_LIGHTNING_INPUT_HEIGHT,
+              },
         type,
         model,
         loading,

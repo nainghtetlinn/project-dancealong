@@ -3,7 +3,13 @@
 import useDetectAndDraw from '@/hooks/useDetectAndDraw'
 import { capturePoses } from '@/lib/store/_features/poseTrainingSlice'
 import { useAppDispatch, useAppSelector } from '@/lib/store/hooks'
-import React, { createContext, useContext, useRef, useState } from 'react'
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 import { toast } from 'sonner'
 import { useModel } from './model-provider'
 
@@ -32,8 +38,7 @@ const webcamContext = createContext<WebcamContext>({
 
 export const WebcamProvider = ({ children }: { children: React.ReactNode }) => {
   const dispatch = useAppDispatch()
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  const videoRef = useRef<HTMLVideoElement>(null)
+
   const streamRef = useRef<MediaStream>(null)
   const keypointsRef = useRef<number[][][]>([])
 
@@ -42,9 +47,7 @@ export const WebcamProvider = ({ children }: { children: React.ReactNode }) => {
   const [webcamEnable, setWebcamEnable] = useState(false)
   const { isCapturing } = useAppSelector(state => state.training)
 
-  const { start, stop } = useDetectAndDraw(
-    videoRef.current,
-    canvasRef.current,
+  const { videoRef, canvasRef, start, stop } = useDetectAndDraw(
     constants.width,
     constants.height,
     keypoints => {

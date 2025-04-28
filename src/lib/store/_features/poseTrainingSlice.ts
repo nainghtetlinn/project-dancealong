@@ -94,6 +94,15 @@ export const poseTrainingSlice = createSlice({
         keypoints,
       }))
     },
+    removePose: (state, action: PayloadAction<string>) => {
+      let label: string
+      state.trainingData = state.trainingData.filter(data => {
+        if (data.id === action.payload) label = data.label
+        return data.id !== action.payload
+      })
+      const pose = state.poses.find(pose => pose.label === label)
+      if (pose) pose.numOfPosesCaptured -= 1
+    },
 
     startTraining: state => {
       state.isTraining = true
@@ -114,6 +123,7 @@ export const {
   startCapturing,
   stopCapturing,
   capturePoses,
+  removePose,
   startTraining,
   stopTraining,
 } = poseTrainingSlice.actions

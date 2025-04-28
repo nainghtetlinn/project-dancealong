@@ -1,12 +1,28 @@
 import type { Pose } from '@/types'
 import type { ColumnDef } from '@tanstack/react-table'
 
-import { DataTable } from '@/components/ui/data-table'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 import CaptureBtn from './CaptureBtn'
 import EditBtn from './EditBtn'
+import ExpandBtn from './ExpandBtn'
 import RemoveBtn from './RemoveBtn'
+import PosesList from './PosesList'
 
 import { useAppSelector } from '@/lib/store/hooks'
+import {
+  flexRender,
+  getCoreRowModel,
+  getExpandedRowModel,
+  useReactTable,
+} from '@tanstack/react-table'
+import React from 'react'
 
 const columns: ColumnDef<Pose>[] = [
   { accessorKey: 'label', header: 'Label' },
@@ -18,6 +34,10 @@ const columns: ColumnDef<Pose>[] = [
         <div className='flex gap-2'>
           <CaptureBtn label={row.original.label} />
           <EditBtn label={row.original.label} />
+          <ExpandBtn
+            isExpanded={row.getIsExpanded()}
+            handleClick={row.getToggleExpandedHandler()}
+          />
           <RemoveBtn label={row.original.label} />
         </div>
       )
@@ -28,11 +48,71 @@ const columns: ColumnDef<Pose>[] = [
 const PosesTable = () => {
   const { poses } = useAppSelector(state => state.training)
 
+  const table = useReactTable<Pose>({
+    data: poses,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getExpandedRowModel: getExpandedRowModel(),
+    getRowCanExpand: () => true,
+  })
+
   return (
-    <DataTable
-      columns={columns}
-      data={poses}
-    />
+    <div className='rounded-md border overflow-hidden'>
+      <Table>
+        <TableHeader>
+          {table.getHeaderGroups().map(headerGroup => (
+            <TableRow key={headerGroup.id}>
+              {headerGroup.headers.map(header => {
+                return (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </TableHead>
+                )
+              })}
+            </TableRow>
+          ))}
+        </TableHeader>
+        <TableBody>
+          {table.getRowModel().rows?.length ? (
+            table.getRowModel().rows.map(row => (
+              <React.Fragment key={row.id}>
+                <TableRow data-state={row.getIsSelected() && 'selected'}>
+                  {row.getVisibleCells().map(cell => (
+                    <TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+                {row.getIsExpanded() && (
+                  <TableRow>
+                    <TableCell colSpan={row.getAllCells().length}>
+                      <PosesList label={row.original.label} />
+                    </TableCell>
+                  </TableRow>
+                )}
+              </React.Fragment>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell
+                colSpan={columns.length}
+                className='h-24 text-center'
+              >
+                No results.
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+    </div>
   )
 }
 

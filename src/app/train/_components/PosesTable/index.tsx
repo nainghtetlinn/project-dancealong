@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { ChevronDown, ChevronUp } from 'lucide-react'
+import { ChevronDown, ChevronUp, Plus } from 'lucide-react'
 import CaptureBtn from './CaptureBtn'
 import EditBtn from './EditBtn'
 import RemoveBtn from './RemoveBtn'
@@ -24,6 +24,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import React from 'react'
+import { useAudio } from '@/provider/audio-provider'
 
 const columns: ColumnDef<Pose>[] = [
   {
@@ -45,9 +46,17 @@ const columns: ColumnDef<Pose>[] = [
   {
     id: 'capture',
     cell: ({ row }) => {
+      const { addRegion } = useAudio()
       return (
         <div className='flex gap-2'>
           <CaptureBtn label={row.original.label} />
+          <Button
+            size='icon'
+            variant='secondary'
+            onClick={() => addRegion(row.original.label)}
+          >
+            <Plus />
+          </Button>
         </div>
       )
     },

@@ -1,10 +1,12 @@
-import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit'
-import poseTrainingReducer from './_features/poseTrainingSlice'
+import { Action, configureStore, ThunkAction } from '@reduxjs/toolkit'
 import counterReducer from './_features/counterSlice'
+import poseRegionReducer from './_features/poseRegionSlice'
+import poseTrainingReducer from './_features/poseTrainingSlice'
 
 export const makeStore = () => {
   return configureStore({
     reducer: {
+      region: poseRegionReducer,
       counter: counterReducer,
       training: poseTrainingReducer,
     },

@@ -119,4 +119,8 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  div::part(region-content) {
+    font-size: 10px;
+  }
 }

@@ -3,13 +3,7 @@
 import useDetectAndDraw from '@/hooks/useDetectAndDraw'
 import { capturePoses } from '@/lib/store/_features/poseTrainingSlice'
 import { useAppDispatch, useAppSelector } from '@/lib/store/hooks'
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from 'react'
+import React, { createContext, useContext, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { useModel } from './model-provider'
 

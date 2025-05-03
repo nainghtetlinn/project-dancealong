@@ -1,6 +1,19 @@
 {
   "IDX.aI.enableInlineCompletion": true,
   "IDX.aI.enableCodebaseIndexing": true,
+
+  // Vs code
   "editor.formatOnSave": true,
-  "editor.defaultFormatter": "esbenp.prettier-vscode"
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.minimap.renderCharacters": false,
+  "editor.stickyScroll.enabled": false,
+
+  "breadcrumbs.enabled": false,
+
+  // Prettier
+  "prettier.arrowParens": "avoid",
+  "prettier.jsxSingleQuote": true,
+  "prettier.singleAttributePerLine": true,
+  "prettier.singleQuote": true,
+  "prettier.semi": false
 }

@@ -1,10 +1,11 @@
 'use client'
 
 import { Loader2 } from 'lucide-react'
+import AudioTimeline from './AudioTimeline'
 import AudioUpload from './AudioUpload'
 
-import { useAudio } from '../_lib/audioContext'
 import { TProject } from '../../_types'
+import { useAudio } from '../_lib/audioContext'
 
 export default function Studio({ project }: { project: TProject }) {
   const { loading, audio } = useAudio()
@@ -23,5 +24,9 @@ export default function Studio({ project }: { project: TProject }) {
       </div>
     )
 
-  return <div>Studio</div>
+  return (
+    <div>
+      <AudioTimeline />
+    </div>
+  )
 }

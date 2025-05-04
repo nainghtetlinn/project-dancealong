@@ -27,12 +27,14 @@ interface AudioContext {
   audio: File | null
   loading: boolean
   upload: (audio: File, projectId: number) => void
+  setupWavesurfer: (container: HTMLDivElement, onReady: () => void) => void
 }
 
 const audioContext = createContext<AudioContext>({
   audio: null,
   loading: true,
   upload: () => {},
+  setupWavesurfer: () => {},
 })
 
 export const AudioProvider = ({
@@ -43,9 +45,49 @@ export const AudioProvider = ({
   song: TSong | null
 }) => {
   const hasLoadedSong = useRef(false)
+  const wavesurferRef = useRef<WaveSurfer>(null)
+  const regionsRef = useRef<RegionsPlugin>(null)
 
   const [loading, setLoading] = useState(true)
   const [audio, setAudio] = useState<File | null>(null)
+  const [isPlaying, setIsPlaying] = useState(false)
+  const [duration, setDuration] = useState(0)
+  const [currentTime, setCurrentTime] = useState(0)
+
+  const setupWavesurfer = (container: HTMLDivElement, onReady: () => void) => {
+    if (wavesurferRef.current || regionsRef.current || !audio) return
+
+    const { ws, regions } = initWaveSurfer(container)
+    wavesurferRef.current = ws
+    regionsRef.current = regions
+
+    /**
+     * Wavesurfer
+     */
+    ws.on('decode', setDuration)
+    ws.on('timeupdate', setCurrentTime)
+    ws.on('finish', () => {
+      ws.setTime(0)
+      setIsPlaying(false)
+    })
+    ws.on('ready', onReady)
+
+    /**
+     * Region plugin
+     */
+    regions.on('region-updated', e => {})
+
+    regions.on('region-clicked', (region, e) => {
+      e.stopPropagation()
+    })
+
+    /**
+     * Load audio
+     */
+    readAudio(audio, blob => {
+      ws.loadBlob(blob)
+    })
+  }
 
   const upload = async (audio: File, projectId: number) => {
     setLoading(true)
@@ -75,6 +117,7 @@ export const AudioProvider = ({
         audio,
         loading,
         upload,
+        setupWavesurfer,
       }}
     >
       {children}

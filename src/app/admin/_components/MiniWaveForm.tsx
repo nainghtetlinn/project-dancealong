@@ -21,6 +21,8 @@ export default function MiniWaveForm({ url }: { url: string }) {
   useEffect(() => {
     if (!containerRef.current) return
 
+    if (wavesurferRef.current) return
+
     const ws = WaveSurfer.create({
       container: containerRef.current,
       height: 60,

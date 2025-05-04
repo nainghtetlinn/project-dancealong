@@ -16,7 +16,7 @@ export default async function AdminLayout({
   if (error || !data.user) redirect('/login')
 
   return (
-    <div className='flex flex-col'>
+    <div className='flex flex-col h-screen'>
       <nav className='flex items-center justify-between px-4 py-2 border-b'>
         <Link href='/admin'>
           <h5>Admin Studio</h5>

@@ -26,15 +26,29 @@ const uid = new ShortUniqueID({ length: 6 })
 interface AudioContext {
   audio: File | null
   loading: boolean
+  isPlaying: boolean
+  duration: number
+  currentTime: number
+  activeRegionId: string
   upload: (audio: File, projectId: number) => void
+  play: () => void
+  pause: () => void
   setupWavesurfer: (container: HTMLDivElement, onReady: () => void) => void
+  removeRegion: () => void
 }
 
 const audioContext = createContext<AudioContext>({
   audio: null,
   loading: true,
+  isPlaying: false,
+  duration: 0,
+  currentTime: 0,
+  activeRegionId:'',
   upload: () => {},
+  play: () => {},
+  pause: () => {},
   setupWavesurfer: () => {},
+  removeRegion: () => {},
 })
 
 export const AudioProvider = ({
@@ -53,6 +67,10 @@ export const AudioProvider = ({
   const [isPlaying, setIsPlaying] = useState(false)
   const [duration, setDuration] = useState(0)
   const [currentTime, setCurrentTime] = useState(0)
+  const [activeRegionId, setActiveRegionId] = useState('')
+
+
+  const removeRegion = () => {}
 
   const setupWavesurfer = (container: HTMLDivElement, onReady: () => void) => {
     if (wavesurferRef.current || regionsRef.current || !audio) return
@@ -97,6 +115,16 @@ export const AudioProvider = ({
     setAudio(audio)
   }
 
+  const play = () => {
+    setIsPlaying(true)
+    wavesurferRef.current?.play()
+  }
+
+  const pause = () => {
+    setIsPlaying(false)
+    wavesurferRef.current?.pause()
+  }
+
   if (song && !hasLoadedSong.current) {
     hasLoadedSong.current = true
     readAudioFromUrl(song.song_public_url, song.song_name)
@@ -116,8 +144,15 @@ export const AudioProvider = ({
       value={{
         audio,
         loading,
+        isPlaying,
+        duration,
+        currentTime,
+        activeRegionId,
         upload,
+        play,
+        pause,
         setupWavesurfer,
+        removeRegion,
       }}
     >
       {children}

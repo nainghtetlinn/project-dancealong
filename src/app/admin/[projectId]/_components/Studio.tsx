@@ -1,6 +1,7 @@
 'use client'
 
 import { Loader2 } from 'lucide-react'
+import AudioDetails from './AudioDetails'
 import AudioTimeline from './AudioTimeline'
 import AudioUpload from './AudioUpload'
 
@@ -27,6 +28,7 @@ export default function Studio({ project }: { project: TProject }) {
   return (
     <div>
       <AudioTimeline />
+      <AudioDetails />
     </div>
   )
 }

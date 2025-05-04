@@ -34,6 +34,7 @@ interface AudioContext {
   play: () => void
   pause: () => void
   setupWavesurfer: (container: HTMLDivElement, onReady: () => void) => void
+  addRegion: (label: string) => void
   removeRegion: () => void
 }
 
@@ -43,13 +44,19 @@ const audioContext = createContext<AudioContext>({
   isPlaying: false,
   duration: 0,
   currentTime: 0,
-  activeRegionId:'',
+  activeRegionId: '',
   upload: () => {},
   play: () => {},
   pause: () => {},
   setupWavesurfer: () => {},
+  addRegion: () => {},
   removeRegion: () => {},
 })
+
+const colors = {
+  DEFAULT: 'oklch(0.606 0.25 292.717/50%)',
+  ACTIVE: 'oklch(0.606 0.25 292.717/70%)',
+}
 
 export const AudioProvider = ({
   children,
@@ -61,6 +68,7 @@ export const AudioProvider = ({
   const hasLoadedSong = useRef(false)
   const wavesurferRef = useRef<WaveSurfer>(null)
   const regionsRef = useRef<RegionsPlugin>(null)
+  const activeRegionIdRef = useRef<string>(null)
 
   const [loading, setLoading] = useState(true)
   const [audio, setAudio] = useState<File | null>(null)
@@ -69,8 +77,26 @@ export const AudioProvider = ({
   const [currentTime, setCurrentTime] = useState(0)
   const [activeRegionId, setActiveRegionId] = useState('')
 
+  const addRegion = (label: string) => {
+    const newRegion = {
+      id: uid.rnd(),
+      content: label,
+      start: currentTime,
+      end: currentTime + 0.7,
+    }
+    regionsRef.current?.addRegion({ ...newRegion, color: colors.DEFAULT })
+  }
 
-  const removeRegion = () => {}
+  const removeRegion = () => {
+    if (!activeRegionId) return
+
+    regionsRef.current?.getRegions().forEach(r => {
+      if (r.id === activeRegionId) {
+        r.remove()
+      }
+    })
+    setActiveRegionId('')
+  }
 
   const setupWavesurfer = (container: HTMLDivElement, onReady: () => void) => {
     if (wavesurferRef.current || regionsRef.current || !audio) return
@@ -88,6 +114,13 @@ export const AudioProvider = ({
       ws.setTime(0)
       setIsPlaying(false)
     })
+    ws.on('click', () => {
+      regions.getRegions().forEach(r => {
+        r.setOptions({ color: colors.DEFAULT })
+      })
+      activeRegionIdRef.current = null
+      setActiveRegionId('')
+    })
     ws.on('ready', onReady)
 
     /**
@@ -97,6 +130,19 @@ export const AudioProvider = ({
 
     regions.on('region-clicked', (region, e) => {
       e.stopPropagation()
+
+      if (activeRegionIdRef.current === region.id) {
+        region.setOptions({ color: colors.DEFAULT })
+        activeRegionIdRef.current = null
+        setActiveRegionId('')
+      } else {
+        regionsRef.current
+          ?.getRegions()
+          .forEach(r => r.setOptions({ color: colors.DEFAULT }))
+        region.setOptions({ color: colors.ACTIVE })
+        activeRegionIdRef.current = region.id
+        setActiveRegionId(region.id)
+      }
     })
 
     /**
@@ -152,6 +198,7 @@ export const AudioProvider = ({
         play,
         pause,
         setupWavesurfer,
+        addRegion,
         removeRegion,
       }}
     >

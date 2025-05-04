@@ -11,23 +11,7 @@ import MiniWaveForm from './MiniWaveForm'
 
 import { formatTime } from '@/lib/utils'
 import Link from 'next/link'
-
-type TSong = {
-  id: number
-  created_at: string
-  song_name: string
-  duration_in_seconds: number
-  song_public_url: string
-}
-
-type TProject = {
-  id: number
-  created_at: string
-  project_name: string
-  model_url: string | null
-  song_id: number | null
-  songs: TSong | null
-}
+import { TProject } from '../_types'
 
 export default async function ProjectCard({ project }: { project: TProject }) {
   return (

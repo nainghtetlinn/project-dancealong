@@ -1,5 +1,6 @@
 import { ModeToggle } from '@/components/modeToggleBtn'
 
+import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
 
@@ -17,7 +18,9 @@ export default async function AdminLayout({
   return (
     <div className='flex flex-col'>
       <nav className='flex items-center justify-between px-4 py-2 border-b'>
-        <h5>Admin Studio</h5>
+        <Link href='/admin'>
+          <h5>Admin Studio</h5>
+        </Link>
         <div className='flex items-center gap-2'>
           <p>{data.user.email}</p>
           <ModeToggle />

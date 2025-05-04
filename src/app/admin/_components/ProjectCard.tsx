@@ -47,7 +47,7 @@ export default async function ProjectCard({ project }: { project: TProject }) {
         {project.songs ? (
           <MiniWaveForm url={project.songs.song_public_url} />
         ) : (
-          <></>
+          <div className='h-[60px]'></div>
         )}
       </CardContent>
       <CardFooter className='justify-end gap-2'>

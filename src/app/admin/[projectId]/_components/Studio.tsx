@@ -4,6 +4,7 @@ import { Loader2 } from 'lucide-react'
 import AudioDetails from './AudioDetails'
 import AudioTimeline from './AudioTimeline'
 import AudioUpload from './AudioUpload'
+import TrainingData from './TrainingData'
 
 import { TProject } from '../../_types'
 import { useAudio } from '../_lib/audioContext'
@@ -26,9 +27,13 @@ export default function Studio({ project }: { project: TProject }) {
     )
 
   return (
-    <div>
-      <AudioTimeline />
-      <AudioDetails />
-    </div>
+    <>
+      <section>
+        <AudioTimeline />
+        <AudioDetails />
+      </section>
+
+      <TrainingData />
+    </>
   )
 }

@@ -14,3 +14,16 @@ export type TProject = {
   song_id: number | null
   songs: TSong | null
 }
+
+export type TTrainingData = {
+  id: string
+  keypoints: number[][]
+  label: string
+}[]
+
+export type TLabel = {
+  name: string
+  count: number
+}
+
+export type TKeypoints = number[][]

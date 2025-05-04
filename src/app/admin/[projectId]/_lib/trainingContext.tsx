@@ -10,20 +10,24 @@ const uid = new ShortUniqueID({ length: 6 })
 
 interface TrainingContext {
   labels: TLabel[]
+  trainingData: TTrainingData
   addLabel: () => void
   editLabel: (oldLabel: string, newLabel: string) => void
   removeLabel: (label: string) => void
   importData: (data: TTrainingData) => void
   exportData: () => void
+  removePose: (id: string) => void
 }
 
 const trainingContext = createContext<TrainingContext>({
   labels: [],
+  trainingData: [],
   addLabel: () => {},
   editLabel: () => {},
   removeLabel: () => {},
   importData: () => {},
   exportData: () => {},
+  removePose: () => {},
 })
 
 export const TrainingProvider = ({
@@ -57,7 +61,7 @@ export const TrainingProvider = ({
 
   const removeLabel = (label: string) => {
     setLabels(prev => prev.filter(p => p.name !== label))
-    trainingDataRef.current = trainingDataRef.current?.filter(
+    trainingDataRef.current = trainingDataRef.current.filter(
       d => d.label !== label
     )
   }
@@ -86,15 +90,35 @@ export const TrainingProvider = ({
     trainingDataRef.current = data
   }
 
+  const removePose = (id: string) => {
+    let label: string = ''
+
+    trainingDataRef.current = trainingDataRef.current.filter(d => {
+      if (d.id === id) label = d.label
+      return d.id !== id
+    })
+
+    const newLabels = labels.map(l => {
+      if (l.name === label) {
+        l.count -= 1
+      }
+      return l
+    })
+
+    setLabels(newLabels)
+  }
+
   return (
     <trainingContext.Provider
       value={{
         labels,
+        trainingData: trainingDataRef.current,
         addLabel,
         editLabel,
         removeLabel,
         importData,
         exportData,
+        removePose,
       }}
     >
       {children}

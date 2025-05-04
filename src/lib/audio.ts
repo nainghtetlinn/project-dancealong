@@ -54,3 +54,17 @@ export const readAudioFromUrl = async (url: string, filename: string) => {
   const blob = await response.blob()
   return new File([blob], filename)
 }
+
+export const getAudioDuration = (file: File): Promise<number> => {
+  return new Promise((resolve, reject) => {
+    const audio = document.createElement('audio')
+    audio.preload = 'metadata'
+    audio.src = URL.createObjectURL(file)
+
+    audio.onloadedmetadata = () => {
+      resolve(audio.duration)
+    }
+
+    audio.onerror = reject
+  })
+}

@@ -46,14 +46,13 @@ export const TrainingProvider = ({
   }
 
   const editLabel = (oldLabel: string, newLabel: string) => {
-    setLabels(prev =>
-      prev.map(l => {
-        if (l.name === oldLabel) {
-          l.name = newLabel
-        }
-        return l
-      })
-    )
+    const updatedLabels = labels.map(l => {
+      if (l.name === oldLabel) {
+        l.name = newLabel
+      }
+      return l
+    })
+    setLabels(updatedLabels)
     trainingDataRef.current.forEach(d => {
       if (d.label === oldLabel) {
         d.label = newLabel
@@ -62,7 +61,8 @@ export const TrainingProvider = ({
   }
 
   const removeLabel = (label: string) => {
-    setLabels(prev => prev.filter(p => p.name !== label))
+    const updatedLabels = labels.filter(p => p.name !== label)
+    setLabels(updatedLabels)
     trainingDataRef.current = trainingDataRef.current.filter(
       d => d.label !== label
     )
@@ -100,14 +100,14 @@ export const TrainingProvider = ({
       return d.id !== id
     })
 
-    const newLabels = labels.map(l => {
+    const updatedLabels = labels.map(l => {
       if (l.name === label) {
         l.count -= 1
       }
       return l
     })
 
-    setLabels(newLabels)
+    setLabels(updatedLabels)
   }
 
   const addTrainingData = (data: TKeypoints[], label: string) => {

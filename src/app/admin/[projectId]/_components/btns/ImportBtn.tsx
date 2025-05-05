@@ -3,9 +3,11 @@ import { Label } from '@/components/ui/label'
 
 import { useTraining } from '../../_lib/trainingContext'
 import { toast } from 'sonner'
+import { useAudio } from '../../_lib/audioContext'
 
 export default function ImportBtn() {
   const { importData } = useTraining()
+  const { removeAllRegions } = useAudio()
 
   const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -21,6 +23,7 @@ export default function ImportBtn() {
         try {
           const json = JSON.parse(event.target.result)
           importData(json)
+          removeAllRegions()
         } catch (error) {
           toast.error('Invalid JSON file')
         }

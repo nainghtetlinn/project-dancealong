@@ -5,17 +5,12 @@ import { useTraining } from '../../_lib/trainingContext'
 import { useWebcam } from '../../_lib/webcamContext'
 
 export default function CaptureBtn({ label }: { label: string }) {
-  const { openWebcam, closeWebcam, registerCallback } = useWebcam()
-  const {} = useTraining()
+  const { startCapturing } = useWebcam()
+  const { addTrainingData } = useTraining()
 
   const handleClick = async () => {
-    registerCallback(kp => {
-      console.log(kp)
-    })
-    await openWebcam()
-    setTimeout(() => {
-      closeWebcam()
-    }, 5000)
+    const result = await startCapturing()
+    addTrainingData(result, label)
   }
 
   return (

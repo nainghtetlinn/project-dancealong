@@ -1,6 +1,6 @@
 'use client'
 
-import { TLabel, TTrainingData } from '../../_types'
+import { TKeypoints, TLabel, TTrainingData } from '../../_types'
 
 import { exportJSON } from '@/lib/utils'
 import React, { createContext, useContext, useRef, useState } from 'react'
@@ -17,6 +17,7 @@ interface TrainingContext {
   importData: (data: TTrainingData) => void
   exportData: () => void
   removePose: (id: string) => void
+  addTrainingData: (data: TKeypoints[], label: string) => void
 }
 
 const trainingContext = createContext<TrainingContext>({
@@ -28,6 +29,7 @@ const trainingContext = createContext<TrainingContext>({
   importData: () => {},
   exportData: () => {},
   removePose: () => {},
+  addTrainingData: () => {},
 })
 
 export const TrainingProvider = ({
@@ -108,6 +110,20 @@ export const TrainingProvider = ({
     setLabels(newLabels)
   }
 
+  const addTrainingData = (data: TKeypoints[], label: string) => {
+    const updatedLabels = labels.map(l => {
+      if (l.name === label) {
+        l.count += data.length
+        console.log('updated')
+      }
+      return l
+    })
+    setLabels(updatedLabels)
+    data.forEach(d => {
+      trainingDataRef.current.push({ id: uid.rnd(), label, keypoints: d })
+    })
+  }
+
   return (
     <trainingContext.Provider
       value={{
@@ -119,6 +135,7 @@ export const TrainingProvider = ({
         importData,
         exportData,
         removePose,
+        addTrainingData,
       }}
     >
       {children}

@@ -1,9 +1,15 @@
 'use client'
 
-import { Keypoints } from '@/types'
+import { TKeypoints } from '../../_types'
 
 import useDetectAndDraw from '@/hooks/useDetectAndDraw'
-import React, { createContext, useContext, useRef, useState } from 'react'
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 import { toast } from 'sonner'
 
 const constants = {
@@ -16,9 +22,11 @@ interface WebcamContext {
   VideoElement: React.JSX.Element
   CanvasElement: React.JSX.Element
   isWebcamEnable: boolean
+  isCapturing: boolean
+  count: number
   openWebcam: () => void
   closeWebcam: () => void
-  registerCallback: (callback: (keypoints: Keypoints) => void) => void
+  startCapturing: () => Promise<TKeypoints[]>
 }
 
 const webcamContext = createContext<WebcamContext>({
@@ -26,27 +34,58 @@ const webcamContext = createContext<WebcamContext>({
   VideoElement: <video />,
   CanvasElement: <canvas />,
   isWebcamEnable: false,
+  isCapturing: false,
+  count: 0,
   openWebcam: () => {},
   closeWebcam: () => {},
-  registerCallback: () => {},
+  startCapturing: () => {
+    return Promise.resolve([])
+  },
 })
 
 export const WebcamProvider = ({ children }: { children: React.ReactNode }) => {
   const streamRef = useRef<MediaStream>(null)
-  const keypointsRef = useRef<Keypoints[]>([])
-  const callbackRef = useRef<(keypoints: Keypoints) => void>(keypoints => {
-    console.log('Detected')
-  })
+  const keypointsRef = useRef<TKeypoints[]>([])
 
+  const [count, setCount] = useState(0)
   const [isWebcamEnable, setIsWebcamEnable] = useState(false)
+  const [isCapturing, setIsCapturing] = useState(false)
 
   const { videoRef, canvasRef, start, stop } = useDetectAndDraw(
     constants.width,
     constants.height,
     keypoints => {
-      callbackRef.current(keypoints)
+      if (isCapturing) {
+        keypointsRef.current.push(keypoints)
+      }
     }
   )
+
+  const startCapturing = async (): Promise<TKeypoints[]> => {
+    await openWebcam()
+
+    for (let i = 0; i <= 5; i++) {
+      setCount(5 - i)
+      await new Promise(resolve => setTimeout(resolve, 1000))
+    }
+
+    setIsCapturing(true)
+
+    for (let i = 0; i <= 3; i++) {
+      setCount(3 - i)
+      await new Promise(resolve => setTimeout(resolve, 1000))
+    }
+
+    setIsCapturing(false)
+    closeWebcam()
+
+    let result: TKeypoints[] = []
+    if (keypointsRef.current.length > 0) {
+      result = keypointsRef.current
+      keypointsRef.current = []
+    }
+    return result
+  }
 
   const openWebcam = async (): Promise<void> => {
     try {
@@ -69,15 +108,8 @@ export const WebcamProvider = ({ children }: { children: React.ReactNode }) => {
       streamRef.current = null
       if (videoRef.current) videoRef.current.srcObject = null
       stop()
-      if (keypointsRef.current.length > 0) {
-        keypointsRef.current.length = 0
-      }
     }
     setIsWebcamEnable(false)
-  }
-
-  const registerCallback = (callback: (keypoints: Keypoints) => void) => {
-    callbackRef.current = callback
   }
 
   const VideoElement = (
@@ -108,9 +140,11 @@ export const WebcamProvider = ({ children }: { children: React.ReactNode }) => {
         VideoElement,
         CanvasElement,
         isWebcamEnable,
+        isCapturing,
+        count,
         openWebcam,
         closeWebcam,
-        registerCallback,
+        startCapturing,
       }}
     >
       {children}

@@ -4,7 +4,14 @@ import { useEffect, useState } from 'react'
 import { useWebcam } from '../_lib/webcamContext'
 
 export default function Webcam() {
-  const { VideoElement, CanvasElement, constants, isWebcamEnable } = useWebcam()
+  const {
+    VideoElement,
+    CanvasElement,
+    constants,
+    isWebcamEnable,
+    isCapturing,
+    count,
+  } = useWebcam()
 
   const [scale, setScale] = useState(1)
 
@@ -28,7 +35,15 @@ export default function Webcam() {
         isWebcamEnable ? 'opacity-100' : 'opacity-0'
       }`}
     >
-      <div style={{ scale }}>
+      <div
+        style={{ scale }}
+        className='relative'
+      >
+        {count > 0 && !isCapturing && (
+          <div className='absolute z-10 inset-0 bg-black/60 flex items-center justify-center pointer-events-none'>
+            <span className='text-4xl font-bold'>{count}</span>
+          </div>
+        )}
         <div
           style={{
             width: constants.width,

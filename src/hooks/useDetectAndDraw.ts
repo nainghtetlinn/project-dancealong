@@ -4,12 +4,19 @@ import type { Keypoints } from '@/types'
 
 import useDetection from './useDetection'
 import useDraw from './useDraw'
+import { useRef, useEffect } from 'react'
 
 const useDetectAndDraw = (
   width: number,
   height: number,
   callback: (keypoints: Keypoints) => void
 ) => {
+  const callbackRef = useRef(callback)
+
+  useEffect(() => {
+    callbackRef.current = callback
+  }, [callback])
+
   const { canvasRef, draw, clean } = useDraw(width, height, {
     threshold: 0.3,
     point: { size: 16, color: 'oklch(0.705 0.213 47.604)', fillColor: 'white' },
@@ -17,7 +24,7 @@ const useDetectAndDraw = (
   })
   const { videoRef, start, stop } = useDetection(keypoints => {
     draw(keypoints)
-    callback(keypoints)
+    callbackRef.current(keypoints)
   })
 
   return {

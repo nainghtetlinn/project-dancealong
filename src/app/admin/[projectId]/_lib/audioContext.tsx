@@ -36,6 +36,7 @@ interface AudioContext {
   setupWavesurfer: (container: HTMLDivElement, onReady: () => void) => void
   addRegion: (label: string) => void
   removeRegion: () => void
+  removeRegionsByLabel: (label: string) => void
   removeAllRegions: () => void
 }
 
@@ -52,6 +53,7 @@ const audioContext = createContext<AudioContext>({
   setupWavesurfer: () => {},
   addRegion: () => {},
   removeRegion: () => {},
+  removeRegionsByLabel: () => {},
   removeAllRegions: () => {},
 })
 
@@ -98,6 +100,14 @@ export const AudioProvider = ({
       }
     })
     setActiveRegionId('')
+  }
+
+  const removeRegionsByLabel = (label: string) => {
+    regionsRef.current?.getRegions().forEach(r => {
+      if (r.content?.innerText === label) {
+        r.remove()
+      }
+    })
   }
 
   const removeAllRegions = () => {
@@ -207,6 +217,7 @@ export const AudioProvider = ({
         setupWavesurfer,
         addRegion,
         removeRegion,
+        removeRegionsByLabel,
         removeAllRegions,
       }}
     >

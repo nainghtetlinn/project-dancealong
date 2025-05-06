@@ -10,16 +10,9 @@ import {
   readAudio,
   readAudioFromUrl,
 } from '@/lib/audio'
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from 'react'
-import { uploadAudio } from '../../action'
+import React, { createContext, useContext, useRef, useState } from 'react'
 import { TSong } from '../../_types'
-import { toast } from 'sonner'
+import { uploadAudio } from '../../action'
 
 const uid = new ShortUniqueID({ length: 6 })
 

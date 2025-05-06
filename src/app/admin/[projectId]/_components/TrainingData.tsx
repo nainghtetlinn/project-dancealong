@@ -2,6 +2,7 @@ import ImportBtn from './btns/ImportBtn'
 import ExportBtn from './btns/ExportBtn'
 import AddLabelBtn from './btns/AddLabelBtn'
 import TrainBtn from './btns/TrainBtn'
+import TestModelBtn from './btns/TestModelBtn'
 import TrainingDataTable from './TrainingDataTable'
 
 export default function TrainingData() {
@@ -14,6 +15,7 @@ export default function TrainingData() {
           <ExportBtn />
           <AddLabelBtn />
           <TrainBtn />
+          <TestModelBtn />
         </div>
       </div>
 

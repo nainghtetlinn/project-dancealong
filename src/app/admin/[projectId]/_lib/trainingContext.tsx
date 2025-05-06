@@ -114,7 +114,6 @@ export const TrainingProvider = ({
     const updatedLabels = labels.map(l => {
       if (l.name === label) {
         l.count += data.length
-        console.log('updated')
       }
       return l
     })

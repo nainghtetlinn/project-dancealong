@@ -22,7 +22,9 @@ interface ModelContext {
     labels: string[]
     model: tf.Sequential
   }) => void
-  classify: (keypoints: number[][]) => void
+  classify: (
+    keypoints: number[][]
+  ) => { label: string; confidence: number } | undefined
 }
 
 const modelContext = createContext<ModelContext>({
@@ -36,7 +38,9 @@ const modelContext = createContext<ModelContext>({
   classificationModel: null,
   classificationLabels: [],
   uploadClassificationModel: () => {},
-  classify: () => {},
+  classify: () => {
+    return undefined
+  },
 })
 
 export function ModelProvider({
@@ -97,9 +101,9 @@ export function ModelProvider({
   }
 
   const classify = (keypoints: number[][]) => {
-    if (classificationModel === null) return
+    if (classificationModel === null) return undefined
 
-    const result = tf.tidy(() => {
+    return tf.tidy(() => {
       const inputs = keypoints
         .map(kp => {
           if (kp[2] < 0.3) {
@@ -130,8 +134,6 @@ export function ModelProvider({
         confidence: maxProb,
       }
     })
-
-    console.log(result)
   }
 
   const uploadClassificationModel = (result: {

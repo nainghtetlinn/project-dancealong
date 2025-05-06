@@ -20,19 +20,21 @@ const useDraw = (width: number, height: number, options?: HumanPoseOptions) => {
   }, [width, height])
 
   const clean = () => {
-    const ctx = ctxRef.current
-    if (!ctx) return
-    ctx.clearRect(0, 0, width, height)
+    if (ctxRef.current) {
+      const ctx = ctxRef.current
+      ctx.clearRect(0, 0, width, height)
+    }
   }
 
   const draw = (keypoints: Keypoints) => {
-    const ctx = ctxRef.current
-    if (!ctx) return
-    ctx.clearRect(0, 0, width, height)
-
-    const humanPose = new HumanPose(keypoints, width, height, options)
-
-    humanPose.draw(ctx)
+    if (ctxRef.current) {
+      const ctx = ctxRef.current
+      ctx.clearRect(0, 0, width, height)
+      const humanPose = new HumanPose(keypoints, width, height, options)
+      humanPose.draw(ctx)
+    } else {
+      ctxRef.current = canvasRef.current?.getContext('2d') || null
+    }
   }
 
   return { canvasRef, draw, clean }

@@ -15,7 +15,7 @@ export default function AudioDetails() {
     activeRegionId,
     play,
     pause,
-    removeRegion,
+    removeActiveRegion,
   } = useAudio()
 
   return (
@@ -32,7 +32,7 @@ export default function AudioDetails() {
         size='icon'
         variant='secondary'
         disabled={!activeRegionId}
-        onClick={removeRegion}
+        onClick={removeActiveRegion}
       >
         <MinusSquare />
       </Button>

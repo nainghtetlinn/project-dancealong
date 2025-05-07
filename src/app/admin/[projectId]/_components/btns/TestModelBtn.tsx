@@ -31,7 +31,7 @@ export default function TestModelBtn() {
     }
   )
 
-  const { classify, classificationLabels } = useModel()
+  const { classify } = useModel()
 
   const [open, setOpen] = useState(false)
   const [result, setResult] = useState<
@@ -75,7 +75,7 @@ export default function TestModelBtn() {
       <DialogTrigger asChild>
         <Button
           size='sm'
-          disabled={classificationLabels.length === 0}
+          variant='secondary'
         >
           Test Model
         </Button>

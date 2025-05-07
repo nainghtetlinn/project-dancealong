@@ -2,7 +2,7 @@ import ImportBtn from './btns/ImportBtn'
 import ExportBtn from './btns/ExportBtn'
 import AddLabelBtn from './btns/AddLabelBtn'
 import TrainBtn from './btns/TrainBtn'
-import TestModelBtn from './btns/TestModelBtn'
+import SaveModelBtn from './btns/SaveModelBtn'
 import TrainingDataTable from './TrainingDataTable'
 
 export default function TrainingData() {
@@ -14,12 +14,15 @@ export default function TrainingData() {
           <ImportBtn />
           <ExportBtn />
           <AddLabelBtn />
-          <TrainBtn />
-          <TestModelBtn />
         </div>
       </div>
 
       <TrainingDataTable />
+
+      <div className='mt-2 flex items-center justify-end gap-2'>
+        <TrainBtn />
+        <SaveModelBtn />
+      </div>
     </section>
   )
 }

@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
 import { Slider } from '@/components/ui/slider'
+import TestModelBtn from './TestModelBtn'
 
 import { createModel } from '@/lib/model'
 import { useModel } from '@/provider/model-provider'
@@ -81,6 +82,7 @@ export default function TrainBtn() {
       <DialogTrigger asChild>
         <Button
           size='sm'
+          variant='secondary'
           disabled={labels.length < 2}
         >
           Train
@@ -126,12 +128,13 @@ export default function TrainBtn() {
           {!isTraining && trained && (
             <>
               <Button
+                size='sm'
                 variant='secondary'
                 onClick={handleRestart}
               >
                 Restart
               </Button>
-              <Button onClick={() => setOpen(false)}>Save</Button>
+              <TestModelBtn />
             </>
           )}
         </DialogFooter>

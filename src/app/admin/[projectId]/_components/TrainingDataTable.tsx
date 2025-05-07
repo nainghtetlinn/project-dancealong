@@ -81,7 +81,7 @@ export default function TrainingDataTable() {
   })
 
   return (
-    <div className='rounded-md border overflow-hidden'>
+    <div className='rounded-md border max-h-[500px] overflow-scroll'>
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map(headerGroup => (

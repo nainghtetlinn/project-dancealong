@@ -89,7 +89,7 @@ export async function uploadModel(
   // Checking if project exists
   const { data: project, error: projectError } = await supabase
     .from('projects')
-    .select('id, project_name')
+    .select('id, project_name, model_id')
     .eq('id', projectId)
     .single()
 
@@ -113,24 +113,27 @@ export async function uploadModel(
 
   if (uploadJson.error || uploadBin.error) redirect('/error')
 
-  // Get public url
-  const { data: url } = supabase.storage
-    .from('models')
-    .getPublicUrl(uploadJson.data.path)
+  // If project has no model_id, create a new model row in models table
+  if (!project.model_id) {
+    // Get public url
+    const { data: url } = supabase.storage
+      .from('models')
+      .getPublicUrl(uploadJson.data.path)
 
-  const { data: model, error: modelError } = await supabase
-    .from('models')
-    .insert({ labels, model_url: url.publicUrl })
-    .select('id')
-    .single()
+    const { data: model, error: modelError } = await supabase
+      .from('models')
+      .insert({ labels, model_url: url.publicUrl })
+      .select('id')
+      .single()
 
-  if (!model || modelError) redirect('/error')
+    if (!model || modelError) redirect('/error')
 
-  // Update project
-  const { error: updateError } = await supabase
-    .from('projects')
-    .update({ model_id: model.id })
-    .eq('id', project.id)
+    // Update project
+    const { error: updateError } = await supabase
+      .from('projects')
+      .update({ model_id: model.id })
+      .eq('id', project.id)
 
-  if (updateError) redirect('/error')
+    if (updateError) redirect('/error')
+  }
 }

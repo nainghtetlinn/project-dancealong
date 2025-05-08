@@ -13,7 +13,7 @@ export default async function ProjectPage({
 
   const { data } = await supabase
     .from('projects')
-    .select('*, songs(*)')
+    .select('*, songs(*), models(*)')
     .eq('id', projectId)
     .single()
 

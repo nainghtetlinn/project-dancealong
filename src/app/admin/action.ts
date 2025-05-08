@@ -78,3 +78,59 @@ export async function uploadAudio(
 
   if (updateError) redirect('/error')
 }
+
+export async function uploadModel(
+  formData: FormData,
+  labels: string[],
+  projectId: number
+) {
+  const supabase = await createClient()
+
+  // Checking if project exists
+  const { data: project, error: projectError } = await supabase
+    .from('projects')
+    .select('id, project_name')
+    .eq('id', projectId)
+    .single()
+
+  if (!project || projectError) redirect('/error')
+
+  const modelJson = formData.get('modelJson') as File
+  const modelBin = formData.get('modelBin') as File
+
+  const fileJsonPath = `${project.project_name}/${modelJson.name}`
+  const fileWeightPath = `${project.project_name}/${modelBin.name}`
+
+  // Upload files
+  const [uploadJson, uploadBin] = await Promise.all([
+    supabase.storage
+      .from('models')
+      .upload(fileJsonPath, modelJson.stream(), { upsert: true }),
+    supabase.storage.from('models').upload(fileWeightPath, modelBin.stream(), {
+      upsert: true,
+    }),
+  ])
+
+  if (uploadJson.error || uploadBin.error) redirect('/error')
+
+  // Get public url
+  const { data: url } = supabase.storage
+    .from('models')
+    .getPublicUrl(uploadJson.data.path)
+
+  const { data: model, error: modelError } = await supabase
+    .from('models')
+    .insert({ labels, model_url: url.publicUrl })
+    .select('id')
+    .single()
+
+  if (!model || modelError) redirect('/error')
+
+  // Update project
+  const { error: updateError } = await supabase
+    .from('projects')
+    .update({ model_id: model.id })
+    .eq('id', project.id)
+
+  if (updateError) redirect('/error')
+}

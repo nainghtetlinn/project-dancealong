@@ -10,25 +10,22 @@ import {
 } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
 import { Slider } from '@/components/ui/slider'
-import TestModelBtn from './TestModelBtn'
 
-import { createModel } from '@/lib/model'
-import { useModel } from '@/provider/model-provider'
+import { TSettings } from '@/app/admin/_types'
+
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { useTraining } from '../../_lib/trainingContext'
 
 export default function TrainBtn() {
-  const { uploadClassificationModel } = useModel()
-  const { labels, trainingData } = useTraining()
+  const { labels, hasTrained, startTrain, restart } = useTraining()
 
   const [open, setOpen] = useState(false)
   const [isTraining, setIsTraining] = useState(false)
-  const [trained, setTrained] = useState(false)
   const [logs, setLogs] = useState({ num: 0, accuracy: '' })
 
   // Training options
-  const [settings, setSettings] = useState({
+  const [settings, setSettings] = useState<TSettings>({
     epochs: 10,
     batchSize: 5,
     validationSplit: 0.2,
@@ -48,7 +45,7 @@ export default function TrainBtn() {
     setIsTraining(true)
 
     try {
-      const result = await createModel(trainingData, {
+      await startTrain({
         ...settings,
         shuffle: true,
         callbacks: {
@@ -57,17 +54,11 @@ export default function TrainBtn() {
           },
         },
       })
-      uploadClassificationModel(result)
-      setTrained(true)
     } catch (error: any) {
       toast.error(error.message)
+    } finally {
+      setIsTraining(false)
     }
-
-    setIsTraining(false)
-  }
-
-  const handleRestart = () => {
-    setTrained(false)
   }
 
   const handleUpdate = (field: string, value: number) => {
@@ -96,13 +87,6 @@ export default function TrainBtn() {
           </DialogDescription>
         </DialogHeader>
 
-        {!isTraining && !trained && (
-          <Settings
-            settings={settings}
-            handleUpdate={handleUpdate}
-          />
-        )}
-
         {isTraining && (
           <div className='flex items-center justify-center h-16'>
             <div className='text-center'>
@@ -112,7 +96,14 @@ export default function TrainBtn() {
           </div>
         )}
 
-        {!isTraining && trained && (
+        {!isTraining && !hasTrained && (
+          <Settings
+            settings={settings}
+            handleUpdate={handleUpdate}
+          />
+        )}
+
+        {!isTraining && hasTrained && (
           <div className='flex items-center justify-center h-16'>
             <div className='text-center'>
               <h6>Training completed!</h6>
@@ -122,20 +113,16 @@ export default function TrainBtn() {
         )}
 
         <DialogFooter>
-          {!isTraining && !trained && (
+          {!isTraining && !hasTrained && (
             <Button onClick={handleTrain}>Start</Button>
           )}
-          {!isTraining && trained && (
-            <>
-              <Button
-                size='sm'
-                variant='secondary'
-                onClick={handleRestart}
-              >
-                Restart
-              </Button>
-              <TestModelBtn />
-            </>
+          {!isTraining && hasTrained && (
+            <Button
+              variant='secondary'
+              onClick={restart}
+            >
+              Restart
+            </Button>
           )}
         </DialogFooter>
       </DialogContent>

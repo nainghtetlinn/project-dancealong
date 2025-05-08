@@ -6,13 +6,21 @@ export type TSong = {
   song_public_url: string
 }
 
+export type TModel = {
+  id: number
+  created_at: string
+  labels: string[]
+  model_url: string
+}
+
 export type TProject = {
   id: number
   created_at: string
   project_name: string
-  model_url: string | null
   song_id: number | null
   songs: TSong | null
+  model_id: number | null
+  models: TModel | null
 }
 
 export type TTrainingData = {
@@ -24,6 +32,12 @@ export type TTrainingData = {
 export type TLabel = {
   name: string
   count: number
+}
+
+export type TSettings = {
+  epochs: number
+  batchSize: number
+  validationSplit: number
 }
 
 export type TKeypoints = number[][]

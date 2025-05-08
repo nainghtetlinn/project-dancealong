@@ -33,7 +33,7 @@ export default function Studio({ project }: { project: TProject }) {
         <AudioDetails />
       </section>
 
-      <TrainingData />
+      <TrainingData project={project} />
     </>
   )
 }

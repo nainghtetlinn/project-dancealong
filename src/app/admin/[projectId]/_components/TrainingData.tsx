@@ -1,11 +1,14 @@
+import { TProject } from '../../_types'
+
 import ImportBtn from './btns/ImportBtn'
 import ExportBtn from './btns/ExportBtn'
 import AddLabelBtn from './btns/AddLabelBtn'
 import TrainBtn from './btns/TrainBtn'
 import SaveModelBtn from './btns/SaveModelBtn'
+import TestModelBtn from './btns/TestModelBtn'
 import TrainingDataTable from './TrainingDataTable'
 
-export default function TrainingData() {
+export default function TrainingData({ project }: { project: TProject }) {
   return (
     <section className='p-2 mt-2 border-t'>
       <div className='mb-2 flex items-center justify-between'>
@@ -21,7 +24,8 @@ export default function TrainingData() {
 
       <div className='mt-2 flex items-center justify-end gap-2'>
         <TrainBtn />
-        <SaveModelBtn />
+        <TestModelBtn />
+        <SaveModelBtn projectId={project.id} />
       </div>
     </section>
   )

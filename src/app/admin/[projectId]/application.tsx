@@ -8,7 +8,7 @@ import { WebcamProvider } from './_lib/webcamContext'
 export default function Application({ project }: { project: TProject }) {
   return (
     <AudioProvider song={project.songs}>
-      <TrainingProvider>
+      <TrainingProvider model={project.models}>
         <WebcamProvider>
           <Webcam />
           <Studio project={project} />

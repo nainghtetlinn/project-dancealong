@@ -10,9 +10,9 @@ import {
 } from '@/components/ui/dialog'
 
 import useDetectAndDraw from '@/hooks/useDetectAndDraw'
-import { useModel } from '@/provider/model-provider'
-import { useState, useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
+import { useTraining } from '../../_lib/trainingContext'
 
 const constants = {
   width: 640,
@@ -22,6 +22,8 @@ const constants = {
 export default function TestModelBtn() {
   const streamRef = useRef<MediaStream>(null)
 
+  const { classify, trainedModelLabels } = useTraining()
+
   const { videoRef, canvasRef, start, stop } = useDetectAndDraw(
     constants.width,
     constants.height,
@@ -30,8 +32,6 @@ export default function TestModelBtn() {
       setResult(r)
     }
   )
-
-  const { classify } = useModel()
 
   const [open, setOpen] = useState(false)
   const [result, setResult] = useState<
@@ -75,6 +75,7 @@ export default function TestModelBtn() {
       <DialogTrigger asChild>
         <Button
           size='sm'
+          disabled={trainedModelLabels.length === 0}
           variant='secondary'
         >
           Test Model

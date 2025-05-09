@@ -12,7 +12,6 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { ChevronDown, ChevronUp } from 'lucide-react'
-import AddRegionBtn from './btns/AddRegionBtn'
 import CaptureBtn from './btns/CaptureBtn'
 import EditBtn from './btns/EditBtn'
 import RemoveBtn from './btns/RemoveBtn'
@@ -47,14 +46,7 @@ const columns: ColumnDef<TLabel>[] = [
   { accessorKey: 'count', header: '' },
   {
     id: 'capture',
-    cell: ({ row }) => {
-      return (
-        <div className='flex gap-2'>
-          <CaptureBtn label={row.original.name} />
-          <AddRegionBtn label={row.original.name} />
-        </div>
-      )
-    },
+    cell: ({ row }) => <CaptureBtn label={row.original.name} />,
   },
   {
     id: 'actions',

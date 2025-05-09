@@ -18,7 +18,7 @@ import { toast } from 'sonner'
 import { useTraining } from '../../_lib/trainingContext'
 
 export default function TrainBtn() {
-  const { labels, hasTrained, startTrain, restart } = useTraining()
+  const { labels, hasLocalTrained, startTrain, restart } = useTraining()
 
   const [open, setOpen] = useState(false)
   const [isTraining, setIsTraining] = useState(false)
@@ -96,14 +96,14 @@ export default function TrainBtn() {
           </div>
         )}
 
-        {!isTraining && !hasTrained && (
+        {!isTraining && !hasLocalTrained && (
           <Settings
             settings={settings}
             handleUpdate={handleUpdate}
           />
         )}
 
-        {!isTraining && hasTrained && (
+        {!isTraining && hasLocalTrained && (
           <div className='flex items-center justify-center h-16'>
             <div className='text-center'>
               <h6>Training completed!</h6>
@@ -113,10 +113,10 @@ export default function TrainBtn() {
         )}
 
         <DialogFooter>
-          {!isTraining && !hasTrained && (
+          {!isTraining && !hasLocalTrained && (
             <Button onClick={handleTrain}>Start</Button>
           )}
-          {!isTraining && hasTrained && (
+          {!isTraining && hasLocalTrained && (
             <Button
               variant='secondary'
               onClick={restart}

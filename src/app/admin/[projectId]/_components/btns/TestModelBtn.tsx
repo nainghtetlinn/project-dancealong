@@ -10,26 +10,59 @@ import {
 } from '@/components/ui/dialog'
 
 import useDetectAndDraw from '@/hooks/useDetectAndDraw'
+import * as tf from '@tensorflow/tfjs'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
-import { useTraining } from '../../_lib/trainingContext'
 
 const constants = {
   width: 640,
   height: 480,
 }
 
-export default function TestModelBtn() {
+export default function TestModelBtn({
+  model,
+  labels,
+}: {
+  model: tf.Sequential | tf.LayersModel | null
+  labels: string[]
+}) {
   const streamRef = useRef<MediaStream>(null)
-
-  const { classify, trainedModelLabels } = useTraining()
 
   const { videoRef, canvasRef, start, stop } = useDetectAndDraw(
     constants.width,
     constants.height,
-    kp => {
-      const r = classify(kp)
-      setResult(r)
+    keypoints => {
+      if (model === null) return
+
+      tf.tidy(() => {
+        const inputs = keypoints
+          .map(kp => {
+            if (kp[2] < 0.3) {
+              return [0, 0]
+            }
+            return [kp[0], kp[1]]
+          })
+          .flat()
+
+        const prediction = model.predict(tf.tensor([inputs])) as tf.Tensor
+        const probabilities = prediction.dataSync()
+
+        // Find the max probability and index
+        let maxIndex = 0
+        let maxProb = probabilities[0]
+
+        for (let i = 1; i < probabilities.length; i++) {
+          if (probabilities[i] > maxProb) {
+            maxProb = probabilities[i]
+            maxIndex = i
+          }
+        }
+
+        setResult({
+          label: labels[maxIndex],
+          confidence: maxProb,
+        })
+      })
     }
   )
 
@@ -75,7 +108,7 @@ export default function TestModelBtn() {
       <DialogTrigger asChild>
         <Button
           size='sm'
-          disabled={trainedModelLabels.length === 0}
+          disabled={labels.length === 0}
           variant='secondary'
         >
           Test Model

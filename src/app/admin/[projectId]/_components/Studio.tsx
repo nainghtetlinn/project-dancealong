@@ -4,13 +4,17 @@ import { Loader2 } from 'lucide-react'
 import AudioDetails from './AudioDetails'
 import AudioTimeline from './AudioTimeline'
 import AudioUpload from './AudioUpload'
+import Controls from './Controls'
 import TrainingData from './TrainingData'
 
 import { TProject } from '../../_types'
+
 import { useAudio } from '../_lib/audioContext'
+import { useTraining } from '../_lib/trainingContext'
 
 export default function Studio({ project }: { project: TProject }) {
   const { loading, audio } = useAudio()
+  const { hasTrained } = useTraining()
 
   if (loading)
     return (
@@ -33,7 +37,7 @@ export default function Studio({ project }: { project: TProject }) {
         <AudioDetails />
       </section>
 
-      <TrainingData project={project} />
+      {hasTrained ? <Controls /> : <TrainingData project={project} />}
     </>
   )
 }

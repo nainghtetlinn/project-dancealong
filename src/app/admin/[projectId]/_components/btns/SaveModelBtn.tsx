@@ -9,12 +9,17 @@ import { toast } from 'sonner'
 import { useTraining } from '../../_lib/trainingContext'
 
 export default function SaveModelBtn({ projectId }: { projectId: number }) {
-  const { hasTrained, trainedModel, trainedModelLabels } = useTraining()
+  const {
+    hasLocalTrained,
+    localTrainedModel,
+    localTrainedModelLabels,
+    saveLocalModel,
+  } = useTraining()
 
   const [loading, setLoading] = useState(false)
 
   const handleSave = async () => {
-    if (!trainedModel) return
+    if (!localTrainedModel) return
     setLoading(true)
 
     const handler = tf.io.withSaveHandler(async modelArtifacts => {
@@ -30,7 +35,7 @@ export default function SaveModelBtn({ projectId }: { projectId: number }) {
         modelArtifacts: modelArtifacts,
       }
     })
-    const saveResult = await trainedModel.save(handler)
+    const saveResult = await localTrainedModel.save(handler)
 
     const { modelTopology, weightSpecs, weightData } = saveResult.modelArtifacts
 
@@ -57,8 +62,8 @@ export default function SaveModelBtn({ projectId }: { projectId: number }) {
     formData.append('modelJson', modelJsonBlob, 'model.json')
     formData.append('modelBin', modelBinBlob, 'group1-shard1of1.bin')
 
-    await uploadModel(formData, trainedModelLabels, projectId)
-
+    await uploadModel(formData, localTrainedModelLabels, projectId)
+    saveLocalModel()
     setLoading(false)
     toast.success('Model successfully uploaded.')
   }
@@ -66,7 +71,7 @@ export default function SaveModelBtn({ projectId }: { projectId: number }) {
   return (
     <Button
       size='sm'
-      disabled={!hasTrained || loading}
+      disabled={!hasLocalTrained || loading}
       onClick={handleSave}
     >
       Save Model {loading && <Loader2 className='animate-spin' />}

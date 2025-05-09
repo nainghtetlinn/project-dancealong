@@ -10,6 +10,7 @@ export type TModel = {
   id: number
   created_at: string
   labels: string[]
+  accuracy: number
   model_url: string
 }
 

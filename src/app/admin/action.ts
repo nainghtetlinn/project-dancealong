@@ -113,13 +113,14 @@ export async function uploadModel(
 
   if (uploadJson.error || uploadBin.error) redirect('/error')
 
-  // If project has no model_id, create a new model row in models table
   if (!project.model_id) {
+    // If project has no model_id, create a new model row in models table and reference it in project table
     // Get public url
     const { data: url } = supabase.storage
       .from('models')
       .getPublicUrl(uploadJson.data.path)
 
+    // Create new row in models table
     const { data: model, error: modelError } = await supabase
       .from('models')
       .insert({ labels, model_url: url.publicUrl })
@@ -135,5 +136,8 @@ export async function uploadModel(
       .eq('id', project.id)
 
     if (updateError) redirect('/error')
+  } else {
+    // If project has model_id, update model row in models table
+    await supabase.from('models').update({ labels }).eq('id', project.model_id)
   }
 }

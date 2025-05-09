@@ -13,9 +13,12 @@ const uid = new ShortUniqueID({ length: 6 })
 interface TrainingContext {
   labels: TLabel[]
   trainingData: TTrainingData
-  trainedModel: tf.Sequential | tf.LayersModel | null
-  trainedModelLabels: string[]
+  hasLocalTrained: boolean
+  localTrainedModel: tf.Sequential | null
+  localTrainedModelLabels: string[]
   hasTrained: boolean
+  trainedModel: tf.LayersModel | null
+  trainedModelLabels: string[]
   addLabel: () => void
   editLabel: (oldLabel: string, newLabel: string) => void
   removeLabel: (label: string) => void
@@ -25,6 +28,9 @@ interface TrainingContext {
   addTrainingData: (data: TKeypoints[], label: string) => void
   startTrain: (options: tf.ModelFitArgs) => Promise<void>
   restart: () => void
+  retrain: () => void
+  calcelRetrain: () => void
+  saveLocalModel: () => void
   classify: (
     keypoints: TKeypoints
   ) => { label: string; confidence: number } | undefined
@@ -33,9 +39,12 @@ interface TrainingContext {
 const trainingContext = createContext<TrainingContext>({
   labels: [],
   trainingData: [],
+  hasLocalTrained: false,
+  localTrainedModel: null,
+  localTrainedModelLabels: [],
+  hasTrained: false,
   trainedModel: null,
   trainedModelLabels: [],
-  hasTrained: false,
   addLabel: () => {},
   editLabel: () => {},
   removeLabel: () => {},
@@ -45,6 +54,9 @@ const trainingContext = createContext<TrainingContext>({
   addTrainingData: () => {},
   startTrain: async () => {},
   restart: () => {},
+  retrain: () => {},
+  calcelRetrain: () => {},
+  saveLocalModel: () => {},
   classify: () => {
     return undefined
   },
@@ -58,14 +70,23 @@ export const TrainingProvider = ({
   model: TModel | null
 }) => {
   const hasLoadedModel = useRef(false)
-  const trainingDataRef = useRef<TTrainingData>([])
 
+  // training data for tensorflow
+  const trainingDataRef = useRef<TTrainingData>([])
   const [labels, setLabels] = useState<TLabel[]>([])
+
+  // Fetched model from url
   const [hasTrained, setHasTrained] = useState(false)
-  const [trainedModel, setTrainedModel] = useState<
-    tf.Sequential | tf.LayersModel | null
-  >(null)
+  const [trainedModel, setTrainedModel] = useState<tf.LayersModel | null>(null)
   const [trainedModelLabels, setTrainedModelLabels] = useState<string[]>([])
+
+  // Local trained model
+  const [hasLocalTrained, setHasLocalTrained] = useState(false)
+  const [localTrainedModel, setLocalTrainedModel] =
+    useState<tf.Sequential | null>(null)
+  const [localTrainedModelLabels, setLocalTrainedModelLabels] = useState<
+    string[]
+  >([])
 
   const addLabel = () => {
     setLabels([...labels, { name: 'Pose_' + uid.rnd(), count: 0 }])
@@ -151,17 +172,13 @@ export const TrainingProvider = ({
 
   const startTrain = async (options: tf.ModelFitArgs): Promise<void> => {
     const result = await createModel(trainingDataRef.current, options)
-    setTrainedModel(result.model)
-    setTrainedModelLabels(result.labels)
-    setHasTrained(true)
-  }
-
-  const restart = () => {
-    setHasTrained(false)
+    setLocalTrainedModel(result.model)
+    setLocalTrainedModelLabels(result.labels)
+    setHasLocalTrained(true)
   }
 
   const classify = (keypoints: TKeypoints) => {
-    if (trainedModel === null) return undefined
+    if (localTrainedModel === null) return undefined
 
     return tf.tidy(() => {
       const inputs = keypoints
@@ -173,7 +190,9 @@ export const TrainingProvider = ({
         })
         .flat()
 
-      const prediction = trainedModel.predict(tf.tensor([inputs])) as tf.Tensor
+      const prediction = localTrainedModel.predict(
+        tf.tensor([inputs])
+      ) as tf.Tensor
       const probabilities = prediction.dataSync()
 
       // Find the max probability and index
@@ -188,22 +207,42 @@ export const TrainingProvider = ({
       }
 
       return {
-        label: trainedModelLabels[maxIndex],
+        label: localTrainedModelLabels[maxIndex],
         confidence: maxProb,
       }
     })
   }
 
+  // Call this function if we don't like the accuracy of the local trained model and want to restart the training with different settings
+  const restart = () => {
+    setHasLocalTrained(false)
+  }
+
+  // Call this function if there is uploaded model and want to update the model
+  const retrain = () => {
+    setHasTrained(false)
+  }
+
+  const calcelRetrain = () => {
+    setHasTrained(true)
+  }
+
+  const saveLocalModel = () => {
+    setTrainedModel(localTrainedModel)
+    setTrainedModelLabels(localTrainedModelLabels)
+    setHasTrained(true)
+    setLocalTrainedModel(null)
+    setLocalTrainedModelLabels([])
+    setHasLocalTrained(false)
+  }
+
   if (model && !hasLoadedModel.current) {
     hasLoadedModel.current = true
-    tf.loadLayersModel(model.model_url)
-      .then(m => {
-        setTrainedModel(m)
-        setTrainedModelLabels(model.labels)
-        const ls = model.labels.map(l => ({ name: l, count: 0 }))
-        setLabels(ls)
-      })
-      .finally()
+    tf.loadLayersModel(model.model_url).then(m => {
+      setTrainedModel(m)
+      setTrainedModelLabels(model.labels)
+      setHasTrained(true)
+    })
   } else if (!hasLoadedModel.current) {
     hasLoadedModel.current = true
   }
@@ -213,9 +252,12 @@ export const TrainingProvider = ({
       value={{
         labels,
         trainingData: trainingDataRef.current,
+        hasLocalTrained,
+        localTrainedModel,
+        localTrainedModelLabels,
+        hasTrained,
         trainedModel,
         trainedModelLabels,
-        hasTrained,
         addLabel,
         editLabel,
         removeLabel,
@@ -224,8 +266,11 @@ export const TrainingProvider = ({
         removePose,
         addTrainingData,
         startTrain,
-        restart,
         classify,
+        restart,
+        retrain,
+        calcelRetrain,
+        saveLocalModel,
       }}
     >
       {children}

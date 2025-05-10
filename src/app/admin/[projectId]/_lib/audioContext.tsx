@@ -4,26 +4,22 @@ import ShortUniqueID from 'short-unique-id'
 import WaveSurfer from 'wavesurfer.js'
 import RegionsPlugin from 'wavesurfer.js/dist/plugins/regions.esm.js'
 
-import {
-  getAudioDuration,
-  initWaveSurfer,
-  readAudio,
-  readAudioFromUrl,
-} from '@/lib/audio'
-import React, { createContext, useContext, useRef, useState } from 'react'
 import { TSong } from '../../_types'
-import { uploadAudio, uploadPoseEvents } from '../../action'
+
+import { initWaveSurfer, readAudio, readAudioFromUrl } from '@/lib/audio'
+import React, { createContext, useContext, useRef, useState } from 'react'
 
 const uid = new ShortUniqueID({ length: 6 })
 
 interface AudioContext {
   audio: File | null
+  regions: RegionsPlugin | null
   loading: boolean
   isPlaying: boolean
   duration: number
   currentTime: number
   activeRegionId: string
-  upload: (audio: File, projectId: number) => void
+  upload: (audio: File) => void
   play: () => void
   pause: () => void
   setupWavesurfer: (container: HTMLDivElement, onReady: () => void) => void
@@ -31,11 +27,11 @@ interface AudioContext {
   removeActiveRegion: () => void
   removeRegionsByLabel: (label: string) => void
   removeAllRegions: () => void
-  uploadRegions: (projectId: number) => void
 }
 
 const audioContext = createContext<AudioContext>({
   audio: null,
+  regions: null,
   loading: true,
   isPlaying: false,
   duration: 0,
@@ -49,7 +45,6 @@ const audioContext = createContext<AudioContext>({
   removeActiveRegion: () => {},
   removeRegionsByLabel: () => {},
   removeAllRegions: () => {},
-  uploadRegions: () => {},
 })
 
 const colors = {
@@ -110,17 +105,6 @@ export const AudioProvider = ({
     setActiveRegionId('')
   }
 
-  const uploadRegions = async (projectId: number) => {
-    if (!regionsRef.current) return
-
-    const events = regionsRef.current.getRegions().map(r => ({
-      start: r.start,
-      end: r.end,
-      label: r.content?.innerText || '',
-    }))
-    await uploadPoseEvents(events, projectId)
-  }
-
   const setupWavesurfer = (container: HTMLDivElement, onReady: () => void) => {
     if (wavesurferRef.current || regionsRef.current || !audio) return
 
@@ -176,11 +160,7 @@ export const AudioProvider = ({
     })
   }
 
-  const upload = async (audio: File, projectId: number) => {
-    setLoading(true)
-    const duration = await getAudioDuration(audio)
-    await uploadAudio(audio, duration, projectId)
-    setLoading(false)
+  const upload = (audio: File) => {
     setAudio(audio)
   }
 
@@ -212,6 +192,7 @@ export const AudioProvider = ({
     <audioContext.Provider
       value={{
         audio,
+        regions: regionsRef.current,
         loading,
         isPlaying,
         duration,
@@ -225,7 +206,6 @@ export const AudioProvider = ({
         removeActiveRegion,
         removeRegionsByLabel,
         removeAllRegions,
-        uploadRegions,
       }}
     >
       {children}

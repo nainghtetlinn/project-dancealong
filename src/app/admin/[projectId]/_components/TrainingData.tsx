@@ -1,19 +1,17 @@
 'use client'
 
-import { TProject } from '../../_types'
-
 import { Button } from '@/components/ui/button'
-import ImportBtn from './btns/ImportBtn'
-import ExportBtn from './btns/ExportBtn'
 import AddLabelBtn from './btns/AddLabelBtn'
-import TrainBtn from './btns/TrainBtn'
+import ExportBtn from './btns/ExportBtn'
+import ImportBtn from './btns/ImportBtn'
 import SaveModelBtn from './btns/SaveModelBtn'
 import TestModelBtn from './btns/TestModelBtn'
+import TrainBtn from './btns/TrainBtn'
 import TrainingDataTable from './TrainingDataTable'
 
 import { useTraining } from '../_lib/trainingContext'
 
-export default function TrainingData({ project }: { project: TProject }) {
+export default function TrainingData() {
   const {
     trainedModel,
     localTrainedModel,
@@ -49,7 +47,7 @@ export default function TrainingData({ project }: { project: TProject }) {
           model={localTrainedModel}
           labels={localTrainedModelLabels}
         />
-        <SaveModelBtn projectId={project.id} />
+        <SaveModelBtn />
       </div>
     </section>
   )

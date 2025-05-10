@@ -12,7 +12,7 @@ import { TProject } from '../../_types'
 import { useAudio } from '../_lib/audioContext'
 import { useTraining } from '../_lib/trainingContext'
 
-export default function Studio({ project }: { project: TProject }) {
+export default function Studio() {
   const { loading, audio } = useAudio()
   const { hasTrained } = useTraining()
 
@@ -26,7 +26,7 @@ export default function Studio({ project }: { project: TProject }) {
   if (audio === null)
     return (
       <div className='h-full flex items-center justify-center'>
-        <AudioUpload projectId={project.id} />
+        <AudioUpload />
       </div>
     )
 
@@ -34,10 +34,10 @@ export default function Studio({ project }: { project: TProject }) {
     <>
       <section>
         <AudioTimeline />
-        <AudioDetails projectId={project.id} />
+        <AudioDetails />
       </section>
 
-      {hasTrained ? <Controls /> : <TrainingData project={project} />}
+      {hasTrained ? <Controls /> : <TrainingData />}
     </>
   )
 }

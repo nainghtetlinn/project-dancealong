@@ -6,10 +6,13 @@ import { uploadModel } from '@/app/admin/action'
 import * as tf from '@tensorflow/tfjs'
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { useProjectDetails } from '../../_lib/projectContext'
 import { useTraining } from '../../_lib/trainingContext'
 
-export default function SaveModelBtn({ projectId }: { projectId: number }) {
+export default function SaveModelBtn() {
+  const { projectId } = useProjectDetails()
   const {
+    accuracy,
     hasLocalTrained,
     localTrainedModel,
     localTrainedModelLabels,
@@ -62,7 +65,7 @@ export default function SaveModelBtn({ projectId }: { projectId: number }) {
     formData.append('modelJson', modelJsonBlob, 'model.json')
     formData.append('modelBin', modelBinBlob, 'group1-shard1of1.bin')
 
-    await uploadModel(formData, localTrainedModelLabels, projectId)
+    await uploadModel(formData, localTrainedModelLabels, accuracy, projectId)
     saveLocalModel()
     setLoading(false)
     toast.success('Model successfully uploaded.')

@@ -18,6 +18,7 @@ export type TProject = {
   id: number
   created_at: string
   project_name: string
+  poses_events: { start: number; end: number; label: string }[]
   song_id: number | null
   songs: TSong | null
   model_id: number | null

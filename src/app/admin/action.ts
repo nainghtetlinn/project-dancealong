@@ -37,13 +37,13 @@ export async function uploadAudio(
   // Checking if project exists
   const { data: project, error: projectError } = await supabase
     .from('projects')
-    .select('id')
+    .select('id, project_name')
     .eq('id', projectId)
     .single()
 
   if (!project || projectError) redirect('/error')
 
-  const filePath = `${Date.now()}_${audioFile.name}`
+  const filePath = `${project.project_name}/${audioFile.name}`
 
   // Upload file
   const { data: audio, error: uploadError } = await supabase.storage
@@ -82,6 +82,7 @@ export async function uploadAudio(
 export async function uploadModel(
   formData: FormData,
   labels: string[],
+  accuracy: number,
   projectId: number
 ) {
   const supabase = await createClient()
@@ -123,7 +124,7 @@ export async function uploadModel(
     // Create new row in models table
     const { data: model, error: modelError } = await supabase
       .from('models')
-      .insert({ labels, model_url: url.publicUrl })
+      .insert({ labels, model_url: url.publicUrl, accuracy })
       .select('id')
       .single()
 
@@ -138,11 +139,14 @@ export async function uploadModel(
     if (updateError) redirect('/error')
   } else {
     // If project has model_id, update model row in models table
-    await supabase.from('models').update({ labels }).eq('id', project.model_id)
+    await supabase
+      .from('models')
+      .update({ labels, accuracy })
+      .eq('id', project.model_id)
   }
 }
 
-export async function uploadPoseEvents(
+export async function uploadPosesEvents(
   events: { start: number; end: number; label: string }[],
   projectId: number
 ) {

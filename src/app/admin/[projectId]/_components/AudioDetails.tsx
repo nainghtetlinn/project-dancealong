@@ -5,11 +5,15 @@ import { Music, Pause, Play, MinusSquare, Upload, Loader2 } from 'lucide-react'
 
 import { formatTime } from '@/lib/utils'
 import { useAudio } from '../_lib/audioContext'
+import { useProjectDetails } from '../_lib/projectContext'
 import { useState } from 'react'
+import { uploadPosesEvents } from '../../action'
 
-export default function AudioDetails({ projectId }: { projectId: number }) {
+export default function AudioDetails() {
+  const { projectId } = useProjectDetails()
   const {
     audio,
+    regions,
     duration,
     currentTime,
     isPlaying,
@@ -17,14 +21,19 @@ export default function AudioDetails({ projectId }: { projectId: number }) {
     play,
     pause,
     removeActiveRegion,
-    uploadRegions,
   } = useAudio()
 
   const [loading, setLoading] = useState(false)
 
   const handleUpload = async () => {
+    if (regions === null) return
     setLoading(true)
-    await uploadRegions(projectId)
+    const events = regions.getRegions().map(r => ({
+      start: r.start,
+      end: r.end,
+      label: r.content?.innerText || '',
+    }))
+    await uploadPosesEvents(events, projectId)
     setLoading(false)
   }
 

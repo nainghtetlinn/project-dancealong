@@ -13,6 +13,7 @@ const uid = new ShortUniqueID({ length: 6 })
 interface TrainingContext {
   labels: TLabel[]
   trainingData: TTrainingData
+  accuracy: number
   hasLocalTrained: boolean
   localTrainedModel: tf.Sequential | null
   localTrainedModelLabels: string[]
@@ -27,18 +28,17 @@ interface TrainingContext {
   removePose: (id: string) => void
   addTrainingData: (data: TKeypoints[], label: string) => void
   startTrain: (options: tf.ModelFitArgs) => Promise<void>
+  updateAccuracy: (accuracy: number) => void
   restart: () => void
   retrain: () => void
   calcelRetrain: () => void
   saveLocalModel: () => void
-  classify: (
-    keypoints: TKeypoints
-  ) => { label: string; confidence: number } | undefined
 }
 
 const trainingContext = createContext<TrainingContext>({
   labels: [],
   trainingData: [],
+  accuracy: 0,
   hasLocalTrained: false,
   localTrainedModel: null,
   localTrainedModelLabels: [],
@@ -53,13 +53,11 @@ const trainingContext = createContext<TrainingContext>({
   removePose: () => {},
   addTrainingData: () => {},
   startTrain: async () => {},
+  updateAccuracy: () => {},
   restart: () => {},
   retrain: () => {},
   calcelRetrain: () => {},
   saveLocalModel: () => {},
-  classify: () => {
-    return undefined
-  },
 })
 
 export const TrainingProvider = ({
@@ -81,6 +79,7 @@ export const TrainingProvider = ({
   const [trainedModelLabels, setTrainedModelLabels] = useState<string[]>([])
 
   // Local trained model
+  const [accuracy, setAccuracy] = useState(0)
   const [hasLocalTrained, setHasLocalTrained] = useState(false)
   const [localTrainedModel, setLocalTrainedModel] =
     useState<tf.Sequential | null>(null)
@@ -177,40 +176,8 @@ export const TrainingProvider = ({
     setHasLocalTrained(true)
   }
 
-  const classify = (keypoints: TKeypoints) => {
-    if (localTrainedModel === null) return undefined
-
-    return tf.tidy(() => {
-      const inputs = keypoints
-        .map(kp => {
-          if (kp[2] < 0.3) {
-            return [0, 0]
-          }
-          return [kp[0], kp[1]]
-        })
-        .flat()
-
-      const prediction = localTrainedModel.predict(
-        tf.tensor([inputs])
-      ) as tf.Tensor
-      const probabilities = prediction.dataSync()
-
-      // Find the max probability and index
-      let maxIndex = 0
-      let maxProb = probabilities[0]
-
-      for (let i = 1; i < probabilities.length; i++) {
-        if (probabilities[i] > maxProb) {
-          maxProb = probabilities[i]
-          maxIndex = i
-        }
-      }
-
-      return {
-        label: localTrainedModelLabels[maxIndex],
-        confidence: maxProb,
-      }
-    })
+  const updateAccuracy = (a: number) => {
+    setAccuracy(a)
   }
 
   // Call this function if we don't like the accuracy of the local trained model and want to restart the training with different settings
@@ -234,6 +201,7 @@ export const TrainingProvider = ({
     setLocalTrainedModel(null)
     setLocalTrainedModelLabels([])
     setHasLocalTrained(false)
+    setAccuracy(0)
   }
 
   if (model && !hasLoadedModel.current) {
@@ -252,6 +220,7 @@ export const TrainingProvider = ({
       value={{
         labels,
         trainingData: trainingDataRef.current,
+        accuracy,
         hasLocalTrained,
         localTrainedModel,
         localTrainedModelLabels,
@@ -266,7 +235,7 @@ export const TrainingProvider = ({
         removePose,
         addTrainingData,
         startTrain,
-        classify,
+        updateAccuracy,
         restart,
         retrain,
         calcelRetrain,

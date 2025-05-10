@@ -45,6 +45,7 @@ export default function TrainBtn() {
 
     setIsTraining(true)
 
+    let finalAccuracy = 0
     try {
       await startTrain({
         ...settings,
@@ -52,13 +53,14 @@ export default function TrainBtn() {
         callbacks: {
           onEpochEnd: (epoch, logs) => {
             setLogs({ num: epoch + 1, accuracy: logs?.acc || 0 })
+            finalAccuracy = logs?.acc || 0
           },
         },
       })
-      updateAccuracy(logs.accuracy)
     } catch (error: any) {
       toast.error(error.message)
     } finally {
+      updateAccuracy(finalAccuracy)
       setIsTraining(false)
     }
   }

@@ -3,13 +3,7 @@
 import { TKeypoints } from '../../_types'
 
 import useDetectAndDraw from '@/hooks/useDetectAndDraw'
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from 'react'
+import React, { createContext, useContext, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 const constants = {
@@ -24,7 +18,7 @@ interface WebcamContext {
   isWebcamEnable: boolean
   isCapturing: boolean
   count: number
-  openWebcam: () => void
+  openWebcam: () => Promise<void>
   closeWebcam: () => void
   startCapturing: () => Promise<TKeypoints[]>
 }
@@ -36,11 +30,9 @@ const webcamContext = createContext<WebcamContext>({
   isWebcamEnable: false,
   isCapturing: false,
   count: 0,
-  openWebcam: () => {},
+  openWebcam: async () => {},
   closeWebcam: () => {},
-  startCapturing: () => {
-    return Promise.resolve([])
-  },
+  startCapturing: () => Promise.resolve([]),
 })
 
 export const WebcamProvider = ({ children }: { children: React.ReactNode }) => {

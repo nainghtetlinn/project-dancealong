@@ -18,11 +18,12 @@ import { toast } from 'sonner'
 import { useTraining } from '../../_lib/trainingContext'
 
 export default function TrainBtn() {
-  const { labels, hasLocalTrained, startTrain, restart } = useTraining()
+  const { labels, hasLocalTrained, updateAccuracy, startTrain, restart } =
+    useTraining()
 
   const [open, setOpen] = useState(false)
   const [isTraining, setIsTraining] = useState(false)
-  const [logs, setLogs] = useState({ num: 0, accuracy: '' })
+  const [logs, setLogs] = useState({ num: 0, accuracy: 0 })
 
   // Training options
   const [settings, setSettings] = useState<TSettings>({
@@ -50,10 +51,11 @@ export default function TrainBtn() {
         shuffle: true,
         callbacks: {
           onEpochEnd: (epoch, logs) => {
-            setLogs({ num: epoch + 1, accuracy: logs?.acc.toFixed(4) || '' })
+            setLogs({ num: epoch + 1, accuracy: logs?.acc || 0 })
           },
         },
       })
+      updateAccuracy(logs.accuracy)
     } catch (error: any) {
       toast.error(error.message)
     } finally {
@@ -91,7 +93,9 @@ export default function TrainBtn() {
           <div className='flex items-center justify-center h-16'>
             <div className='text-center'>
               <h6>Training . . .</h6>
-              <p className='text-xs text-muted-foreground'>{`Epoch ${logs.num}/${settings.epochs}: accuracy = ${logs.accuracy}`}</p>
+              <p className='text-xs text-muted-foreground'>{`Epoch ${
+                logs.num
+              }/${settings.epochs}: accuracy = ${logs.accuracy.toFixed(4)}`}</p>
             </div>
           </div>
         )}

@@ -18,15 +18,20 @@ export default function Webcam() {
   useEffect(() => {
     if (!window) return
 
-    setScale(
-      Math.max(
-        Math.min(
-          window.innerWidth / constants.width,
-          window.innerHeight / constants.height
-        ) - 0.2,
-        1
+    const resize = () => {
+      setScale(
+        Math.max(
+          Math.min(
+            window.innerWidth / constants.width,
+            window.innerHeight / constants.height
+          ) - 0.2,
+          1
+        )
       )
-    )
+    }
+
+    window.addEventListener('resize', resize)
+    return () => window.removeEventListener('resize', resize)
   }, [])
 
   return (

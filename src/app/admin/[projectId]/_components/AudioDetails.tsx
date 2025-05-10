@@ -1,12 +1,13 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { Music, Pause, Play, MinusSquare } from 'lucide-react'
+import { Music, Pause, Play, MinusSquare, Upload, Loader2 } from 'lucide-react'
 
 import { formatTime } from '@/lib/utils'
 import { useAudio } from '../_lib/audioContext'
+import { useState } from 'react'
 
-export default function AudioDetails() {
+export default function AudioDetails({ projectId }: { projectId: number }) {
   const {
     audio,
     duration,
@@ -16,7 +17,16 @@ export default function AudioDetails() {
     play,
     pause,
     removeActiveRegion,
+    uploadRegions,
   } = useAudio()
+
+  const [loading, setLoading] = useState(false)
+
+  const handleUpload = async () => {
+    setLoading(true)
+    await uploadRegions(projectId)
+    setLoading(false)
+  }
 
   return (
     <div className='flex justify-between items-center px-2 py-1'>
@@ -48,6 +58,12 @@ export default function AudioDetails() {
           onClick={isPlaying ? pause : play}
         >
           {isPlaying ? <Pause /> : <Play />}
+        </Button>
+        <Button
+          size='icon'
+          onClick={handleUpload}
+        >
+          {loading ? <Loader2 className='animate-spin' /> : <Upload />}
         </Button>
       </div>
     </div>

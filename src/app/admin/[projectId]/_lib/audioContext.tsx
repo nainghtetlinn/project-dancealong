@@ -12,7 +12,7 @@ import {
 } from '@/lib/audio'
 import React, { createContext, useContext, useRef, useState } from 'react'
 import { TSong } from '../../_types'
-import { uploadAudio } from '../../action'
+import { uploadAudio, uploadPoseEvents } from '../../action'
 
 const uid = new ShortUniqueID({ length: 6 })
 
@@ -31,6 +31,7 @@ interface AudioContext {
   removeActiveRegion: () => void
   removeRegionsByLabel: (label: string) => void
   removeAllRegions: () => void
+  uploadRegions: (projectId: number) => void
 }
 
 const audioContext = createContext<AudioContext>({
@@ -48,6 +49,7 @@ const audioContext = createContext<AudioContext>({
   removeActiveRegion: () => {},
   removeRegionsByLabel: () => {},
   removeAllRegions: () => {},
+  uploadRegions: () => {},
 })
 
 const colors = {
@@ -106,6 +108,17 @@ export const AudioProvider = ({
   const removeAllRegions = () => {
     regionsRef.current?.getRegions().forEach(r => r.remove())
     setActiveRegionId('')
+  }
+
+  const uploadRegions = async (projectId: number) => {
+    if (!regionsRef.current) return
+
+    const events = regionsRef.current.getRegions().map(r => ({
+      start: r.start,
+      end: r.end,
+      label: r.content?.innerText || '',
+    }))
+    await uploadPoseEvents(events, projectId)
   }
 
   const setupWavesurfer = (container: HTMLDivElement, onReady: () => void) => {
@@ -212,6 +225,7 @@ export const AudioProvider = ({
         removeActiveRegion,
         removeRegionsByLabel,
         removeAllRegions,
+        uploadRegions,
       }}
     >
       {children}

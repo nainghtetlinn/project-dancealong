@@ -34,7 +34,7 @@ export default function Studio({ project }: { project: TProject }) {
     <>
       <section>
         <AudioTimeline />
-        <AudioDetails />
+        <AudioDetails projectId={project.id} />
       </section>
 
       {hasTrained ? <Controls /> : <TrainingData project={project} />}

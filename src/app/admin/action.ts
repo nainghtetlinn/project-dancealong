@@ -141,3 +141,24 @@ export async function uploadModel(
     await supabase.from('models').update({ labels }).eq('id', project.model_id)
   }
 }
+
+export async function uploadPoseEvents(
+  events: { start: number; end: number; label: string }[],
+  projectId: number
+) {
+  const supabase = await createClient()
+
+  // Checking if project exists
+  const { data: project, error: projectError } = await supabase
+    .from('projects')
+    .select('id, project_name, model_id')
+    .eq('id', projectId)
+    .single()
+
+  if (!project || projectError) redirect('/error')
+
+  await supabase
+    .from('projects')
+    .update({ poses_events: JSON.stringify(events) })
+    .eq('id', project.id)
+}

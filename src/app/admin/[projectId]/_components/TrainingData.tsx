@@ -14,8 +14,12 @@ import TrainingDataTable from './TrainingDataTable'
 import { useTraining } from '../_lib/trainingContext'
 
 export default function TrainingData({ project }: { project: TProject }) {
-  const { localTrainedModel, localTrainedModelLabels, calcelRetrain } =
-    useTraining()
+  const {
+    trainedModel,
+    localTrainedModel,
+    localTrainedModelLabels,
+    calcelRetrain,
+  } = useTraining()
 
   return (
     <section className='p-2 mt-2 border-t'>
@@ -31,13 +35,15 @@ export default function TrainingData({ project }: { project: TProject }) {
       <TrainingDataTable />
 
       <div className='mt-2 flex items-center justify-end gap-2'>
-        <Button
-          size='sm'
-          variant='secondary'
-          onClick={calcelRetrain}
-        >
-          Cancel
-        </Button>
+        {trainedModel !== null && (
+          <Button
+            size='sm'
+            variant='secondary'
+            onClick={calcelRetrain}
+          >
+            Cancel
+          </Button>
+        )}
         <TrainBtn />
         <TestModelBtn
           model={localTrainedModel}

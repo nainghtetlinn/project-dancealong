@@ -13,7 +13,7 @@ export default function Application({ project }: { project: TProject }) {
         <TrainingProvider model={project.models}>
           <WebcamProvider>
             <Webcam />
-            <Studio project={project} />
+            <Studio />
           </WebcamProvider>
         </TrainingProvider>
       </AudioProvider>

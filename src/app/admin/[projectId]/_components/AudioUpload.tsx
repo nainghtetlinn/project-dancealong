@@ -1,16 +1,31 @@
 'use client'
 
-import { Upload } from 'lucide-react'
+import { Loader2, Upload } from 'lucide-react'
 import Dropzone from 'react-dropzone'
-import { cn } from '@/lib/utils'
-import { useAudio } from '../_lib/audioContext'
 
-const AudioUpload = ({ projectId }: { projectId: number }) => {
+import { getAudioDuration } from '@/lib/audio'
+import { cn } from '@/lib/utils'
+import { useState } from 'react'
+import { uploadAudio } from '../../action'
+import { useAudio } from '../_lib/audioContext'
+import { useProjectDetails } from '../_lib/projectContext'
+
+const AudioUpload = () => {
+  const { projectId } = useProjectDetails()
   const { upload } = useAudio()
 
-  const handleDrop = (acceptedFiles: File[]) => {
-    upload(acceptedFiles[0], projectId)
+  const [loading, setLoading] = useState(false)
+
+  const handleDrop = async (acceptedFiles: File[]) => {
+    const audio = acceptedFiles[0]
+    setLoading(true)
+    const duration = await getAudioDuration(audio)
+    await uploadAudio(audio, duration, projectId)
+    setLoading(false)
+    upload(audio)
   }
+
+  if (loading) return <Loader2 className='animate-spin' />
 
   return (
     <Dropzone onDrop={handleDrop}>

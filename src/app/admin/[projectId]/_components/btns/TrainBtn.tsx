@@ -111,7 +111,9 @@ export default function TrainBtn() {
           <div className='flex items-center justify-center h-16'>
             <div className='text-center'>
               <h6>Training completed!</h6>
-              <p className='text-xs text-muted-foreground'>{`Accuracy = ${logs.accuracy}`}</p>
+              <p className='text-xs text-muted-foreground'>{`Accuracy = ${logs.accuracy.toFixed(
+                4
+              )}`}</p>
             </div>
           </div>
         )}

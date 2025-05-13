@@ -1,4 +1,4 @@
-import type { Keypoints } from '@/types'
+import { type TKeypoints } from '@/types'
 
 import Segment, { SegmentOptions } from './Segment'
 import Point, { PointOptions } from './Point'
@@ -58,7 +58,7 @@ export default class HumanPose {
   private segments: Segment[] = []
 
   constructor(
-    keypoints: Keypoints,
+    keypoints: TKeypoints,
     width: number,
     height: number,
     options?: HumanPoseOptions

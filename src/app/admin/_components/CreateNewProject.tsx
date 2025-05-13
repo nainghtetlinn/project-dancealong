@@ -1,45 +1,96 @@
+'use client'
+
 import { Button } from '@/components/ui/button'
 import {
   Card,
-  CardTitle,
   CardContent,
-  CardHeader,
   CardDescription,
   CardFooter,
+  CardHeader,
+  CardTitle,
 } from '@/components/ui/card'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { Loader2 } from 'lucide-react'
 
-import { createProject } from '../action'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+import { useForm } from 'react-hook-form'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+import { toast } from 'sonner'
+
+import { createProjectSchema } from '@/validators/project-validator'
+import { createProject } from '@/server-actions/project'
+
+type TForm = z.infer<typeof createProjectSchema>
 
 export default function CreateNewProject() {
+  const router = useRouter()
+
+  const form = useForm<TForm>({
+    resolver: zodResolver(createProjectSchema),
+    defaultValues: {
+      project_name: '',
+    },
+  })
+
+  const [loading, setLoading] = useState(false)
+
+  const onSubmit = async (values: TForm) => {
+    setLoading(true)
+    const result = await createProject(values)
+
+    if (!result.success) toast.error(result.message)
+    else {
+      toast.success('Successfully created.')
+      router.push('/admin/' + result.data.id)
+    }
+
+    setLoading(false)
+  }
+
   return (
-    <form action={createProject}>
-      <Card>
-        <CardHeader>
-          <CardTitle>New project?</CardTitle>
-          <CardDescription>Just give a project name.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className='space-y-2'>
-            <Label htmlFor='project_name'>Project name</Label>
-            <Input
-              id='project_name'
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        <Card>
+          <CardHeader>
+            <CardTitle>New project?</CardTitle>
+            <CardDescription>Just give a project name.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <FormField
+              control={form.control}
               name='project_name'
-              type='text'
-              required
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Project name</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-        </CardContent>
-        <CardFooter className='justify-end'>
-          <Button
-            size='sm'
-            type='submit'
-          >
-            Create
-          </Button>
-        </CardFooter>
-      </Card>
-    </form>
+          </CardContent>
+          <CardFooter className='justify-end'>
+            <Button
+              size='sm'
+              type='submit'
+              disabled={loading}
+            >
+              Create {loading && <Loader2 className='animate-spin' />}
+            </Button>
+          </CardFooter>
+        </Card>
+      </form>
+    </Form>
   )
 }

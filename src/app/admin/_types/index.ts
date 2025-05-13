@@ -1,9 +1,19 @@
-export type TSong = {
-  id: number
+export type TProject = {
+  id: string
+  project_name: string
+  song_id: string | null
+  songs: TSong | null
   created_at: string
-  song_name: string
-  duration_in_seconds: number
-  song_public_url: string
+}
+
+export type TSong = {
+  id: string
+  title: string
+  artist: string
+  duration: number
+  bpm: number
+  audio_url: string
+  created_at: string
 }
 
 export type TModel = {
@@ -12,17 +22,6 @@ export type TModel = {
   labels: string[]
   accuracy: number
   model_url: string
-}
-
-export type TProject = {
-  id: number
-  created_at: string
-  project_name: string
-  poses_events: { start: number; end: number; label: string }[]
-  song_id: number | null
-  songs: TSong | null
-  model_id: number | null
-  models: TModel | null
 }
 
 export type TTrainingData = {

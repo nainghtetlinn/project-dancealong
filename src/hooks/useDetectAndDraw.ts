@@ -1,6 +1,6 @@
 'use client'
 
-import type { Keypoints } from '@/types'
+import { type TKeypoints } from '@/types'
 
 import useDetection from './useDetection'
 import useDraw from './useDraw'
@@ -9,7 +9,7 @@ import { useRef, useEffect } from 'react'
 const useDetectAndDraw = (
   width: number,
   height: number,
-  callback: (keypoints: Keypoints) => void
+  callback: (keypoints: TKeypoints) => void
 ) => {
   const callbackRef = useRef(callback)
 
@@ -35,6 +35,8 @@ const useDetectAndDraw = (
       stop()
       clean()
     },
+    clean,
+    draw,
   }
 }
 

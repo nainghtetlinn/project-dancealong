@@ -1,6 +1,6 @@
 'use client'
 
-import type { Keypoints } from '@/types'
+import { type TKeypoints } from '@/types'
 
 import HumanPose, { HumanPoseOptions } from '@/components/primitive/HumanPose'
 import { useEffect, useRef } from 'react'
@@ -10,23 +10,25 @@ const useDraw = (width: number, height: number, options?: HumanPoseOptions) => {
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null)
 
   useEffect(() => {
+    if (!canvasRef.current) return
     const canvas = canvasRef.current
-    if (!canvas) return
     canvas.width = width
     canvas.height = height
     const context = canvas.getContext('2d')
     if (!context) return
     ctxRef.current = context
-  }, [width, height])
+  }, [])
 
   const clean = () => {
     if (ctxRef.current) {
       const ctx = ctxRef.current
       ctx.clearRect(0, 0, width, height)
+    } else {
+      console.log('Context not found.')
     }
   }
 
-  const draw = (keypoints: Keypoints) => {
+  const draw = (keypoints: TKeypoints) => {
     if (ctxRef.current) {
       const ctx = ctxRef.current
       ctx.clearRect(0, 0, width, height)
@@ -34,6 +36,7 @@ const useDraw = (width: number, height: number, options?: HumanPoseOptions) => {
       humanPose.draw(ctx)
     } else {
       ctxRef.current = canvasRef.current?.getContext('2d') || null
+      console.log('Context not found.')
     }
   }
 

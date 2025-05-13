@@ -1,12 +1,13 @@
 'use client'
 
-import type { Keypoints } from '@/types'
+import { type TKeypoints } from '@/types'
 
 import * as tf from '@tensorflow/tfjs'
-import { useModel } from '@/provider/model-provider'
-import { useEffect, useRef } from 'react'
+import { useRef } from 'react'
 
-const useDetection = (callback: (keypoints: Keypoints) => void) => {
+import { useModel } from '@/provider/model-provider'
+
+const useDetection = (callback: (keypoints: TKeypoints) => void) => {
   const { constants, model } = useModel()
 
   const videoRef = useRef<HTMLVideoElement | null>(null)
@@ -29,7 +30,7 @@ const useDetection = (callback: (keypoints: Keypoints) => void) => {
 
       const result = model.execute(inputTensor) as tf.Tensor
 
-      const keypoints = (result.arraySync() as Keypoints[][])[0][0]
+      const keypoints = (result.arraySync() as TKeypoints[][])[0][0]
 
       callback(keypoints)
     })

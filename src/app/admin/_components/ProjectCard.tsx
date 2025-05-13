@@ -21,15 +21,13 @@ export default async function ProjectCard({ project }: { project: TProject }) {
 
         <CardDescription>
           {project.songs
-            ? `${project.songs.song_name} | ${formatTime(
-                project.songs.duration_in_seconds
-              )}`
+            ? `${project.songs.title} | ${formatTime(project.songs.duration)}`
             : 'No song uploaded yet.'}
         </CardDescription>
       </CardHeader>
       <CardContent>
         {project.songs ? (
-          <MiniWaveForm url={project.songs.song_public_url} />
+          <MiniWaveForm url={project.songs.audio_url} />
         ) : (
           <div className='h-[60px]'></div>
         )}

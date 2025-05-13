@@ -4,10 +4,11 @@ import ShortUniqueID from 'short-unique-id'
 import WaveSurfer from 'wavesurfer.js'
 import RegionsPlugin from 'wavesurfer.js/dist/plugins/regions.esm.js'
 
-import { TSong } from '../../_types'
+import { type TSong } from '@/types'
+
+import React, { createContext, useContext, useRef, useState } from 'react'
 
 import { initWaveSurfer, readAudio, readAudioFromUrl } from '@/lib/audio'
-import React, { createContext, useContext, useRef, useState } from 'react'
 
 const uid = new ShortUniqueID({ length: 6 })
 
@@ -20,6 +21,7 @@ interface AudioContext {
   currentTime: number
   activeRegionId: string
   upload: (audio: File) => void
+  restart: () => void
   play: () => void
   pause: () => void
   setupWavesurfer: (container: HTMLDivElement, onReady: () => void) => void
@@ -38,6 +40,7 @@ const audioContext = createContext<AudioContext>({
   currentTime: 0,
   activeRegionId: '',
   upload: () => {},
+  restart: () => {},
   play: () => {},
   pause: () => {},
   setupWavesurfer: () => {},
@@ -164,6 +167,10 @@ export const AudioProvider = ({
     setAudio(audio)
   }
 
+  const restart = () => {
+    wavesurferRef.current?.setTime(0)
+  }
+
   const play = () => {
     setIsPlaying(true)
     wavesurferRef.current?.play()
@@ -176,7 +183,7 @@ export const AudioProvider = ({
 
   if (song && !hasLoadedSong.current) {
     hasLoadedSong.current = true
-    readAudioFromUrl(song.song_public_url, song.song_name)
+    readAudioFromUrl(song.audio_url, song.title)
       .then(audio => {
         setAudio(audio)
       })
@@ -199,6 +206,7 @@ export const AudioProvider = ({
         currentTime,
         activeRegionId,
         upload,
+        restart,
         play,
         pause,
         setupWavesurfer,

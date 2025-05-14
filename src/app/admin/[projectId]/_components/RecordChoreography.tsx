@@ -1,5 +1,7 @@
 'use client'
 
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
+import { AlertCircle } from 'lucide-react'
 import RecordBtn from './btns/choreography/RecordBtn'
 import PlayBtn from './btns/choreography/PlayBtn'
 import UploadBtn from './btns/choreography/UploadBtn'
@@ -107,7 +109,7 @@ export default function RecordChoreography({
   }
 
   return (
-    <div className='p-2'>
+    <div className='p-2 space-y-2'>
       <div
         style={{ ...constants }}
         className='relative border rounded overflow-hidden mx-auto'
@@ -131,7 +133,7 @@ export default function RecordChoreography({
 
       <div
         style={{ width: constants.width }}
-        className='mt-2 mx-auto flex items-center justify-between gap-2'
+        className='mx-auto flex items-center justify-between gap-2'
       >
         <div className='space-x-2'>
           {!hasUploaded && <RecordBtn onClick={handleRecord} />}
@@ -149,6 +151,20 @@ export default function RecordChoreography({
           disabled={isWebcamEnable}
         />
       </div>
+
+      {choreography.length > 0 && (
+        <Alert
+          style={{ width: constants.width }}
+          className='mx-auto'
+        >
+          <AlertCircle />
+          <AlertTitle>You've uploaded choreography.</AlertTitle>
+          <AlertDescription>
+            Or you can upload it again if you've taken new choreography and want
+            to update it. Be careful, old choreography will be deleted.
+          </AlertDescription>
+        </Alert>
+      )}
     </div>
   )
 }

@@ -6,7 +6,13 @@ import RegionsPlugin from 'wavesurfer.js/dist/plugins/regions.esm.js'
 
 import { type TSong } from '@/types'
 
-import React, { createContext, useContext, useRef, useState } from 'react'
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 
 import { initWaveSurfer, readAudio, readAudioFromUrl } from '@/lib/audio'
 
@@ -62,7 +68,6 @@ export const AudioProvider = ({
   children: React.ReactNode
   song: TSong | null
 }) => {
-  const hasLoadedSong = useRef(false)
   const wavesurferRef = useRef<WaveSurfer>(null)
   const regionsRef = useRef<RegionsPlugin>(null)
   const activeRegionIdRef = useRef<string>(null)
@@ -181,19 +186,19 @@ export const AudioProvider = ({
     wavesurferRef.current?.pause()
   }
 
-  if (song && !hasLoadedSong.current) {
-    hasLoadedSong.current = true
-    readAudioFromUrl(song.audio_url, song.title)
-      .then(audio => {
-        setAudio(audio)
-      })
-      .finally(() => {
-        setLoading(false)
-      })
-  } else if (!hasLoadedSong.current) {
-    hasLoadedSong.current = true
-    setLoading(false)
-  }
+  useEffect(() => {
+    if (song) {
+      readAudioFromUrl(song.audio_url, song.title)
+        .then(audio => {
+          setAudio(audio)
+        })
+        .finally(() => {
+          setLoading(false)
+        })
+    } else {
+      setLoading(false)
+    }
+  }, [])
 
   return (
     <audioContext.Provider

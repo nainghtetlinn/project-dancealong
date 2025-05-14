@@ -12,9 +12,15 @@ import { findPosePair, interpolatePose } from '@/utils/pose'
 type Props = React.ComponentProps<'button'> & {
   choreography: { keypoints: TKeypoints; timestamp: number }[]
   draw: (kp: TKeypoints) => void
+  clean: () => void
 }
 
-export default function PlayBtn({ choreography, draw, ...props }: Props) {
+export default function PlayBtn({
+  choreography,
+  draw,
+  clean,
+  ...props
+}: Props) {
   const animationFrameId = useRef<number | null>(null)
   const isAudioPlayingRef = useRef(false)
   const audioCurrentTimeRef = useRef(0)
@@ -45,6 +51,7 @@ export default function PlayBtn({ choreography, draw, ...props }: Props) {
       }
       animationFrameId.current = requestAnimationFrame(playbackLoop)
     } else {
+      clean()
       cancelPlaybackLoop()
     }
   }

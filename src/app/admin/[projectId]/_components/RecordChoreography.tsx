@@ -41,7 +41,7 @@ export default function RecordChoreography({
 
   const { model } = useModel()
   const { isPlaying, restart, play } = useAudio()
-  const { videoRef, canvasRef, start, stop, draw } = useDetectAndDraw(
+  const { videoRef, canvasRef, start, stop, draw, clean } = useDetectAndDraw(
     constants.width,
     constants.height,
     keypoints => {
@@ -155,6 +155,7 @@ export default function RecordChoreography({
             hasUploaded ? uploadedChoreography : choreographyRef.current
           }
           draw={draw}
+          clean={clean}
           disabled={isWebcamEnable}
         />
       </div>

@@ -7,7 +7,7 @@ import PlayBtn from './btns/choreography/PlayBtn'
 import UploadBtn from './btns/choreography/UploadBtn'
 import ReshootBtn from './btns/choreography/ReshootBtn'
 
-import { type TKeypoints } from '@/types'
+import { type TKeypoints, type TParsedChoreography } from '@/types'
 
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
@@ -24,14 +24,16 @@ const constants = {
 export default function RecordChoreography({
   choreography,
 }: {
-  choreography: { keypoints: TKeypoints; timestamp: number }[]
+  choreography: TParsedChoreography
 }) {
   const streamRef = useRef<MediaStream>(null)
-  const choreographyRef =
-    useRef<{ keypoints: TKeypoints; timestamp: number }[]>(choreography)
+  const choreographyRef = useRef<
+    { keypoints: TKeypoints; timestamp: number }[]
+  >([])
   const startTimeRef = useRef(0)
   const isAudioPlayingRef = useRef(false)
 
+  const [uploadedChoreography, setUploadedChoreography] = useState(choreography)
   const [hasUploaded, setHasUploaded] = useState(choreography.length > 0)
   const [count, setCount] = useState(0)
   const [isWebcamEnable, setIsWebcamEnable] = useState(false)
@@ -140,19 +142,24 @@ export default function RecordChoreography({
           {!hasUploaded && (
             <UploadBtn
               choreography={choreographyRef.current}
-              onSuccess={() => setHasUploaded(true)}
+              onSuccess={data => {
+                setUploadedChoreography(data)
+                setHasUploaded(true)
+              }}
             />
           )}
           {hasUploaded && <ReshootBtn onClick={() => setHasUploaded(false)} />}
         </div>
         <PlayBtn
-          choreography={choreographyRef.current}
+          choreography={
+            hasUploaded ? uploadedChoreography : choreographyRef.current
+          }
           draw={draw}
           disabled={isWebcamEnable}
         />
       </div>
 
-      {choreography.length > 0 && (
+      {uploadedChoreography.length > 0 && (
         <Alert
           style={{ width: constants.width }}
           className='mx-auto'

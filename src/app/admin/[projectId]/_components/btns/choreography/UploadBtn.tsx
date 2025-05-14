@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { Upload, Loader2 } from 'lucide-react'
 
-import { type TKeypoints } from '@/types'
+import { type TParsedChoreography, type TKeypoints } from '@/types'
 
 import { useState } from 'react'
 import { toast } from 'sonner'
@@ -11,7 +11,7 @@ import { uploadChoreography } from '@/server-actions/choreography'
 
 type Props = React.ComponentProps<'button'> & {
   choreography: { keypoints: TKeypoints; timestamp: number }[]
-  onSuccess: () => void
+  onSuccess: (data: TParsedChoreography) => void
 }
 
 export default function UploadBtn({
@@ -31,7 +31,15 @@ export default function UploadBtn({
       if (!result.success) toast.error(result.message)
       else {
         toast.success('Successfully uploaded.')
-        onSuccess()
+        const data: TParsedChoreography = result.data.map(c => ({
+          id: c.id,
+          keypoints: JSON.parse(c.keypoints_json),
+          timestamp: c.timestamp,
+          image_url: c.image_url,
+          is_key_pose: c.is_key_pose,
+          song_id: c.song_id,
+        }))
+        onSuccess(data)
       }
 
       setLoading(false)

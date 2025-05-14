@@ -24,26 +24,27 @@ export default function UploadBtn({
   const [loading, setLoading] = useState(false)
 
   const handleUpload = async () => {
-    if (choreography.length > 0 && !!song) {
-      setLoading(true)
-      const result = await uploadChoreography(choreography, song.id)
+    if (choreography.length === 0)
+      return toast.error('No choreography found to upload.')
 
-      if (!result.success) toast.error(result.message)
-      else {
-        toast.success('Successfully uploaded.')
-        const data: TParsedChoreography = result.data.map(c => ({
-          id: c.id,
-          keypoints: JSON.parse(c.keypoints_json),
-          timestamp: c.timestamp,
-          image_url: c.image_url,
-          is_key_pose: c.is_key_pose,
-          song_id: c.song_id,
-        }))
-        onSuccess(data)
-      }
+    setLoading(true)
+    const result = await uploadChoreography(choreography, song!.id)
 
-      setLoading(false)
+    if (!result.success) toast.error(result.message)
+    else {
+      toast.success('Successfully uploaded.')
+      const data: TParsedChoreography = result.data.map(c => ({
+        id: c.id,
+        keypoints: JSON.parse(c.keypoints_json),
+        timestamp: c.timestamp,
+        image_url: c.image_url,
+        is_key_pose: c.is_key_pose,
+        song_id: c.song_id,
+      }))
+      onSuccess(data)
     }
+
+    setLoading(false)
   }
 
   return (

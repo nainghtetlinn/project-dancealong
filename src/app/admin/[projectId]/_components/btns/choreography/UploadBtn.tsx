@@ -11,9 +11,14 @@ import { uploadChoreography } from '@/server-actions/choreography'
 
 type Props = React.ComponentProps<'button'> & {
   choreography: { keypoints: TKeypoints; timestamp: number }[]
+  onSuccess: () => void
 }
 
-export default function UploadBtn({ choreography, ...props }: Props) {
+export default function UploadBtn({
+  choreography,
+  onSuccess,
+  ...props
+}: Props) {
   const { song } = useProjectDetails()
 
   const [loading, setLoading] = useState(false)
@@ -26,6 +31,7 @@ export default function UploadBtn({ choreography, ...props }: Props) {
       if (!result.success) toast.error(result.message)
       else {
         toast.success('Successfully uploaded.')
+        onSuccess()
       }
 
       setLoading(false)

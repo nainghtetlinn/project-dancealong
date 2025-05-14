@@ -55,7 +55,7 @@ export default function PlayBtn({
       cancelPlaybackLoop()
     }
   }
-
+  
   const cancelPlaybackLoop = () => {
     cancelAnimationFrame(animationFrameId.current!)
     animationFrameId.current = null
@@ -64,13 +64,14 @@ export default function PlayBtn({
   const handleReplay = () => {
     if (choreography.length === 0)
       return toast.error('No choreography found to replay.')
-
+    
     if (!isPlaying) {
       isAudioPlayingRef.current = true
       animationFrameId.current = requestAnimationFrame(playbackLoop)
       play()
     } else {
       pause()
+      cancelPlaybackLoop()
     }
   }
 

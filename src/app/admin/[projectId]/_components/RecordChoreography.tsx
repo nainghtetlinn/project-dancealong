@@ -24,7 +24,7 @@ const constants = {
 export default function RecordChoreography({
   choreography,
 }: {
-  choreography: TParsedChoreography
+  choreography: TParsedChoreography[]
 }) {
   const streamRef = useRef<MediaStream>(null)
   const choreographyRef = useRef<

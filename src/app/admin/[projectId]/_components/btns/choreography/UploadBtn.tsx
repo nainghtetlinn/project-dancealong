@@ -11,7 +11,7 @@ import { uploadChoreography } from '@/server-actions/choreography'
 
 type Props = React.ComponentProps<'button'> & {
   choreography: { keypoints: TKeypoints; timestamp: number }[]
-  onSuccess: (data: TParsedChoreography) => void
+  onSuccess: (data: TParsedChoreography[]) => void
 }
 
 export default function UploadBtn({
@@ -33,7 +33,7 @@ export default function UploadBtn({
     if (!result.success) toast.error(result.message)
     else {
       toast.success('Successfully uploaded.')
-      const data: TParsedChoreography = result.data.map(c => ({
+      const data: TParsedChoreography[] = result.data.map(c => ({
         id: c.id,
         keypoints: JSON.parse(c.keypoints_json),
         timestamp: c.timestamp,

@@ -37,7 +37,7 @@ export type TSong = {
   duration: number
   bpm: number
   audio_url: string
-  choreography: TChoreography
+  choreography: TChoreography[]
   created_at: string
 }
 
@@ -48,7 +48,7 @@ export type TChoreography = {
   image_url: string | null
   is_key_pose: boolean
   song_id: string
-}[]
+}
 
 export type TParsedChoreography = {
   id: string
@@ -57,7 +57,7 @@ export type TParsedChoreography = {
   image_url: string | null
   is_key_pose: boolean
   song_id: string
-}[]
+}
 
 export type TModel = {
   id: number

@@ -6,7 +6,7 @@ import { createClient } from '@/utils/supabase/server'
 import { uploadChoreographySchema } from '@/validators/choreography-validator'
 
 type TReturn =
-  | { success: true; data: TChoreography }
+  | { success: true; data: TChoreography[] }
   | { success: false; message: string }
 
 export async function uploadChoreography(

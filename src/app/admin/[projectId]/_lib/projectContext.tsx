@@ -13,7 +13,7 @@ interface ProjectState {
   projectId: string
   projectName: string
   song: TSong | null
-  choreography: TParsedChoreography
+  choreography: TParsedChoreography[]
 }
 
 const initialState: ProjectState = {

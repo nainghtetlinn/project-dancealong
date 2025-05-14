@@ -1,6 +1,11 @@
 'use client'
 
-import { type TProject, type TSong, TKeypoints } from '@/types'
+import {
+  type TProject,
+  type TSong,
+  type TKeypoints,
+  type TParsedChoreography,
+} from '@/types'
 
 import React, { createContext, useContext } from 'react'
 
@@ -8,7 +13,7 @@ interface ProjectState {
   projectId: string
   projectName: string
   song: TSong | null
-  choreography: { keypoints: TKeypoints; timestamp: number }[]
+  choreography: TParsedChoreography
 }
 
 const initialState: ProjectState = {
@@ -35,8 +40,12 @@ export const ProjectDetailsProvider = ({
         song: project.songs,
         choreography: project.songs
           ? project.songs.choreography.map(c => ({
+              id: c.id,
               keypoints: JSON.parse(c.keypoints_json),
               timestamp: c.timestamp,
+              image_url: c.image_url,
+              is_key_pose: c.is_key_pose,
+              song_id: c.song_id,
             }))
           : [],
       }}

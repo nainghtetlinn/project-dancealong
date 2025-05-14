@@ -46,6 +46,16 @@ export type TChoreography = {
   keypoints_json: string
   timestamp: number
   image_url: string | null
+  is_key_pose: boolean
+  song_id: string
+}[]
+
+export type TParsedChoreography = {
+  id: string
+  keypoints: TKeypoints
+  timestamp: number
+  image_url: string | null
+  is_key_pose: boolean
   song_id: string
 }[]
 

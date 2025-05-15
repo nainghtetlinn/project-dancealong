@@ -3,16 +3,23 @@
 import { type TKeypoints } from '@/types'
 
 import * as tf from '@tensorflow/tfjs'
-import { useRef } from 'react'
+import { RefObject, useEffect, useRef, useState } from 'react'
 
 import { useModel } from '@/provider/model-provider'
 
-const useDetection = (callback: (keypoints: TKeypoints) => void) => {
+const useDetection = (
+  videoRef: RefObject<HTMLVideoElement | null>,
+  callback: (keypoints: TKeypoints) => void
+) => {
   const { constants, model } = useModel()
 
-  const videoRef = useRef<HTMLVideoElement | null>(null)
   const animationFrameId = useRef<number | null>(null)
-  const isDetecting = useRef(false)
+  const callbackRef = useRef(callback)
+  const [isDetecting, setIsDetecting] = useState(false)
+
+  useEffect(() => {
+    callbackRef.current = callback
+  }, [callback])
 
   const detect = () => {
     const video = videoRef.current
@@ -29,33 +36,29 @@ const useDetection = (callback: (keypoints: TKeypoints) => void) => {
         .toInt()
 
       const result = model.execute(inputTensor) as tf.Tensor
-
       const keypoints = (result.arraySync() as TKeypoints[][])[0][0]
-
-      callback(keypoints)
+      callbackRef.current(keypoints)
     })
 
     animationFrameId.current = requestAnimationFrame(detect)
   }
 
   const start = () => {
-    if (!isDetecting.current) {
-      isDetecting.current = true
+    if (!isDetecting) {
+      setIsDetecting(true)
       animationFrameId.current = requestAnimationFrame(detect)
-      console.log('Detection started')
     }
   }
 
   const stop = () => {
     if (animationFrameId.current !== null) {
+      setIsDetecting(false)
       cancelAnimationFrame(animationFrameId.current)
       animationFrameId.current = null
-      isDetecting.current = false
-      console.log('Detection stopped')
     }
   }
 
-  return { videoRef, start, stop }
+  return { isDetecting, start, stop }
 }
 
 export default useDetection

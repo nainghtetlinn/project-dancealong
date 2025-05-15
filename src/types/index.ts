@@ -1,21 +1,3 @@
-export type TrainingData = {
-  id: string
-  keypoints: number[][]
-  label: string
-}[]
-
-export type Pose = {
-  label: string
-  numOfPosesCaptured: number
-}
-
-export type Region = {
-  id: string
-  content: string
-  start: number
-  end: number
-}
-
 /**
  * @summary 17 keypoints with x, y, and confidence
  * @description [y, x, score][]
@@ -57,12 +39,4 @@ export type TParsedChoreography = {
   image_url: string | null
   is_key_pose: boolean
   song_id: string
-}
-
-export type TModel = {
-  id: number
-  created_at: string
-  labels: string[]
-  accuracy: number
-  model_url: string
 }

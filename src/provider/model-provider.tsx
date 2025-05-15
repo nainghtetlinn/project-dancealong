@@ -16,15 +16,6 @@ interface ModelContext {
   model: tf.GraphModel | null
   type: 'lightning' | 'thunder'
   constants: { width: number; height: number }
-  classificationModel: tf.Sequential | null
-  classificationLabels: string[]
-  uploadClassificationModel: (result: {
-    labels: string[]
-    model: tf.Sequential
-  }) => void
-  classify: (
-    keypoints: number[][]
-  ) => { label: string; confidence: number } | undefined
 }
 
 const modelContext = createContext<ModelContext>({
@@ -34,12 +25,6 @@ const modelContext = createContext<ModelContext>({
   constants: {
     width: MOVENET_LIGHTNING_INPUT_WIDTH,
     height: MOVENET_LIGHTNING_INPUT_HEIGHT,
-  },
-  classificationModel: null,
-  classificationLabels: [],
-  uploadClassificationModel: () => {},
-  classify: () => {
-    return undefined
   },
 })
 
@@ -53,9 +38,6 @@ export function ModelProvider({
   disable?: boolean
 }) {
   const [model, setModel] = useState<tf.GraphModel | null>(null)
-  const [classificationModel, setClassificationModel] =
-    useState<tf.Sequential | null>(null)
-  const [classificationLabels, setClassificationLabels] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
 
   const loadModel = async () => {
@@ -100,50 +82,6 @@ export function ModelProvider({
     }
   }
 
-  const classify = (keypoints: number[][]) => {
-    if (classificationModel === null) return undefined
-
-    return tf.tidy(() => {
-      const inputs = keypoints
-        .map(kp => {
-          if (kp[2] < 0.3) {
-            return [0, 0]
-          }
-          return [kp[0], kp[1]]
-        })
-        .flat()
-
-      const prediction = classificationModel.predict(
-        tf.tensor([inputs])
-      ) as tf.Tensor
-      const probabilities = prediction.dataSync()
-
-      // Find the max probability and index
-      let maxIndex = 0
-      let maxProb = probabilities[0]
-
-      for (let i = 1; i < probabilities.length; i++) {
-        if (probabilities[i] > maxProb) {
-          maxProb = probabilities[i]
-          maxIndex = i
-        }
-      }
-
-      return {
-        label: classificationLabels[maxIndex],
-        confidence: maxProb,
-      }
-    })
-  }
-
-  const uploadClassificationModel = (result: {
-    labels: string[]
-    model: tf.Sequential
-  }) => {
-    setClassificationLabels(result.labels)
-    setClassificationModel(result.model)
-  }
-
   useEffect(() => {
     if (!disable) {
       loadModel()
@@ -166,10 +104,6 @@ export function ModelProvider({
         type,
         model,
         loading,
-        classificationModel,
-        classificationLabels,
-        uploadClassificationModel,
-        classify,
       }}
     >
       {children}

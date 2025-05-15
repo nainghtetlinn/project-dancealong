@@ -17,7 +17,7 @@ export const initWaveSurfer = (container: HTMLDivElement) => {
     waveColor: 'oklch(.552 .016 285.938)',
     progressColor: 'oklch(.646 .222 41.116)',
     dragToSeek: true,
-    hideScrollbar: true,
+    minPxPerSec: 100,
     plugins: [
       TimelinePlugin.create(),
       Hover.create({

@@ -13,8 +13,12 @@ export default async function ProjectPage({
 
   const { data } = await supabase
     .from('projects')
-    .select('*, songs(*), models(*)')
+    .select('*, songs(*, choreography(*))')
     .eq('id', projectId)
+    .order('timestamp', {
+      referencedTable: 'songs.choreography',
+      ascending: true,
+    })
     .single()
 
   if (!data) redirect('/admin')

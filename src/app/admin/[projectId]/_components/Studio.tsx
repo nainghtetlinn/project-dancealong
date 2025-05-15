@@ -4,17 +4,15 @@ import { Loader2 } from 'lucide-react'
 import AudioDetails from './AudioDetails'
 import AudioTimeline from './AudioTimeline'
 import AudioUpload from './AudioUpload'
-import Controls from './Controls'
-import TrainingData from './TrainingData'
-
-import { TProject } from '../../_types'
+import ChoreographyList from './ChoreographyList'
+import RecordChoreography from './RecordChoreography'
 
 import { useAudio } from '../_lib/audioContext'
-import { useTraining } from '../_lib/trainingContext'
+import { useProjectDetails } from '../_lib/projectContext'
 
 export default function Studio() {
   const { loading, audio } = useAudio()
-  const { hasTrained } = useTraining()
+  const { choreography } = useProjectDetails()
 
   if (loading)
     return (
@@ -32,12 +30,14 @@ export default function Studio() {
 
   return (
     <>
-      <section>
-        <AudioTimeline />
-        <AudioDetails />
+      <section className='grid grid-cols-2'>
+        <RecordChoreography choreography={choreography} />
+        <div>
+          <AudioDetails />
+          <AudioTimeline />
+          <ChoreographyList choreography={choreography} />
+        </div>
       </section>
-
-      {hasTrained ? <Controls /> : <TrainingData />}
     </>
   )
 }

@@ -2,9 +2,10 @@
 
 import { type TKeypoints } from '@/types'
 
+import { useEffect, useRef } from 'react'
 import useDetection from './useDetection'
 import useDraw from './useDraw'
-import { useRef, useEffect } from 'react'
+import useWebcam from './useWebcam'
 
 const useDetectAndDraw = (
   width: number,
@@ -17,26 +18,44 @@ const useDetectAndDraw = (
     callbackRef.current = callback
   }, [callback])
 
+  const { videoRef, isEnable, isError, enable, disable } = useWebcam(
+    width,
+    height
+  )
   const { canvasRef, draw, clean } = useDraw(width, height, {
     threshold: 0.3,
     point: { size: 16, color: 'oklch(0.705 0.213 47.604)', fillColor: 'white' },
     segment: { width: 2, color: 'oklch(0.705 0.213 47.604)' },
   })
-  const { videoRef, start, stop } = useDetection(keypoints => {
+  const { isDetecting, start, stop } = useDetection(videoRef, keypoints => {
     draw(keypoints)
     callbackRef.current(keypoints)
   })
 
+  const startDetection = async (): Promise<void> => {
+    await enable()
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    start()
+  }
+
+  const stopDetection = () => {
+    stop()
+    clean()
+    disable()
+  }
+
   return {
     videoRef,
+    isWebcamEnable: isEnable,
+    isWebcamError: isError,
+
     canvasRef,
-    start,
-    stop: () => {
-      stop()
-      clean()
-    },
-    clean,
     draw,
+    clean,
+
+    isDetecting,
+    startDetection,
+    stopDetection,
   }
 }
 

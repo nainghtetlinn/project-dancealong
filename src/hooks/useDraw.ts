@@ -24,7 +24,7 @@ const useDraw = (width: number, height: number, options?: HumanPoseOptions) => {
       const ctx = ctxRef.current
       ctx.clearRect(0, 0, width, height)
     } else {
-      console.log('Context not found.')
+      console.error('Context not found.')
     }
   }
 
@@ -35,8 +35,7 @@ const useDraw = (width: number, height: number, options?: HumanPoseOptions) => {
       const humanPose = new HumanPose(keypoints, width, height, options)
       humanPose.draw(ctx)
     } else {
-      ctxRef.current = canvasRef.current?.getContext('2d') || null
-      console.log('Context not found.')
+      console.error('Context not found.')
     }
   }
 

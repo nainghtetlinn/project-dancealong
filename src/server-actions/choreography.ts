@@ -5,14 +5,14 @@ import { type TChoreography } from '@/types'
 import { createClient } from '@/utils/supabase/server'
 import { uploadChoreographySchema } from '@/validators/choreography-validator'
 
-type TReturn =
-  | { success: true; data: TChoreography[] }
+type TReturn<T> =
+  | { success: true; data: T }
   | { success: false; message: string }
 
 export async function uploadChoreography(
   inputs: any,
   songId: string
-): Promise<TReturn> {
+): Promise<TReturn<TChoreography[]>> {
   const validation = uploadChoreographySchema.safeParse(inputs)
 
   if (!validation.success)
@@ -48,6 +48,22 @@ export async function uploadChoreography(
     .select('*')
 
   if (uploadError) return { success: false, message: 'Something went wrong.' }
+
+  return { success: true, data }
+}
+
+export async function updateIsKeyPose(
+  id: string,
+  isKeyPose: boolean
+): Promise<TReturn<null>> {
+  const supabase = await createClient()
+
+  const { data, error: updateError } = await supabase
+    .from('choreography')
+    .update({ is_key_pose: isKeyPose })
+    .eq('id', id)
+
+  if (updateError) return { success: false, message: 'Something went wrong.' }
 
   return { success: true, data }
 }

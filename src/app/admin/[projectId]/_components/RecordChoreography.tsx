@@ -1,11 +1,11 @@
 'use client'
 
-import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { AlertCircle } from 'lucide-react'
-import RecordBtn from './btns/choreography/RecordBtn'
 import PlayBtn from './btns/choreography/PlayBtn'
-import UploadBtn from './btns/choreography/UploadBtn'
+import RecordBtn from './btns/choreography/RecordBtn'
 import ReshootBtn from './btns/choreography/ReshootBtn'
+import UploadBtn from './btns/choreography/UploadBtn'
 
 import { type TKeypoints, type TParsedChoreography } from '@/types'
 
@@ -26,87 +26,60 @@ export default function RecordChoreography({
 }: {
   choreography: TParsedChoreography[]
 }) {
-  const streamRef = useRef<MediaStream>(null)
   const choreographyRef = useRef<
     { keypoints: TKeypoints; timestamp: number }[]
   >([])
   const startTimeRef = useRef(0)
-  const isAudioPlayingRef = useRef(false)
 
   const [uploadedChoreography, setUploadedChoreography] = useState(choreography)
   const [hasUploaded, setHasUploaded] = useState(choreography.length > 0)
   const [count, setCount] = useState(0)
-  const [isWebcamEnable, setIsWebcamEnable] = useState(false)
   const [isCapturing, setIsCapturing] = useState(false)
 
   const { model } = useModel()
   const { isPlaying, restart, play } = useAudio()
-  const { videoRef, canvasRef, start, stop, draw, clean } = useDetectAndDraw(
-    constants.width,
-    constants.height,
-    keypoints => {
-      if (isCapturing) {
-        if (!startTimeRef.current) startTimeRef.current = new Date().getTime()
 
-        if (isAudioPlayingRef.current) {
-          let currentTime = new Date().getTime()
-          choreographyRef.current.push({
-            keypoints,
-            timestamp: currentTime - startTimeRef.current,
-          })
-        } else {
-          // when audio stop, capturing stop
-          setIsCapturing(false)
-          closeWebcam()
-        }
+  const {
+    videoRef,
+    canvasRef,
+    isWebcamEnable,
+    isWebcamError,
+    isDetecting,
+    startDetection,
+    stopDetection,
+    draw,
+    clean,
+  } = useDetectAndDraw(constants.width, constants.height, keypoints => {
+    if (isCapturing) {
+      if (!startTimeRef.current) startTimeRef.current = new Date().getTime()
+      if (isPlaying) {
+        let currentTime = new Date().getTime()
+        choreographyRef.current.push({
+          keypoints,
+          timestamp: currentTime - startTimeRef.current,
+        })
+      } else {
+        // when audio stop, capturing stop
+        setIsCapturing(false)
+        stopDetection()
       }
     }
-  )
+  })
 
   useEffect(() => {
-    isAudioPlayingRef.current = isPlaying
-  }, [isPlaying])
-
-  const openWebcam = async (): Promise<void> => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-      })
-      streamRef.current = stream
-      if (videoRef.current) videoRef.current.srcObject = stream
-      setIsWebcamEnable(true)
-      setTimeout(start, 1000)
-    } catch (error) {
-      console.error('Error accessing webcam', error)
-      toast.error('Error accessing webcam')
-      setIsWebcamEnable(false)
-    }
-  }
-
-  const closeWebcam = () => {
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop())
-      streamRef.current = null
-      if (videoRef.current) videoRef.current.srcObject = null
-      stop()
-    }
-    setIsWebcamEnable(false)
-  }
+    if (isWebcamError) toast.error('Error accessing webcam.')
+  }, [isWebcamError])
 
   const handleRecord = async () => {
     if (model === null) return
-
     choreographyRef.current = []
     restart() // restart the audio
-
-    await openWebcam()
-
-    for (let i = 0; i <= 5; i++) {
-      setCount(5 - i)
+    await startDetection()
+    for (let i = 5; i >= 0; i--) {
+      setCount(i)
       await new Promise(resolve => setTimeout(resolve, 1000))
     }
-
-    play()
+    play() // play audio
     setIsCapturing(true)
   }
 
@@ -138,7 +111,12 @@ export default function RecordChoreography({
         className='mx-auto flex items-center justify-between gap-2'
       >
         <div className='space-x-2'>
-          {!hasUploaded && <RecordBtn onClick={handleRecord} />}
+          {!hasUploaded && (
+            <RecordBtn
+              disabled={isDetecting}
+              onClick={handleRecord}
+            />
+          )}
           {!hasUploaded && (
             <UploadBtn
               choreography={choreographyRef.current}

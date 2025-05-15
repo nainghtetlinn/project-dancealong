@@ -3,8 +3,6 @@
 import WaveSurfer from 'wavesurfer.js'
 import RegionsPlugin from 'wavesurfer.js/dist/plugins/regions.esm.js'
 
-import { type TSong } from '@/types'
-
 import React, {
   createContext,
   useContext,
@@ -13,7 +11,7 @@ import React, {
   useState,
 } from 'react'
 
-import { initWaveSurfer, readAudio, readAudioFromUrl } from '@/lib/audio'
+import { initWaveSurfer, readAudio, readAudioFromUrl } from '@/utils/audio'
 
 type Setup = (
   container: HTMLDivElement,

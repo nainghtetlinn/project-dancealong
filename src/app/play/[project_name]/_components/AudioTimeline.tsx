@@ -3,7 +3,7 @@
 import { Skeleton } from '@/components/ui/skeleton'
 
 import { useEffect, useRef, useState } from 'react'
-import { useAudio } from '../_lib/audioContext.jsx'
+import { useAudio } from '../_lib/audioContext'
 
 export default function AudioTimeline() {
   const containerRef = useRef<HTMLDivElement>(null)

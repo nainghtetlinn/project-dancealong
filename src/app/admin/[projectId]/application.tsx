@@ -1,10 +1,16 @@
-import { TProject } from '@/types'
+import { TChoreography, TProject, TSong } from '@/types'
 
 import Studio from './_components/Studio'
 import { ProjectDetailsProvider } from './_lib/projectContext'
 import { AudioProvider } from './_lib/audioContext'
 
-export default function Application({ project }: { project: TProject }) {
+export default function Application({
+  project,
+}: {
+  project: TProject & {
+    songs: (TSong & { choreography: TChoreography[] }) | null
+  }
+}) {
   return (
     <ProjectDetailsProvider project={project}>
       <AudioProvider

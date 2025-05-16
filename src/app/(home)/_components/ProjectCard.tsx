@@ -9,10 +9,18 @@ import {
 } from '@/components/ui/card'
 import MiniWaveForm from '@/app/admin/_components/MiniWaveForm'
 
-import { type TProject } from '@/types'
+import { type TSong } from '@/types'
 
 import { formatTime } from '@/lib/utils'
 import Link from 'next/link'
+
+export type TProject = {
+  id: string
+  project_name: string
+  song_id: string | null
+  created_at: string
+  songs: TSong
+}
 
 export default function ProjectCard({ project }: { project: TProject }) {
   return (

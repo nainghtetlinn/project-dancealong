@@ -8,7 +8,6 @@ export type TProject = {
   id: string
   project_name: string
   song_id: string | null
-  songs: TSong | null
   created_at: string
 }
 
@@ -19,7 +18,6 @@ export type TSong = {
   duration: number
   bpm: number
   audio_url: string
-  choreography: TChoreography[]
   created_at: string
 }
 

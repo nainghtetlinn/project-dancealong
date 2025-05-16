@@ -1,11 +1,6 @@
 'use client'
 
-import {
-  type TProject,
-  type TSong,
-  type TKeypoints,
-  type TParsedChoreography,
-} from '@/types'
+import { type TParsedChoreography, type TProject, type TSong } from '@/types'
 
 import React, { createContext, useContext } from 'react'
 

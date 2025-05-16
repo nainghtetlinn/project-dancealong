@@ -1,7 +1,7 @@
 import { type TProject, type TSong } from '@/types'
 
-import Game from './_components/Game.jsx'
-import { AudioProvider } from './_lib/audioContext.jsx'
+import Game from './_components/Game'
+import { AudioProvider } from './_lib/audioContext'
 
 export default function Application({
   project,

@@ -66,10 +66,12 @@ export const AudioProvider = ({
       height: 60,
       barWidth: 2.5,
       barRadius: 12,
-      barHeight: 0.8,
       cursorWidth: 0,
       waveColor: 'oklch(.552 .016 285.938)',
       progressColor: 'oklch(.646 .222 41.116)',
+      minPxPerSec: 100,
+      hideScrollbar: true,
+      interact: false,
     })
     wavesurferRef.current = ws
 

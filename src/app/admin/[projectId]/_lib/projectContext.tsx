@@ -1,6 +1,11 @@
 'use client'
 
-import { type TParsedChoreography, type TProject, type TSong } from '@/types'
+import {
+  type TChoreography,
+  type TParsedChoreography,
+  type TProject,
+  type TSong,
+} from '@/types'
 
 import React, { createContext, useContext } from 'react'
 
@@ -25,14 +30,26 @@ export const ProjectDetailsProvider = ({
   project,
 }: {
   children: React.ReactNode
-  project: TProject
+  project: TProject & {
+    songs: (TSong & { choreography: TChoreography[] }) | null
+  }
 }) => {
   return (
     <projectContext.Provider
       value={{
         projectId: project.id,
         projectName: project.project_name,
-        song: project.songs,
+        song: project.songs
+          ? {
+              id: project.songs.id,
+              title: project.songs.title,
+              artist: project.songs.artist,
+              audio_url: project.songs.audio_url,
+              duration: project.songs.duration,
+              bpm: project.songs.bpm,
+              created_at: project.songs.created_at,
+            }
+          : null,
         choreography: project.songs
           ? project.songs.choreography.map(c => ({
               id: c.id,

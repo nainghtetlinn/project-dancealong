@@ -20,7 +20,7 @@ const useAnimationFrame = (callback: (deltaTime: number) => void) => {
   }
 
   const stop = () => {
-    if (requestRef.current !== null) {
+    if (requestRef.current) {
       cancelAnimationFrame(requestRef.current)
       requestRef.current = null
       previousTimeRef.current = null

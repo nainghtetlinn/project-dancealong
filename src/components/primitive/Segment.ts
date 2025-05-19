@@ -21,12 +21,12 @@ export default class Segment {
     }
   }
 
-  draw(ctx: CanvasRenderingContext2D) {
+  draw(ctx: CanvasRenderingContext2D, x: number, y: number) {
     ctx.beginPath()
     ctx.lineWidth = this.width
     ctx.strokeStyle = this.color
-    ctx.moveTo(this.p1.x, this.p1.y)
-    ctx.lineTo(this.p2.x, this.p2.y)
+    ctx.moveTo(this.p1.x + x, this.p1.y + y)
+    ctx.lineTo(this.p2.x + x, this.p2.y + y)
     ctx.stroke()
   }
 }

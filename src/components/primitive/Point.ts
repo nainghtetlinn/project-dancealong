@@ -22,16 +22,16 @@ export default class Point {
     }
   }
 
-  draw(ctx: CanvasRenderingContext2D) {
+  draw(ctx: CanvasRenderingContext2D, x: number, y: number) {
     const radius = this.size / 2
     ctx.beginPath()
     ctx.fillStyle = this.color
-    ctx.arc(this.x, this.y, radius, 0, Math.PI * 2)
+    ctx.arc(this.x + x, this.y + y, radius, 0, Math.PI * 2)
     ctx.fill()
 
     if (this.fillColor !== undefined) {
       ctx.beginPath()
-      ctx.arc(this.x, this.y, radius * 0.4, 0, Math.PI * 2)
+      ctx.arc(this.x + x, this.y + y, radius * 0.4, 0, Math.PI * 2)
       ctx.fillStyle = this.fillColor
       ctx.fill()
     }

@@ -54,6 +54,8 @@ export type HumanPoseOptions = {
 }
 
 export default class HumanPose {
+  public x: number = 0
+  public y: number = 0
   private points: (Point | null)[] = []
   private segments: Segment[] = []
 
@@ -84,11 +86,11 @@ export default class HumanPose {
 
   draw(ctx: CanvasRenderingContext2D) {
     for (const segment of this.segments) {
-      segment.draw(ctx)
+      segment.draw(ctx, this.x, this.y)
     }
     for (const point of this.points) {
       if (point) {
-        point.draw(ctx)
+        point.draw(ctx, this.x, this.y)
       }
     }
   }

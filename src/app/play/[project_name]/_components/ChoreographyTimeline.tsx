@@ -3,7 +3,6 @@ import { TParsedChoreography } from '@/types'
 
 import { RefObject, useEffect, useImperativeHandle, useRef } from 'react'
 
-import useAnimationFrame from '@/hooks/useAnimationFrame'
 import { useAudio } from '../_lib/audioContext'
 
 const WIDTH = 375
@@ -16,8 +15,7 @@ export default function ChoreographyTimeline({
   choreography,
 }: {
   ref: RefObject<{
-    playAnimation: () => void
-    pauseAnimation: () => void
+    callbackAnimationLoop: (delta: number, elasped: number) => void
     restartAnimation: () => void
   } | null>
   choreography: TParsedChoreography[]
@@ -34,76 +32,50 @@ export default function ChoreographyTimeline({
   )
   const indexRef = useRef(0)
   const shiftTime = useRef(0)
-  const elasped = useRef(0)
-  const isRunning = useRef(false)
-  const isPause = useRef(false)
-  const audioIsPlaying = useRef(false)
+  const hasAudioPlayed = useRef(false)
 
-  const { isPlaying, play, pause, restart } = useAudio()
+  const { play } = useAudio()
 
-  const { start: startAnimationLoop, stop: stopAnimationLoop } =
-    useAnimationFrame(delta => {
-      if (isRunning.current) {
-        elasped.current += delta
+  function callbackAnimationLoop(delta: number, elasped: number) {
+    const ctx = ctxRef.current!
+    ctx.clearRect(0, 0, WIDTH, HEIGHT)
 
-        const ctx = ctxRef.current!
-        ctx.clearRect(0, 0, WIDTH, HEIGHT)
+    for (let i = indexRef.current; i < choreography.length; i++) {
+      const c = toRender.current[i]
+      if (shiftTime.current === 0 && c.start < 0) {
+        shiftTime.current = Math.abs(c.start)
+      }
 
-        for (let i = indexRef.current; i < choreography.length; i++) {
-          const c = toRender.current[i]
-          if (shiftTime.current === 0 && c.start < 0) {
-            shiftTime.current = Math.abs(c.start)
-          }
+      if (elasped >= c.start + shiftTime.current) {
+        c.pose.draw(ctx)
+        c.pose.x -= SPEED * delta
 
-          if (elasped.current >= c.start + shiftTime.current) {
-            c.pose.draw(ctx)
-            c.pose.x -= SPEED * delta
-
-            if (c.pose.x <= -WIDTH) {
-              indexRef.current += 1
-            }
-          }
-        }
-
-        if (!audioIsPlaying.current && elasped.current >= shiftTime.current) {
-          play()
-          audioIsPlaying.current = true
+        if (c.pose.x <= -WIDTH) {
+          indexRef.current += 1
         }
       }
-    })
+    }
 
-  const playAnimation = () => {
-    isRunning.current = true
-    if (!isPause.current) startAnimationLoop()
+    if (!hasAudioPlayed.current && shiftTime.current <= elasped) {
+      play()
+      hasAudioPlayed.current = true
+    }
   }
 
-  const pauseAnimation = () => {
-    isRunning.current = false
-    isPause.current = true
-    audioIsPlaying.current = false
-    pause()
-  }
-
-  const restartAnimation = () => {
-    stopAnimationLoop()
-    pause()
-    restart()
+  function restartAnimation() {
     indexRef.current = 0
     shiftTime.current = 0
-    elasped.current = 0
-    isRunning.current = false
-    isPause.current = false
-    audioIsPlaying.current = false
+    hasAudioPlayed.current = false
     toRender.current = choreography.map(c => {
       const newPose = new HumanPose(c.keypoints, WIDTH, HEIGHT)
       newPose.x = WIDTH
       return { start: c.timestamp - DURATION, end: c.timestamp, pose: newPose }
     })
+    ctxRef.current?.clearRect(0, 0, WIDTH, HEIGHT)
   }
 
   useImperativeHandle(ref, () => ({
-    playAnimation,
-    pauseAnimation,
+    callbackAnimationLoop,
     restartAnimation,
   }))
 

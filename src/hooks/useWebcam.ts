@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 const useWebcam = (width: number, height: number) => {
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -8,6 +8,13 @@ const useWebcam = (width: number, height: number) => {
 
   const [isEnable, setIsEnable] = useState(false)
   const [isError, setIsError] = useState(false)
+
+  useEffect(() => {
+    if (!videoRef.current) return
+    const video = videoRef.current
+    video.width = width
+    video.height = height
+  }, [])
 
   const enable = async (): Promise<void> => {
     setIsEnable(false)

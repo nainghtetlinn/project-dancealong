@@ -1,11 +1,10 @@
-import HumanPose from '@/components/primitive/HumanPose'
 import { TParsedChoreography } from '@/types'
 
-import { RefObject, useEffect, useImperativeHandle, useRef } from 'react'
+import { RefObject, useImperativeHandle, useRef } from 'react'
 
-import { useAudio } from '../_lib/audioContext'
 import useDraw from '@/hooks/useDraw'
 import { findPosePair, interpolatePose } from '@/utils/pose'
+import { useAudio } from '../_lib/audioContext'
 
 const WIDTH = 720
 const HEIGHT = 480
@@ -53,12 +52,11 @@ export default function ChoreographyList({
   }))
 
   return (
-    <div className='border'>
-      <canvas
-        ref={canvasRef}
-        width={WIDTH}
-        height={HEIGHT}
-      />
-    </div>
+    <canvas
+      ref={canvasRef}
+      width={WIDTH}
+      height={HEIGHT}
+      className='border'
+    />
   )
 }

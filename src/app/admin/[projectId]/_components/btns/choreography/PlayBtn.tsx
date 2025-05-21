@@ -1,13 +1,14 @@
 import { Button } from '@/components/ui/button'
 import { Pause, Play } from 'lucide-react'
 
-import { type TKeypoints } from '@/types'
+import { TKeypoints } from '@/types'
 
-import { useEffect, useRef } from 'react'
+import { useRef, useState } from 'react'
 import { toast } from 'sonner'
 
-import { useAudio } from '../../../_lib/audioContext'
+import useAnimationFrame from '@/hooks/useAnimationFrame'
 import { findPosePair, interpolatePose } from '@/utils/pose'
+import { useAudio } from '../../../_lib/audioContext'
 
 type Props = React.ComponentProps<'button'> & {
   choreography: { keypoints: TKeypoints; timestamp: number }[]
@@ -21,21 +22,15 @@ export default function PlayBtn({
   clean,
   ...props
 }: Props) {
-  const animationFrameId = useRef<number | null>(null)
-  const isAudioPlayingRef = useRef(false)
-  const audioCurrentTimeRef = useRef(0)
   const lastPoseTimestampRef = useRef(-1)
+
+  const [isAnimationPlaying, setIsAnimatinPlaying] = useState(false)
 
   const { isPlaying, currentTime, play, pause } = useAudio()
 
-  useEffect(() => {
-    isAudioPlayingRef.current = isPlaying
-    audioCurrentTimeRef.current = currentTime
-  }, [isPlaying, currentTime])
-
-  const playbackLoop = () => {
-    if (isAudioPlayingRef.current) {
-      const tNow = audioCurrentTimeRef.current * 1000
+  const { start, stop } = useAnimationFrame(() => {
+    if (isPlaying) {
+      const tNow = currentTime * 1000
       const posePair = findPosePair(choreography, tNow)
       if (posePair && tNow !== lastPoseTimestampRef.current) {
         const [poseA, poseB] = posePair
@@ -49,40 +44,36 @@ export default function PlayBtn({
         draw(interpolated)
         lastPoseTimestampRef.current = tNow
       }
-      animationFrameId.current = requestAnimationFrame(playbackLoop)
-    } else {
-      clean()
-      cancelPlaybackLoop()
     }
-  }
-  
-  const cancelPlaybackLoop = () => {
-    cancelAnimationFrame(animationFrameId.current!)
-    animationFrameId.current = null
-  }
+  })
 
   const handleReplay = () => {
     if (choreography.length === 0)
       return toast.error('No choreography found to replay.')
-    
-    if (!isPlaying) {
-      isAudioPlayingRef.current = true
-      animationFrameId.current = requestAnimationFrame(playbackLoop)
-      play()
-    } else {
+
+    if (isAnimationPlaying) {
+      stop()
       pause()
-      cancelPlaybackLoop()
+      clean()
+      setIsAnimatinPlaying(false)
+    } else {
+      start()
+      play()
+      setIsAnimatinPlaying(true)
     }
   }
 
   return (
-    <Button
-      size='icon'
-      variant='secondary'
-      onClick={handleReplay}
-      {...props}
-    >
-      {isPlaying ? <Pause /> : <Play />}
-    </Button>
+    <div className='space-x-2'>
+      {isAnimationPlaying && <span>Animation is playing ...</span>}
+      <Button
+        size='icon'
+        variant='secondary'
+        onClick={handleReplay}
+        {...props}
+      >
+        {isAnimationPlaying ? <Pause /> : <Play />}
+      </Button>
+    </div>
   )
 }

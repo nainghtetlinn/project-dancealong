@@ -9,7 +9,8 @@ import { useProjectDetails } from '../_lib/projectContext'
 
 export default function AudioDetails() {
   const { song } = useProjectDetails()
-  const { duration, currentTime, isPlaying, play, pause } = useAudio()
+  const { audioDetails, duration, currentTime, isPlaying, play, pause } =
+    useAudio()
 
   return (
     <div className='flex justify-between items-center p-2'>
@@ -18,8 +19,10 @@ export default function AudioDetails() {
           size={26}
           className='text-primary'
         />
-        <h4>{song?.title}</h4>
-        <p className='text-sm text-muted-foreground'>({song?.artist})</p>
+        <h4>{song?.title || audioDetails?.title}</h4>
+        <p className='text-sm text-muted-foreground'>
+          ({song?.artist || audioDetails?.artist})
+        </p>
       </div>
 
       <div className='flex items-center gap-2'>

@@ -69,7 +69,7 @@ const AudioUpload = () => {
     if (!result.success) toast.error(result.message)
     else {
       toast.success('Successfully uploaded.')
-      upload(file!) // upload to audio context
+      upload(file!, result.data) // upload to audio context
     }
 
     setLoading(false)
@@ -169,7 +169,8 @@ const AudioUpload = () => {
               type='submit'
               disabled={loading}
             >
-              Upload {loading && <Loader2 className='animate-spin' />}
+              Upload
+              {loading ? <Loader2 className='animate-spin' /> : <Upload />}
             </Button>
           </CardFooter>
         </Card>

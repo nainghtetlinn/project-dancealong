@@ -11,17 +11,29 @@ export default async function ProjectPage({
   const { projectId } = await params
   const supabase = await createClient()
 
-  const { data } = await supabase
+  const { data: project } = await supabase
     .from('projects')
-    .select('*, songs(*, choreography(*))')
+    .select('*')
     .eq('id', projectId)
-    .order('timestamp', {
-      referencedTable: 'songs.choreography',
-      ascending: true,
-    })
     .single()
 
-  if (!data) redirect('/admin')
+  const { data: song } = await supabase
+    .from('songs')
+    .select('*')
+    .eq('id', project.song_id)
+    .single()
 
-  return <Application project={data} />
+  const { data: choreography } = await supabase
+    .from('choreography')
+    .select('*')
+    .eq('song_id', project.song_id)
+    .order('timestamp', { ascending: true })
+
+  return (
+    <Application
+      project={project}
+      song={song}
+      choreography={choreography}
+    />
+  )
 }

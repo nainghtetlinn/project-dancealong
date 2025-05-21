@@ -50,7 +50,7 @@ export default function ChoreographyTimeline({
         c.pose.draw(ctx)
         c.pose.x -= SPEED * delta
 
-        if (c.pose.x <= -WIDTH) {
+        if (c.pose.x <= 0) {
           indexRef.current += 1
         }
       }

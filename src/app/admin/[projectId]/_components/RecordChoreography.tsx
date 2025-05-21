@@ -72,6 +72,7 @@ export default function RecordChoreography({
 
   const handleRecord = async () => {
     if (model === null) return
+    startTimeRef.current = 0
     choreographyRef.current = []
     restart() // restart the audio
     await startDetection()
@@ -113,7 +114,7 @@ export default function RecordChoreography({
         <div className='space-x-2'>
           {!hasUploaded && (
             <RecordBtn
-              disabled={isDetecting}
+              disabled={isDetecting || isPlaying}
               onClick={handleRecord}
             />
           )}

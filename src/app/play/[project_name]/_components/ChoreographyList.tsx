@@ -14,7 +14,7 @@ export default function ChoreographyList({
   choreography,
 }: {
   ref: RefObject<{
-    callbackAnimationLoop: (delta: number, elasped: number) => void
+    callbackAnimationLoop: () => void
     restartAnimation: () => void
   } | null>
   choreography: TParsedChoreography[]

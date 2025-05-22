@@ -8,6 +8,7 @@ import { TParsedChoreography, TProject, TSong } from '@/types'
 
 import { formatTime } from '@/lib/utils'
 import { useAudio } from '../_lib/audioContext'
+import { useModel } from '@/provider/model-provider'
 
 export default function Game({
   project,
@@ -19,8 +20,9 @@ export default function Game({
   choreography: TParsedChoreography[]
 }) {
   const { loading } = useAudio()
+  const { loading: modelLoading } = useModel()
 
-  if (loading)
+  if (loading || modelLoading)
     return (
       <div className='h-screen flex items-center justify-center'>
         <Loader2 className='animate-spin' />

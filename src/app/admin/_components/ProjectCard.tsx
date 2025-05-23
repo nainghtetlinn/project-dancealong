@@ -9,12 +9,16 @@ import {
 } from '@/components/ui/card'
 import MiniWaveForm from './MiniWaveForm'
 
-import { type TProject } from '@/types'
+import { TProject, TSong } from '@/types'
 
 import { formatTime } from '@/lib/utils'
 import Link from 'next/link'
 
-export default async function ProjectCard({ project }: { project: TProject }) {
+export default async function ProjectCard({
+  project,
+}: {
+  project: TProject & { songs: TSong }
+}) {
   return (
     <Card>
       <CardHeader>

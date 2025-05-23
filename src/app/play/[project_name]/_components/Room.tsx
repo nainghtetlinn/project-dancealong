@@ -46,16 +46,6 @@ export default function Room({
     restart: restartAudio,
   } = useAudio()
 
-  useEffect(() => {
-    if (isFinished && isPlaying) {
-      stopAnimation()
-      scoreRef.current?.disableWebcam()
-
-      const ts = scoreRef.current?.getResult() || 0
-      setTotalScore(ts)
-    }
-  }, [isFinished, isPlaying])
-
   const { start: startAnimation, stop: stopAnimation } = useAnimationFrame(
     delta => {
       if (isPause) return
@@ -111,6 +101,16 @@ export default function Room({
     clRef.current?.restartAnimation()
     scoreRef.current?.restart()
   }
+
+  useEffect(() => {
+    if (isFinished && isPlaying) {
+      stopAnimation()
+      scoreRef.current?.disableWebcam()
+
+      const ts = scoreRef.current?.getResult() || 0
+      setTotalScore(ts)
+    }
+  }, [isFinished, isPlaying, stopAnimation])
 
   return (
     <section className='w-full flex-1 relative'>

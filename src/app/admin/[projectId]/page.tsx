@@ -17,6 +17,8 @@ export default async function ProjectPage({
     .eq('id', projectId)
     .single()
 
+  if (!project) redirect('/admin')
+
   const { data: song } = await supabase
     .from('songs')
     .select('*')

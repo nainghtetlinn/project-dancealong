@@ -9,7 +9,9 @@ type TReturn =
   | { success: true; data: TProject }
   | { success: false; message: string }
 
-export async function createProject(inputs: any): Promise<TReturn> {
+export async function createProject(inputs: {
+  project_name: string
+}): Promise<TReturn> {
   const validation = createProjectSchema.safeParse(inputs)
 
   if (!validation.success)

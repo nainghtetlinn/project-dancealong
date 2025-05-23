@@ -29,7 +29,7 @@ export default function AudioTimeline() {
         }
       })
     })
-  }, [])
+  })
 
   return (
     <div className='p-2'>

@@ -126,7 +126,7 @@ export const AudioProvider = ({
     } else {
       setLoading(false)
     }
-  }, [])
+  }, [song])
 
   return (
     <audioContext.Provider

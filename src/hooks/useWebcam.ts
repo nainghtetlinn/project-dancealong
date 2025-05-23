@@ -14,7 +14,7 @@ const useWebcam = (width: number, height: number) => {
     const video = videoRef.current
     video.width = width
     video.height = height
-  }, [])
+  }, [width, height])
 
   const enable = async (): Promise<void> => {
     setIsEnable(false)
@@ -30,6 +30,7 @@ const useWebcam = (width: number, height: number) => {
       setIsEnable(true)
       setIsError(false)
     } catch (error) {
+      console.error(error)
       setIsEnable(false)
       setIsError(true)
     }

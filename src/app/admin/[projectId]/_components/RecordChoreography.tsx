@@ -53,7 +53,7 @@ export default function RecordChoreography({
     if (isCapturing) {
       if (!startTimeRef.current) startTimeRef.current = new Date().getTime()
       if (isPlaying) {
-        let currentTime = new Date().getTime()
+        const currentTime = new Date().getTime()
         choreographyRef.current.push({
           keypoints,
           timestamp: currentTime - startTimeRef.current,
@@ -145,10 +145,10 @@ export default function RecordChoreography({
           className='mx-auto'
         >
           <AlertCircle />
-          <AlertTitle>You've uploaded choreography.</AlertTitle>
+          <AlertTitle>You&apos;ve uploaded choreography.</AlertTitle>
           <AlertDescription>
-            Or you can upload it again if you've taken new choreography and want
-            to update it. Be careful, old choreography will be deleted.
+            Or you can upload it again if you&apos;ve taken new choreography and
+            want to update it. Be careful, old choreography will be deleted.
           </AlertDescription>
         </Alert>
       )}

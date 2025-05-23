@@ -17,7 +17,7 @@ const useDraw = (width: number, height: number, options?: HumanPoseOptions) => {
     const context = canvas.getContext('2d')
     if (!context) return
     ctxRef.current = context
-  }, [])
+  }, [width, height])
 
   const clean = () => {
     if (ctxRef.current) {

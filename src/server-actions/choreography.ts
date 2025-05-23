@@ -1,6 +1,6 @@
 'use server'
 
-import { type TChoreography } from '@/types'
+import { TChoreography, TKeypoints } from '@/types'
 
 import { createClient } from '@/utils/supabase/server'
 import { uploadChoreographySchema } from '@/validators/choreography-validator'
@@ -10,7 +10,10 @@ type TReturn<T> =
   | { success: false; message: string }
 
 export async function uploadChoreography(
-  inputs: any,
+  inputs: {
+    keypoints: TKeypoints
+    timestamp: number
+  }[],
   songId: string
 ): Promise<TReturn<TChoreography[]>> {
   const validation = uploadChoreographySchema.safeParse(inputs)

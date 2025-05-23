@@ -58,7 +58,7 @@ export default function MiniWaveForm({ url }: { url: string }) {
     ws.on('ready', () => {
       setLoading(false)
     })
-  }, [])
+  }, [url])
 
   const play = () => {
     setIsPlaying(true)

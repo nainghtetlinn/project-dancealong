@@ -10,7 +10,11 @@ type TReturn =
   | { success: false; message: string }
 
 export async function uploadAudio(
-  inputs: any,
+  inputs: {
+    title: string
+    artist: string
+    duration: number
+  },
   audioFile: File,
   projectId: string
 ): Promise<TReturn> {

@@ -9,7 +9,7 @@ import { comparePoses } from '@/utils/pose'
 export default function Similarity() {
   const [text, setText] = useState('')
 
-  const { canvasRef, draw, clean } = useDraw(640, 480)
+  const { canvasRef, draw } = useDraw(640, 480)
   const {
     videoRef,
     canvasRef: videoCanvasRef,
@@ -22,7 +22,7 @@ export default function Similarity() {
 
   useEffect(() => {
     draw(expected_keypoints)
-  }, [])
+  })
 
   const handleClick = async () => {
     await startDetection()

@@ -2,7 +2,7 @@
 
 import { TChoreography, TParsedChoreography, TProject, TSong } from '@/types'
 
-import React, { createContext, useContext, useState } from 'react'
+import React, { createContext, useContext } from 'react'
 
 interface ProjectState {
   projectId: string

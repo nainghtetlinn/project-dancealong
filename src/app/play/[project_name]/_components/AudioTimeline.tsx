@@ -17,7 +17,7 @@ export default function AudioTimeline() {
     setupWavesurfer(containerRef.current, () => {
       setLoading(false)
     })
-  }, [])
+  })
 
   return (
     <div

@@ -118,7 +118,7 @@ export function ModelProvider({
     if (!disable) {
       loadModel()
     }
-  }, [])
+  })
 
   return (
     <modelContext.Provider

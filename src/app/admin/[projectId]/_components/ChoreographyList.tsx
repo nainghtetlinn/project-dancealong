@@ -51,7 +51,7 @@ function ChoreographyItem({ c }: { c: TParsedChoreography }) {
 
   useEffect(() => {
     draw(c.keypoints)
-  }, [])
+  })
 
   useEffect(() => {
     if (isKeyPose) {
@@ -66,7 +66,7 @@ function ChoreographyItem({ c }: { c: TParsedChoreography }) {
         if (r.id === c.id) r.remove()
       })
     }
-  }, [isKeyPose])
+  }, [isKeyPose, c.id, c.timestamp, regions])
 
   const handleClick = async () => {
     const prev = isKeyPose

@@ -21,6 +21,7 @@ type Setup = (
 
 interface AudioContext {
   loading: boolean
+  isFinished: boolean
   isPlaying: boolean
   duration: number
   currentTime: number
@@ -32,6 +33,7 @@ interface AudioContext {
 
 const initialValues: AudioContext = {
   loading: true,
+  isFinished: false,
   isPlaying: false,
   duration: 0,
   currentTime: 0,
@@ -54,6 +56,7 @@ export const AudioProvider = ({
 
   const [loading, setLoading] = useState(true)
   const [audio, setAudio] = useState<File | null>(null)
+  const [isFinished, setIsFinished] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
   const [duration, setDuration] = useState(0)
   const [currentTime, setCurrentTime] = useState(0)
@@ -83,6 +86,7 @@ export const AudioProvider = ({
     ws.on('finish', () => {
       ws.setTime(0)
       setIsPlaying(false)
+      setIsFinished(true)
     })
     ws.on('ready', () => {
       onReady(ws)
@@ -97,16 +101,19 @@ export const AudioProvider = ({
   }
 
   const restart = () => {
+    setIsFinished(false)
     wavesurferRef.current?.setTime(0)
   }
 
   const play = () => {
     setIsPlaying(true)
+    setIsFinished(false)
     wavesurferRef.current?.play()
   }
 
   const pause = () => {
     setIsPlaying(false)
+    setIsFinished(false)
     wavesurferRef.current?.pause()
   }
 
@@ -128,6 +135,7 @@ export const AudioProvider = ({
     <audioContext.Provider
       value={{
         loading,
+        isFinished,
         isPlaying,
         duration,
         currentTime,

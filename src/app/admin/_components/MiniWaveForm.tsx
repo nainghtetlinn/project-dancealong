@@ -79,6 +79,7 @@ export default function MiniWaveForm({ url }: { url: string }) {
         size='icon'
         variant='ghost'
         type='button'
+        disabled={loading}
         onClick={isPlaying ? pause : play}
       >
         {isPlaying ? <Pause /> : <Play />}

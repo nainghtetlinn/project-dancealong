@@ -1,5 +1,7 @@
 'use client'
 
+import { TKeypoints } from '@/types'
+
 import * as tf from '@tensorflow/tfjs'
 import React, { createContext, useContext, useEffect, useState } from 'react'
 
@@ -16,6 +18,7 @@ interface ModelContext {
   model: tf.GraphModel | null
   type: 'lightning' | 'thunder'
   constants: { width: number; height: number }
+  detect: (video: HTMLVideoElement) => TKeypoints
 }
 
 const modelContext = createContext<ModelContext>({
@@ -25,6 +28,9 @@ const modelContext = createContext<ModelContext>({
   constants: {
     width: MOVENET_LIGHTNING_INPUT_WIDTH,
     height: MOVENET_LIGHTNING_INPUT_HEIGHT,
+  },
+  detect: () => {
+    return []
   },
 })
 
@@ -37,6 +43,17 @@ export function ModelProvider({
   type: 'lightning' | 'thunder'
   disable?: boolean
 }) {
+  const constants =
+    type === 'thunder'
+      ? {
+          width: MOVENET_THUNDER_INPUT_WIDTH,
+          height: MOVENET_THUNDER_INPUT_HEIGHT,
+        }
+      : {
+          width: MOVENET_LIGHTNING_INPUT_WIDTH,
+          height: MOVENET_LIGHTNING_INPUT_HEIGHT,
+        }
+
   const [model, setModel] = useState<tf.GraphModel | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -82,6 +99,21 @@ export function ModelProvider({
     }
   }
 
+  const detect = (video: HTMLVideoElement): TKeypoints => {
+    return tf.tidy(() => {
+      const inputTensor = tf.browser
+        .fromPixels(video)
+        .resizeBilinear([constants.height, constants.width])
+        .expandDims(0)
+        .toInt()
+
+      const result = model!.execute(inputTensor) as tf.Tensor
+      const keypoints = (result.arraySync() as TKeypoints[][])[0][0]
+
+      return keypoints
+    })
+  }
+
   useEffect(() => {
     if (!disable) {
       loadModel()
@@ -91,19 +123,11 @@ export function ModelProvider({
   return (
     <modelContext.Provider
       value={{
-        constants:
-          type === 'thunder'
-            ? {
-                width: MOVENET_THUNDER_INPUT_WIDTH,
-                height: MOVENET_THUNDER_INPUT_HEIGHT,
-              }
-            : {
-                width: MOVENET_LIGHTNING_INPUT_WIDTH,
-                height: MOVENET_LIGHTNING_INPUT_HEIGHT,
-              },
+        constants,
         type,
         model,
         loading,
+        detect,
       }}
     >
       {children}

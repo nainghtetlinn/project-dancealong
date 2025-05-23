@@ -1,23 +1,16 @@
-import { type TProject, type TSong } from '@/types'
+import { TParsedChoreography, TProject, TSong } from '@/types'
 
 import Game from './_components/Game'
 import { AudioProvider } from './_lib/audioContext'
 
-export default function Application({
-  project,
-  song,
-}: {
+export default function Application(props: {
   project: TProject
   song: TSong
+  choreography: TParsedChoreography[]
 }) {
   return (
-    <AudioProvider song={song}>
-      <div className='h-screen overflow-hidden relative'>
-        <Game
-          project={project}
-          song={song}
-        />
-      </div>
+    <AudioProvider song={props.song}>
+      <Game {...props} />
     </AudioProvider>
   )
 }

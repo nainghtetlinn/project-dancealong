@@ -4,9 +4,9 @@ import { TKeypoints, TParsedChoreography } from '@/types'
 
 import { RefObject, useImperativeHandle, useRef, useState } from 'react'
 
+import Keypoints from '@/components/primitive/Keypoints'
 import useWebcam from '@/hooks/useWebcam'
 import { useModel } from '@/provider/model-provider'
-import { comparePoses } from '@/utils/pose'
 
 export default function Score({
   ref,
@@ -25,12 +25,12 @@ export default function Score({
   const { detect } = useModel()
 
   const toCheck = useRef<
-    { start: number; end: number; keypoints: TKeypoints }[]
+    { start: number; end: number; keypoints: Keypoints }[]
   >(
     choreography.map(c => ({
       start: c.timestamp - 200,
       end: c.timestamp + 200,
-      keypoints: c.keypoints,
+      keypoints: new Keypoints(c.keypoints),
     }))
   )
   const indexRef = useRef(0)
@@ -70,8 +70,8 @@ export default function Score({
     const c = toCheck.current[indexRef.current]
 
     if (c.start <= elasped && elasped <= c.end) {
-      const keypoints = detect(videoRef.current)
-      const score = comparePoses(keypoints, c.keypoints)
+      const playerKeypoints = detect(videoRef.current)
+      const score = c.keypoints.compareTo(playerKeypoints)
       if (score > maxScoreRef.current) maxScoreRef.current = score
     } else if (c.end <= elasped) {
       updateScore(maxScoreRef.current)

@@ -4,25 +4,27 @@ import useDraw from '@/hooks/useDraw'
 import useDetectAndDraw from '@/hooks/useDetectAndDraw'
 import { Button } from '@/components/ui/button'
 import { useEffect, useState } from 'react'
-import { comparePoses } from '@/utils/pose'
+import Keypoints from '@/components/primitive/Keypoints'
 
 export default function Similarity() {
   const [text, setText] = useState('')
 
-  const { canvasRef, draw } = useDraw(640, 480)
+  const expectedKeypoints = new Keypoints(expected_keypoints)
+
+  const { canvasRef, draw } = useDraw(640, 480, { threshold: 0 })
   const {
     videoRef,
     canvasRef: videoCanvasRef,
     startDetection,
     stopDetection,
   } = useDetectAndDraw(640, 480, keypoints => {
-    const score = comparePoses(keypoints, expected_keypoints)
+    const score = expectedKeypoints.compareTo(keypoints)
     setText(`Score: ${score}`)
   })
 
   useEffect(() => {
     draw(expected_keypoints)
-  })
+  }, [draw])
 
   const handleClick = async () => {
     await startDetection()

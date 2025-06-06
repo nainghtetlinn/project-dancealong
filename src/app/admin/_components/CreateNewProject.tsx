@@ -52,6 +52,7 @@ export default function CreateNewProject() {
     else {
       toast.success('Successfully created.')
       router.push('/admin/' + result.data.id)
+      form.reset()
     }
 
     setLoading(false)

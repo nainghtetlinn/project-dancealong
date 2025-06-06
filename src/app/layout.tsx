@@ -39,9 +39,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <ModelProvider type='thunder'>
-            <main>{children}</main>
-          </ModelProvider>
+          <main>{children}</main>
           <Toaster />
         </ThemeProvider>
       </body>

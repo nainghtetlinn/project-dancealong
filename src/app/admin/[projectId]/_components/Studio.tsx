@@ -7,14 +7,16 @@ import AudioUpload from './AudioUpload'
 import ChoreographyList from './ChoreographyList'
 import RecordChoreography from './RecordChoreography'
 
+import { useModel } from '@/provider/model-provider'
 import { useAudio } from '../_lib/audioContext'
 import { useProjectDetails } from '../_lib/projectContext'
 
 export default function Studio() {
+  const { loading: modelLoading } = useModel()
   const { loading, audio } = useAudio()
   const { choreography } = useProjectDetails()
 
-  if (loading)
+  if (loading || modelLoading)
     return (
       <div className='h-full flex items-center justify-center'>
         <Loader2 className='animate-spin' />

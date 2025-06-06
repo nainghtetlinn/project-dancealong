@@ -1,13 +1,9 @@
 'use server'
 
-import { type TSong } from '@/types'
+import { TSong, TReturn } from '@/types'
 
 import { createClient } from '@/utils/supabase/server'
 import { uploadAudioSchema } from '@/validators/audio-validator'
-
-type TReturn =
-  | { success: true; data: TSong }
-  | { success: false; message: string }
 
 export async function uploadAudio(
   inputs: {
@@ -17,7 +13,7 @@ export async function uploadAudio(
   },
   audioFile: File,
   projectId: string
-): Promise<TReturn> {
+): Promise<TReturn<TSong>> {
   const validation = uploadAudioSchema.safeParse(inputs)
 
   if (!validation.success)

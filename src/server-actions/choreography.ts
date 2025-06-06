@@ -1,13 +1,9 @@
 'use server'
 
-import { TChoreography, TKeypoints } from '@/types'
+import { TChoreography, TKeypoints, TReturn } from '@/types'
 
 import { createClient } from '@/utils/supabase/server'
 import { uploadChoreographySchema } from '@/validators/choreography-validator'
-
-type TReturn<T> =
-  | { success: true; data: T }
-  | { success: false; message: string }
 
 export async function uploadChoreography(
   inputs: {

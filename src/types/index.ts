@@ -38,3 +38,7 @@ export type TParsedChoreography = {
   is_key_pose: boolean
   song_id: string
 }
+
+export type TReturn<T> =
+  | { success: true; data: T }
+  | { success: false; message: string }

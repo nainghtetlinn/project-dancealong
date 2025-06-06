@@ -18,7 +18,8 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Loader2, Upload } from 'lucide-react'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Loader2, Upload, Trash2 } from 'lucide-react'
 import Dropzone from 'react-dropzone'
 import MiniWaveForm from '../../_components/MiniWaveForm'
 
@@ -50,16 +51,25 @@ const AudioUpload = () => {
     },
   })
 
+  const [fileLoading, setFileLoading] = useState(false)
   const [file, setFile] = useState<File | null>(null)
   const [fileLocalUrl, setFileLocalUrl] = useState('')
   const [loading, setLoading] = useState(false)
 
   const handleDrop = async (acceptedFiles: File[]) => {
+    setFileLoading(true)
     const audio = acceptedFiles[0]
     const duration = await getAudioDuration(audio)
-    form.setValue('duration', duration)
+    form.setValue('duration', Math.floor(duration))
     setFile(audio)
     setFileLocalUrl(URL.createObjectURL(audio))
+    setFileLoading(false)
+  }
+
+  const handleRemove = () => {
+    form.resetField('duration')
+    setFile(null)
+    setFileLocalUrl('')
   }
 
   const onSubmit = async (values: TForm) => {
@@ -111,7 +121,9 @@ const AudioUpload = () => {
               )}
             />
 
-            {file === null ? (
+            {fileLoading ? (
+              <Skeleton className='w-full h-[150px]' />
+            ) : file === null ? (
               <Dropzone onDrop={handleDrop}>
                 {({ getRootProps, getInputProps, isDragActive }) => (
                   <div {...getRootProps()}>
@@ -147,7 +159,7 @@ const AudioUpload = () => {
                 name='duration'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Duration</FormLabel>
+                    <FormLabel>Duration (s)</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
@@ -158,13 +170,26 @@ const AudioUpload = () => {
                 )}
               />
             )}
+
             {fileLocalUrl && (
               <div className='mt-8'>
                 <MiniWaveForm url={fileLocalUrl} />
               </div>
             )}
           </CardContent>
-          <CardFooter className='justify-end'>
+          <CardFooter className='justify-between'>
+            {file === null ? (
+              <div></div>
+            ) : (
+              <Button
+                size='icon'
+                variant='destructive'
+                type='button'
+                onClick={handleRemove}
+              >
+                <Trash2 />
+              </Button>
+            )}
             <Button
               type='submit'
               disabled={loading}

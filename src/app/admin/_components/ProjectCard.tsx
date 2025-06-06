@@ -7,6 +7,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import { Edit2 } from 'lucide-react'
+import DeleteProjectBtn from './DeleteProjectBtn'
 import MiniWaveForm from './MiniWaveForm'
 
 import { TProject, TSong } from '@/types'
@@ -39,18 +41,15 @@ export default async function ProjectCard({
       </CardContent>
       <CardFooter className='justify-end gap-2'>
         <Button
-          size='sm'
+          size='icon'
           variant='secondary'
           asChild
         >
-          <Link href={`/admin/${project.id}`}>Edit</Link>
+          <Link href={`/admin/${project.id}`}>
+            <Edit2 />
+          </Link>
         </Button>
-        <Button
-          size='sm'
-          variant='destructive'
-        >
-          Delete
-        </Button>
+        <DeleteProjectBtn id={project.id} />
       </CardFooter>
     </Card>
   )

@@ -47,7 +47,7 @@ export default function ProjectCard({ project }: { project: TProject }) {
           variant='secondary'
           asChild
         >
-          <Link href={`/play/${project.project_name}`}>Play</Link>
+          <Link href={`/play/${project.id}`}>Play</Link>
         </Button>
       </CardFooter>
     </Card>

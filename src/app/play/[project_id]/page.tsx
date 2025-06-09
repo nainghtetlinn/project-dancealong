@@ -6,15 +6,15 @@ import { redirect } from 'next/navigation'
 export default async function Play({
   params,
 }: {
-  params: Promise<{ project_name: string }>
+  params: Promise<{ project_id: string }>
 }) {
-  const { project_name } = await params
+  const { project_id } = await params
   const supabase = await createClient()
 
   const { data: project } = await supabase
     .from('projects')
     .select('*')
-    .eq('project_name', project_name)
+    .eq('id', project_id)
     .not('song_id', 'is', null)
     .single()
 

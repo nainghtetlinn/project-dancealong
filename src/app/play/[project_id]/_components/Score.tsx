@@ -1,6 +1,6 @@
 import AnimatedText from './AnimatedText'
 
-import { TKeypoints, TParsedChoreography } from '@/types'
+import { TParsedChoreography } from '@/types'
 
 import { RefObject, useImperativeHandle, useRef, useState } from 'react'
 
